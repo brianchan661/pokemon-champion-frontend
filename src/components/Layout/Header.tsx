@@ -1,0 +1,292 @@
+import { useState, useMemo, useCallback } from 'react';
+import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
+import { LanguageSelector } from './LanguageSelector';
+import { useAuth } from '@/contexts/AuthContext';
+import { BuyMeCoffeeButton } from '@/components/BuyMeCoffeeButton';
+
+// Move navigation config outside component to prevent recreation
+const NAVIGATION_ITEMS = [
+  { key: 'news', href: '/news' },
+  { key: 'pokemon', href: '/pokemon' },
+  { key: 'teams', href: '/teams' },
+  {
+    key: 'data',
+    href: '/data',
+    dropdown: [
+      { key: 'abilities', href: '/data/abilities' },
+      { key: 'moves', href: '/data/moves' },
+      { key: 'items', href: '/data/items' },
+    ]
+  },
+  { key: 'tiers', href: '/tiers' },
+  { key: 'guides', href: '/guides' },
+] as const;
+
+export const Header = () => {
+  const { t } = useTranslation('common');
+  const { user, isAuthenticated, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  // Memoize navigation items to prevent recreation on each render
+  const navigation = useMemo(() =>
+    NAVIGATION_ITEMS.map(item => {
+      const base = {
+        name: t(`nav.${item.key}`),
+        href: item.href,
+        key: item.key,
+      };
+
+      // Include dropdown if it exists
+      if ('dropdown' in item && item.dropdown) {
+        return {
+          ...base,
+          dropdown: item.dropdown
+        };
+      }
+
+      return base;
+    }), [t]);
+
+  // Memoize toggle function to prevent child re-renders
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prev => !prev);
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
+
+  return (
+    <header className="bg-white shadow-sm border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">PC</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">
+                Pokemon Champion
+              </span>
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-8">
+            {navigation.map((item) => {
+              const hasDropdown = 'dropdown' in item && item.dropdown;
+
+              if (hasDropdown) {
+                return (
+                  <div
+                    key={item.name}
+                    className="relative"
+                    onMouseEnter={() => setOpenDropdown(item.key)}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    <button
+                      className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center whitespace-nowrap"
+                    >
+                      {item.name}
+                      <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {openDropdown === item.key && (
+                      <div className="absolute left-0 pt-2 w-48 z-50">
+                        <div className="rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1">
+                          {item.dropdown.map((subItem) => (
+                            <Link
+                              key={subItem.key}
+                              href={subItem.href}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-primary-600"
+                            >
+                              {t(`nav.${subItem.key}`)}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Right side */}
+          <div className="flex items-center space-x-4">
+            <LanguageSelector />
+
+            {/* Buy Me a Coffee Button - Desktop */}
+            <div className="hidden md:block">
+              <BuyMeCoffeeButton />
+            </div>
+
+            {/* Auth section */}
+            <div className="hidden md:flex items-center space-x-2">
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-3">
+                  {user?.role === 'admin' && (
+                    <Link
+                      href="/admin"
+                      className="text-sm text-red-600 hover:text-red-700 font-medium"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <Link
+                    href="/profile"
+                    className="text-sm text-gray-600 hover:text-primary-600 font-medium"
+                  >
+                    {user?.username}
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="btn-secondary text-sm"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link href="/auth" className="btn-secondary text-sm">
+                    Sign In
+                  </Link>
+                  <Link href="/auth" className="btn-primary text-sm">
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* Mobile menu button */}
+            <button
+              className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+              onClick={toggleMenu}
+              aria-expanded={isMenuOpen}
+              aria-label={isMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-2">
+              {navigation.map((item) => {
+                const hasDropdown = 'dropdown' in item && item.dropdown;
+
+                if (hasDropdown) {
+                  return (
+                    <div key={item.key}>
+                      <button
+                        onClick={() => setOpenDropdown(openDropdown === item.key ? null : item.key)}
+                        className="w-full text-left text-gray-600 hover:text-primary-600 px-3 py-2 text-base font-medium transition-colors duration-200 flex items-center justify-between"
+                      >
+                        {item.name}
+                        <svg
+                          className={`h-4 w-4 transition-transform ${openDropdown === item.key ? 'rotate-180' : ''}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      {openDropdown === item.key && (
+                        <div className="pl-6 space-y-1">
+                          {item.dropdown.map((subItem) => (
+                            <Link
+                              key={subItem.key}
+                              href={subItem.href}
+                              className="block text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                              onClick={closeMenu}
+                            >
+                              {t(`nav.${subItem.key}`)}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className="text-gray-600 hover:text-primary-600 px-3 py-2 text-base font-medium transition-colors duration-200"
+                    onClick={closeMenu}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
+              <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                {/* Buy Me a Coffee Button - Mobile */}
+                <div className="mx-3">
+                  <BuyMeCoffeeButton />
+                </div>
+
+                {isAuthenticated ? (
+                  <>
+                    <div className="px-3 py-2">
+                      <span className="text-sm text-gray-600">{user?.username}</span>
+                    </div>
+                    {user?.role === 'admin' && (
+                      <Link href="/admin" className="btn-secondary text-sm mx-3 bg-red-600 hover:bg-red-700 text-white" onClick={closeMenu}>
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <Link href="/profile" className="btn-secondary text-sm mx-3" onClick={closeMenu}>
+                      Profile
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        closeMenu();
+                      }}
+                      className="btn-secondary text-sm mx-3"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/auth" className="btn-secondary text-sm mx-3" onClick={closeMenu}>
+                      Sign In
+                    </Link>
+                    <Link href="/auth" className="btn-primary text-sm mx-3" onClick={closeMenu}>
+                      Sign Up
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+};

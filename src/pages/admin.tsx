@@ -1,0 +1,329 @@
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useAuth } from '../contexts/AuthContext';
+import { Layout } from '../components/Layout/Layout';
+import { NewsManagement } from '../components/Admin/NewsManagement';
+import { PremiumManagement } from '../components/Admin/PremiumManagement';
+import { UserManagement } from '../components/Admin/UserManagement';
+import axios from 'axios';
+
+interface SystemSetting {
+  id: number;
+  setting_key: string;
+  setting_value: string;
+  description: string | null;
+  updated_at: string;
+  updated_by: string | null;
+}
+
+const AdminPage = () => {
+  const { t } = useTranslation('common');
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'settings' | 'news' | 'premium' | 'users'>('settings');
+  const [settings, setSettings] = useState<SystemSetting[]>([]);
+  const [readOnlyMode, setReadOnlyMode] = useState(false);
+  const [readOnlyMessage, setReadOnlyMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    if (!isLoading && (!user || user.role !== 'admin')) {
+      router.push('/');
+    }
+  }, [user, isLoading, router]);
+
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      fetchSettings();
+      fetchReadOnlyStatus();
+    }
+  }, [user]);
+
+  const fetchSettings = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/settings`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setSettings(response.data.settings);
+    } catch (err) {
+      setError('Failed to fetch settings');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchReadOnlyStatus = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/read-only-mode`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setReadOnlyMode(response.data.enabled);
+      setReadOnlyMessage(response.data.message);
+    } catch (err) {
+      console.error('Failed to fetch read-only status:', err);
+    }
+  };
+
+  const toggleReadOnlyMode = async () => {
+    setUpdating(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/read-only-mode`,
+        { enabled: !readOnlyMode },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      setReadOnlyMode(!readOnlyMode);
+      setSuccess(response.data.message);
+      fetchSettings();
+    } catch (err) {
+      setError('Failed to toggle read-only mode');
+      console.error(err);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const updateReadOnlyMessage = async () => {
+    setUpdating(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/settings/read_only_message`,
+        { value: readOnlyMessage },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      setSuccess('Message updated successfully');
+      fetchSettings();
+    } catch (err) {
+      setError('Failed to update message');
+      console.error(err);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  if (isLoading || loading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <div className="text-white text-xl">{t('admin.loading')}</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!user || user.role !== 'admin') {
+    return null;
+  }
+
+  return (
+    <Layout>
+      <div className="min-h-screen bg-gray-900 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">{t('admin.title')}</h1>
+          <p className="text-gray-400">{t('admin.subtitle')}</p>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-gray-700 mb-6">
+          <nav className="flex gap-6">
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'settings'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-300'
+              }`}
+            >
+              {t('admin.tabs.settings')}
+            </button>
+            <button
+              onClick={() => setActiveTab('news')}
+              className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'news'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-300'
+              }`}
+            >
+              {t('admin.tabs.news')}
+            </button>
+            <button
+              onClick={() => setActiveTab('premium')}
+              className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'premium'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-300'
+              }`}
+            >
+              {t('admin.tabs.premium')}
+            </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'users'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-300'
+              }`}
+            >
+              {t('admin.tabs.users')}
+            </button>
+          </nav>
+        </div>
+
+        {error && (
+          <div className="mb-6 bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded">
+            {success}
+          </div>
+        )}
+
+        {/* News Management Tab */}
+        {activeTab === 'news' && (
+          <NewsManagement />
+        )}
+
+        {/* Premium Management Tab */}
+        {activeTab === 'premium' && (
+          <PremiumManagement />
+        )}
+
+        {/* User Management Tab */}
+        {activeTab === 'users' && (
+          <UserManagement />
+        )}
+
+        {/* System Settings Tab */}
+        {activeTab === 'settings' && (
+          <>
+        <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
+          <h2 className="text-2xl font-bold text-white mb-4">{t('admin.readOnlyMode.title')}</h2>
+          <p className="text-gray-300 mb-6">
+            {t('admin.readOnlyMode.description')}
+          </p>
+
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-white">{t('admin.readOnlyMode.status')}</h3>
+                <p className="text-sm text-gray-400">
+                  {readOnlyMode ? t('admin.readOnlyMode.currentlyEnabled') : t('admin.readOnlyMode.currentlyDisabled')}
+                </p>
+              </div>
+              <button
+                onClick={toggleReadOnlyMode}
+                disabled={updating}
+                className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                  readOnlyMode
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {updating ? t('admin.readOnlyMode.updating') : readOnlyMode ? t('admin.readOnlyMode.disable') : t('admin.readOnlyMode.enable')}
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                {t('admin.readOnlyMode.userMessage')}
+              </label>
+              <p className="text-sm text-gray-400 mb-3">
+                {t('admin.readOnlyMode.userMessageDescription')}
+              </p>
+              <textarea
+                value={readOnlyMessage}
+                onChange={(e) => setReadOnlyMessage(e.target.value)}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+              />
+              <button
+                onClick={updateReadOnlyMessage}
+                disabled={updating}
+                className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {updating ? t('admin.readOnlyMode.updating') : t('admin.readOnlyMode.updateMessage')}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+          <h2 className="text-2xl font-bold text-white mb-4">{t('admin.systemSettings.title')}</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-700">
+                  <th className="text-left py-3 px-4 text-gray-300 font-semibold">{t('admin.systemSettings.key')}</th>
+                  <th className="text-left py-3 px-4 text-gray-300 font-semibold">{t('admin.systemSettings.value')}</th>
+                  <th className="text-left py-3 px-4 text-gray-300 font-semibold">{t('admin.systemSettings.description')}</th>
+                  <th className="text-left py-3 px-4 text-gray-300 font-semibold">{t('admin.systemSettings.updated')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {settings.map((setting) => (
+                  <tr key={setting.id} className="border-b border-gray-700 hover:bg-gray-750">
+                    <td className="py-3 px-4 text-white font-mono text-sm">
+                      {setting.setting_key}
+                    </td>
+                    <td className="py-3 px-4 text-gray-300">
+                      {setting.setting_value}
+                    </td>
+                    <td className="py-3 px-4 text-gray-400 text-sm">
+                      {setting.description || '-'}
+                    </td>
+                    <td className="py-3 px-4 text-gray-400 text-sm">
+                      {new Date(setting.updated_at).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+          </>
+        )}
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export const getStaticProps = async ({ locale }: { locale: string }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['common'])),
+  },
+});
+
+export default AdminPage;

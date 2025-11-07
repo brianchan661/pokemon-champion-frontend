@@ -1,0 +1,482 @@
+{
+  "common": {
+    "loading": "読み込み中..."
+  },
+  "comingSoon": {
+    "status": "準備中"
+  },
+  "nav": {
+    "home": "ホーム",
+    "pokemon": "ポケモン",
+    "teams": "チーム",
+    "data": "データ",
+    "abilities": "特性",
+    "moves": "わざ",
+    "items": "道具",
+    "tiers": "ティア",
+    "guides": "ガイド",
+    "news": "ニュース",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる"
+  },
+  "auth": {
+    "login": "ログイン",
+    "signup": "サインアップ",
+    "logout": "ログアウト",
+    "verifyingEmail": "メールアドレスを確認中",
+    "pleaseWait": "メールアドレスを確認していますのでお待ちください...",
+    "success": "成功！",
+    "error": "エラー",
+    "emailVerified": "メールアドレスが正常に確認されました！",
+    "emailVerificationFailed": "メール確認に失敗しました。リンクが無効または期限切れの可能性があります。",
+    "redirectingToHome": "ホームページにリダイレクトしています...",
+    "backToLogin": "ログインに戻る",
+    "checkEmail": "メールを確認してください",
+    "verificationEmailSent": "確認メールを送信しました。メールを確認して、リンクをクリックしてアカウントを確認してください。",
+    "didNotReceive": "メールが届きませんでしたか？",
+    "resendEmail": "メールを再送信",
+    "resending": "再送信中...",
+    "verificationEmailResent": "確認メールを送信しました！受信トレイをご確認ください。",
+    "checkSpam": "迷惑メールフォルダをご確認ください",
+    "emailAlreadyVerified": "メールアドレスはすでに確認されています。"
+  },
+  "profile": {
+    "title": "マイプロフィール",
+    "information": "プロフィール情報",
+    "editProfile": "プロフィールを編集",
+    "saveChanges": "変更を保存",
+    "cancel": "キャンセル",
+    "memberId": "会員ID",
+    "username": "ユーザー名",
+    "email": "メールアドレス",
+    "language": "優先言語",
+    "accountType": "アカウントタイプ",
+    "role": "役割",
+    "memberSince": "登録日",
+    "avatarUrl": "アバターURL",
+    "linkedAccounts": "連携アカウント",
+    "teamStatistics": "チーム統計",
+    "totalTeams": "総チーム数",
+    "publicTeams": "公開",
+    "privateTeams": "非公開",
+    "totalLikes": "総いいね数",
+    "quickActions": "クイックアクション",
+    "myTeams": "マイチーム",
+    "createTeam": "チーム作成",
+    "free": "無料",
+    "premium": "プレミアム"
+  },
+  "home": {
+    "title": "ポケモンチャンピオンへようこそ",
+    "description": "包括的なデータ、チーム構築ツール、競技的洞察を備えた究極のポケモンバトル体験。",
+    "hero": {
+      "title": "ポケモンチャンピオン",
+      "subtitle": "包括的なデータベース、チームビルダー、競技的洞察でポケモンバトルの技術をマスターしよう。",
+      "explorePokemon": "ポケモンを探索",
+      "buildTeam": "チーム構築"
+    },
+    "mainFeatures": {
+      "title": "コア機能",
+      "subtitle": "ポケモンチャンピオンになるために必要なすべて",
+      "database": {
+        "title": "ポケモンデータベース",
+        "description": "ゲーム内のすべてのポケモンのステータス、特性、技、競技的洞察を含む包括的なポケモンデータを探索。",
+        "action": "データベースを探索"
+      },
+      "teamBuilder": {
+        "title": "チームビルダー",
+        "description": "高度なツールと戦略分析で完璧なチーム構成を作成、最適化、共有。",
+        "action": "チームを構築"
+      },
+      "tiers": {
+        "title": "ティアリスト",
+        "description": "トッププレイヤーからの最新の競技ランキングとティア分析でメタの先を行く。",
+        "action": "ティアを表示"
+      }
+    },
+    "news": {
+      "title": "最新ゲームニュース",
+      "subtitle": "ポケモンチャンピオンの最新アップデート、バランス変更、競技イベントの情報をお届け。",
+      "readMore": "続きを読む",
+      "viewAll": "すべてのニュースを表示",
+      "categories": {
+        "update": "ゲームアップデート",
+        "feature": "新機能",
+        "event": "トーナメント"
+      },
+      "items": {
+        "balanceUpdate": {
+          "title": "メジャーバランスアップデートリリース",
+          "excerpt": "競技バランスとメタの多様性を改善するためのポケモンステータスと特性の大幅な変更。",
+          "date": "2日前"
+        },
+        "newFeatures": {
+          "title": "強化されたチームビルダー機能",
+          "excerpt": "完璧な競技チームを作成するための新しい高度なフィルタリングオプションとチーム分析ツール。",
+          "date": "1週間前"
+        },
+        "tournament": {
+          "title": "チャンピオンシップトーナメント発表",
+          "excerpt": "素晴らしい賞品と認知度を誇る今年最大のポケモンチャンピオントーナメントに参加しよう。",
+          "date": "2週間前"
+        }
+      }
+    },
+    "status": {
+      "title": "バックエンドステータス",
+      "checking": "バックエンド接続を確認中...",
+      "connected": "バックエンドに正常に接続されました",
+      "error": "バックエンド接続に失敗しました",
+      "uptime": "稼働時間",
+      "minutes": "分",
+      "message": "ステータス"
+    }
+  },
+  "error": {
+    "notFound": {
+      "title": "ページが見つかりません",
+      "description": "お探しのページは存在しないか、移動した可能性があります。",
+      "goHome": "ホームページへ",
+      "goBack": "戻る",
+      "popularPages": "人気のページ"
+    }
+  },
+  "footer": {
+    "description": "包括的なデータ、チーム構築ツール、競技的洞察を備えた究極のポケモンバトル体験。",
+    "quickLinks": "クイックリンク",
+    "about": "について",
+    "support": "サポート",
+    "contact": "お問い合わせ",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "rights": "すべての権利を保有。",
+    "followUs": "フォローする",
+    "disclaimer": "Pokemon and all related properties are © Nintendo/Creatures Inc./GAME FREAK inc. This website is not affiliated with or endorsed by Nintendo, Creatures Inc., or GAME FREAK inc. [NEEDS_REVIEW]"
+  },
+  "support": {
+    "coffee": "コーヒーをおごる",
+    "buyMeACoffee": "Buy Me a Coffeeでサポート"
+  },
+  "types": {
+    "normal": "ノーマル",
+    "fire": "ほのお",
+    "water": "みず",
+    "electric": "でんき",
+    "grass": "くさ",
+    "ice": "こおり",
+    "fighting": "かくとう",
+    "poison": "どく",
+    "ground": "じめん",
+    "flying": "ひこう",
+    "psychic": "エスパー",
+    "bug": "むし",
+    "rock": "いわ",
+    "ghost": "ゴースト",
+    "dragon": "ドラゴン",
+    "dark": "あく",
+    "steel": "はがね",
+    "fairy": "フェアリー"
+  },
+  "pokemon": {
+    "title": "ポケモン図鑑",
+    "number": "No.",
+    "image": "画像",
+    "name": "名前",
+    "type": "タイプ",
+    "abilities": "特性",
+    "ability1": "特性1",
+    "ability2": "特性2",
+    "abilityHidden": "隠れ特性",
+    "filterByType": "タイプで絞り込む",
+    "allTypes": "すべてのタイプ",
+    "loading": "ポケモンを読み込み中...",
+    "error": "ポケモンの読み込みに失敗しました。もう一度お試しください。",
+    "noResults": "ポケモンが見つかりませんでした。",
+    "stats": {
+      "total": "合計",
+      "hp": "HP",
+      "attack": "こうげき",
+      "defense": "ぼうぎょ",
+      "spAtk": "とくこう",
+      "spDef": "とくぼう",
+      "speed": "すばやさ"
+    },
+    "detail": {
+      "back": "一覧に戻る",
+      "error": "ポケモンの詳細を読み込めませんでした。もう一度お試しください。",
+      "species": "分類",
+      "height": "高さ",
+      "weight": "重さ",
+      "baseStats": "種族値",
+      "forms": "別のフォーム",
+      "evolutionChain": "進化チェーン",
+      "notFound": {
+        "title": "ポケモンが見つかりません",
+        "description": "お探しのポケモンはデータベースに存在しないか、まだ追加されていません。",
+        "browsePokemon": "すべてのポケモンを見る"
+      },
+      "moves": "わざ",
+      "movesFrom": "わざ（データ元）",
+      "levelUpMoves": "レベルアップで覚えるわざ",
+      "tmMoves": "わざマシン・ひでんマシン",
+      "eggMoves": "タマゴわざ",
+      "level": "レベル",
+      "move": "わざ",
+      "category": "分類",
+      "power": "威力",
+      "accuracy": "命中",
+      "noMoves": "わざデータがありません",
+      "selectGeneration": "世代を選択",
+      "selectGameVersion": "ゲームバージョンを選択",
+      "filterByType": "タイプでフィルター",
+      "allTypes": "すべてのタイプ"
+    }
+  },
+  "teams": {
+    "title": "公開チーム",
+    "description": "みんなが共有している対戦用チームをチェックしよう",
+    "createTeam": "チームを作成",
+    "myTeams": "マイチーム",
+    "browseTeams": "チームを見る",
+    "loading": "チームを読み込み中...",
+    "error": "チームの読み込みに失敗しました。もう一度お試しください。",
+    "noResults": "チームが見つかりませんでした。",
+    "by": "作成者",
+    "likes": "いいね",
+    "pokemon": "ポケモン",
+    "viewDetails": "詳細を見る",
+    "strategy": "戦略",
+    "sortBy": "並び替え",
+    "sort": {
+      "newest": "新しい順",
+      "oldest": "古い順",
+      "mostLiked": "人気順"
+    },
+    "teamCount": "{{count}} / {{limit}} チーム",
+    "limitReached": "チーム上限に達しました",
+    "limitReachedMessage": "最大10チームに達しました。",
+    "deleteToCreate": "新しいチームを作成するには、既存のチームを削除してください。",
+    "noTeamsYet": "まだチームがありません",
+    "createFirstTeam": "最初のチームを作成して、競技戦略を構築しましょう！",
+    "public": "公開",
+    "private": "非公開",
+    "edit": "編集",
+    "delete": "削除",
+    "confirmDelete": "削除を確認",
+    "cancel": "キャンセル",
+    "makePublic": "公開にする",
+    "makePrivate": "非公開にする"
+  },
+  "teamBuilder": {
+    "searchItems": "道具を検索...",
+    "noItemsFound": "道具が見つかりません",
+    "description": "説明",
+    "descriptionPlaceholder": "チームの説明を入力してください...（@ を入力するとポケモン、わざ、道具、特性をメンションできます）"
+  },
+  "moves": {
+    "title": "わざ",
+    "description": "すべてのポケモンのわざとステータス、説明を閲覧",
+    "totalMoves": "{{count}} 件のわざ",
+    "filteredMoves": "{{count}} 件の絞り込み結果",
+    "searchPlaceholder": "わざを検索...",
+    "clearFilters": "フィルターをクリア",
+    "filterByType": "タイプで絞り込む",
+    "filterByCategory": "分類で絞り込む",
+    "all": "すべて",
+    "activeFilters": "有効なフィルター：",
+    "search": "検索",
+    "type": "タイプ",
+    "category": "分類",
+    "categories": {
+      "physical": "物理",
+      "special": "特殊",
+      "status": "変化",
+      "Physical": "物理",
+      "Special": "特殊",
+      "Status": "変化"
+    },
+    "table": {
+      "name": "わざ名",
+      "type": "タイプ",
+      "category": "分類",
+      "power": "威力",
+      "accuracy": "命中",
+      "pp": "PP",
+      "description": "説明"
+    },
+    "loading": "わざを読み込み中...",
+    "loadingMore": "さらに読み込み中...",
+    "allLoaded": "すべてのわざを読み込みました",
+    "error": "わざの読み込みに失敗しました。もう一度お試しください。",
+    "noResults": "わざが見つかりませんでした。",
+    "detail": {
+      "backToMoves": "わざ一覧に戻る",
+      "loading": "わざの詳細を読み込み中...",
+      "error": "わざが見つからないか、読み込みに失敗しました。",
+      "power": "威力",
+      "accuracy": "命中",
+      "pp": "PP",
+      "priority": "優先度",
+      "description": "説明",
+      "pokemonTitle": "{{moveName}}を覚えるポケモン",
+      "pokemonCount": "({{count}}匹)",
+      "noPokemon": "このわざを覚えるポケモンが見つかりませんでした。",
+      "pokemonTable": {
+        "number": "No.",
+        "pokemon": "ポケモン",
+        "type": "タイプ"
+      }
+    }
+  },
+  "items": {
+    "title": "道具",
+    "description": "すべてのポケモン道具を閲覧",
+    "totalItems": "{{count}}個の道具",
+    "filteredItems": "{{count}}個が見つかりました",
+    "search": "道具を検索...",
+    "clearFilters": "フィルターをクリア",
+    "filterByCategory": "カテゴリーで絞り込む",
+    "allCategories": "すべてのカテゴリー",
+    "categories": {
+      "held-items": "持ち物",
+      "choice": "こだわり系",
+      "mega-stones": "メガストーン",
+      "z-crystals": "Zクリスタル",
+      "type-enhancement": "タイプ強化",
+      "type-protection": "タイプ防御",
+      "in-a-pinch": "ピンチベリー",
+      "effort-drop": "努力値下げ",
+      "healing": "回復",
+      "revival": "復活",
+      "status-cures": "状態異常治療",
+      "pp-recovery": "PP回復",
+      "vitamins": "栄養ドリンク",
+      "stat-boosts": "能力上昇",
+      "standard-balls": "標準ボール",
+      "special-balls": "特殊ボール",
+      "species-specific": "専用道具",
+      "plates": "プレート",
+      "memories": "メモリ",
+      "bad-held-items": "悪影響道具",
+      "effort-training": "努力値訓練",
+      "flutes": "フルート",
+      "spelunking": "探索",
+      "training": "トレーニング",
+      "evolution": "進化"
+    },
+    "table": {
+      "sprite": "画像",
+      "name": "名前",
+      "category": "カテゴリー",
+      "description": "説明"
+    },
+    "loading": "読み込み中...",
+    "error": "道具の読み込みに失敗しました。もう一度お試しください。",
+    "noResults": "道具が見つかりませんでした。",
+    "detail": {
+      "backToItems": "道具リストに戻る",
+      "loading": "道具の詳細を読み込み中...",
+      "error": "道具が見つからないか、読み込みエラーが発生しました。",
+      "identifier": "識別子",
+      "category": "カテゴリー"
+    }
+  },
+  "news": {
+    "title": "ニュース",
+    "description": "最新のニュースとアップデート",
+    "filterByTag": "タグで絞り込む",
+    "allArticles": "すべての記事",
+    "translationComingSoon": "日本語版は準備中です"
+  },
+  "tiers": {
+    "comingSoon": "ポケモンのティアリストとランキングは準備中です。対戦環境の分析をお楽しみに！"
+  },
+  "guides": {
+    "comingSoon": "詳しいバトルガイド、戦略、チュートリアルは準備中です。トッププレイヤーから学ぼう！"
+  },
+  "strategy": {
+    "write": "書く",
+    "preview": "プレビュー"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "subtitle": "Manage system settings and configurations",
+    "tabs": {
+      "settings": "System Settings",
+      "news": "News Management",
+      "premium": "Premium Management",
+      "users": "User Management"
+    },
+    "readOnlyMode": {
+      "title": "Read-Only Mode",
+      "description": "When enabled, only GET requests are allowed for non-admin users. This prevents users from creating, updating, or deleting content while you perform maintenance.",
+      "status": "Status",
+      "currentlyEnabled": "Currently enabled",
+      "currentlyDisabled": "Currently disabled",
+      "enable": "Enable",
+      "disable": "Disable",
+      "updating": "Updating...",
+      "userMessage": "User Message",
+      "userMessageDescription": "This message will be shown to users when they attempt to make changes while read-only mode is active.",
+      "updateMessage": "Update Message"
+    },
+    "systemSettings": {
+      "title": "All System Settings",
+      "key": "Key",
+      "value": "Value",
+      "description": "Description",
+      "updated": "Updated"
+    },
+    "premium": {
+      "loading": "Loading...",
+      "sections": {
+        "stats": "Statistics",
+        "pending": "Pending Activations",
+        "transactions": "Transaction History"
+      },
+      "stats": {
+        "activePremium": "Active Premium Users",
+        "expiredPremium": "Expired Premium",
+        "totalRevenue": "Total Revenue",
+        "totalTransactions": "Total Transactions",
+        "recentByType": "Recent Transactions (Last 30 Days)"
+      },
+      "pending": {
+        "title": "Pending Premium Activations",
+        "description": "These are Buy Me a Coffee subscriptions that couldn't be automatically linked to a user account. You can manually approve and link them here.",
+        "noPending": "No pending activations"
+      },
+      "transactions": {
+        "title": "Premium Transaction History",
+        "noTransactions": "No transactions found"
+      }
+    },
+    "users": {
+      "loading": "Loading...",
+      "sections": {
+        "stats": "Statistics",
+        "users": "User List",
+        "auditLog": "Audit Log"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "adminUsers": "Admin Users",
+        "premiumUsers": "Premium Users",
+        "verifiedUsers": "Verified Users",
+        "suspendedUsers": "Suspended Users",
+        "bannedUsers": "Banned Users",
+        "recentSignups": "Recent Signups"
+      },
+      "list": {
+        "title": "User Management",
+        "searchPlaceholder": "Search by username, email, or ID..."
+      },
+      "auditLog": {
+        "title": "Admin Audit Log"
+      }
+    },
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}

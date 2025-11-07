@@ -1,0 +1,482 @@
+{
+  "common": {
+    "loading": "Loading..."
+  },
+  "comingSoon": {
+    "status": "Coming Soon"
+  },
+  "nav": {
+    "home": "Home",
+    "pokemon": "Pokemon",
+    "teams": "Teams",
+    "data": "Data",
+    "abilities": "Abilities",
+    "moves": "Moves",
+    "items": "Items",
+    "tiers": "Tiers",
+    "guides": "Guides",
+    "news": "News",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "verifyingEmail": "Verifying Your Email",
+    "pleaseWait": "Please wait while we verify your email address...",
+    "success": "Success!",
+    "error": "Error",
+    "emailVerified": "Your email has been successfully verified!",
+    "emailVerificationFailed": "Email verification failed. The link may be invalid or expired.",
+    "redirectingToHome": "Redirecting you to the home page...",
+    "backToLogin": "Back to Login",
+    "checkEmail": "Check Your Email",
+    "verificationEmailSent": "We've sent a verification email to your inbox. Please check your email and click the link to verify your account.",
+    "didNotReceive": "Didn't receive the email?",
+    "resendEmail": "Resend Email",
+    "resending": "Resending...",
+    "verificationEmailResent": "Verification email sent! Please check your inbox.",
+    "checkSpam": "Please check your spam folder",
+    "emailAlreadyVerified": "Your email is already verified."
+  },
+  "profile": {
+    "title": "My Profile",
+    "information": "Profile Information",
+    "editProfile": "Edit Profile",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "memberId": "Member ID",
+    "username": "Username",
+    "email": "Email",
+    "language": "Preferred Language",
+    "accountType": "Account Type",
+    "role": "Role",
+    "memberSince": "Member Since",
+    "avatarUrl": "Avatar URL",
+    "linkedAccounts": "Linked Accounts",
+    "teamStatistics": "Team Statistics",
+    "totalTeams": "Total Teams",
+    "publicTeams": "Public",
+    "privateTeams": "Private",
+    "totalLikes": "Total Likes",
+    "quickActions": "Quick Actions",
+    "myTeams": "My Teams",
+    "createTeam": "Create Team",
+    "free": "Free",
+    "premium": "Premium"
+  },
+  "home": {
+    "title": "Welcome to Pokemon Champion",
+    "description": "The ultimate Pokemon battle experience with comprehensive data, team building tools, and competitive insights.",
+    "hero": {
+      "title": "Pokemon Champion",
+      "subtitle": "Master the art of Pokemon battles with our comprehensive database, team builder, and competitive insights.",
+      "explorePokemon": "Explore Pokemon",
+      "buildTeam": "Build Team"
+    },
+    "mainFeatures": {
+      "title": "Core Features",
+      "subtitle": "Everything you need to become a Pokemon Champion",
+      "database": {
+        "title": "Pokemon Database",
+        "description": "Comprehensive Pokemon data with advanced filtering and search capabilities.",
+        "action": "Explore Database"
+      },
+      "teamBuilder": {
+        "title": "Team Builder",
+        "description": "Create and share your perfect team compositions with detailed strategies.",
+        "action": "Build Teams"
+      },
+      "tiers": {
+        "title": "Tier Lists",
+        "description": "Stay updated with the latest competitive rankings and meta analysis.",
+        "action": "View Rankings"
+      }
+    },
+    "news": {
+      "title": "Latest Pokemon Champion News",
+      "subtitle": "Stay updated with the latest game updates, features, and community events.",
+      "categories": {
+        "update": "Game Update",
+        "feature": "New Feature",
+        "event": "Event"
+      },
+      "items": {
+        "balanceUpdate": {
+          "title": "Balance Update 1.2.0 Released",
+          "excerpt": "Major balance changes to competitive Pokemon and new tier adjustments.",
+          "date": "2 days ago"
+        },
+        "newFeatures": {
+          "title": "Advanced Team Builder Features",
+          "excerpt": "New tools for team optimization and strategy sharing with the community.",
+          "date": "1 week ago"
+        },
+        "tournament": {
+          "title": "Championship Tournament Announced",
+          "excerpt": "Join the first official Pokemon Champion tournament with amazing prizes.",
+          "date": "2 weeks ago"
+        }
+      },
+      "readMore": "Read More",
+      "viewAll": "View All News"
+    },
+    "status": {
+      "title": "Backend Status",
+      "checking": "Checking backend connection...",
+      "connected": "Backend connected successfully",
+      "error": "Backend connection failed",
+      "uptime": "Uptime",
+      "minutes": "minutes",
+      "message": "Status"
+    }
+  },
+  "error": {
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for does not exist or has been moved.",
+      "goHome": "Go to Home Page",
+      "goBack": "Go Back",
+      "popularPages": "Popular pages"
+    }
+  },
+  "footer": {
+    "description": "The ultimate Pokemon battle experience with comprehensive data, team building tools, and competitive insights.",
+    "quickLinks": "Quick Links",
+    "about": "About",
+    "support": "Support",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "rights": "All rights reserved.",
+    "followUs": "Follow us",
+    "disclaimer": "Pokemon and all related properties are © Nintendo/Creatures Inc./GAME FREAK inc. This website is not affiliated with or endorsed by Nintendo, Creatures Inc., or GAME FREAK inc."
+  },
+  "support": {
+    "coffee": "Buy me a coffee",
+    "buyMeACoffee": "Support us on Buy Me a Coffee"
+  },
+  "types": {
+    "normal": "Normal",
+    "fire": "Fire",
+    "water": "Water",
+    "electric": "Electric",
+    "grass": "Grass",
+    "ice": "Ice",
+    "fighting": "Fighting",
+    "poison": "Poison",
+    "ground": "Ground",
+    "flying": "Flying",
+    "psychic": "Psychic",
+    "bug": "Bug",
+    "rock": "Rock",
+    "ghost": "Ghost",
+    "dragon": "Dragon",
+    "dark": "Dark",
+    "steel": "Steel",
+    "fairy": "Fairy"
+  },
+  "pokemon": {
+    "title": "Pokemon Database",
+    "number": "#",
+    "image": "Image",
+    "name": "Name",
+    "type": "Type",
+    "abilities": "Abilities",
+    "ability1": "Ability 1",
+    "ability2": "Ability 2",
+    "abilityHidden": "Hidden Ability",
+    "filterByType": "Filter by Type",
+    "allTypes": "All Types",
+    "loading": "Loading Pokemon...",
+    "error": "Error loading Pokemon. Please try again.",
+    "noResults": "No Pokemon found.",
+    "stats": {
+      "total": "Total",
+      "hp": "HP",
+      "attack": "Atk",
+      "defense": "Def",
+      "spAtk": "SpA",
+      "spDef": "SpD",
+      "speed": "Spe"
+    },
+    "detail": {
+      "back": "Back to List",
+      "error": "Failed to load Pokemon details. Please try again.",
+      "species": "Species",
+      "height": "Height",
+      "weight": "Weight",
+      "baseStats": "Base Stats",
+      "forms": "Alternative Forms",
+      "evolutionChain": "Evolution Chain",
+      "notFound": {
+        "title": "Pokemon Not Found",
+        "description": "The Pokemon you are looking for does not exist in our database or has not been added yet.",
+        "browsePokemon": "Browse All Pokemon"
+      },
+      "moves": "Moves",
+      "movesFrom": "Moves from",
+      "levelUpMoves": "Level Up Moves",
+      "tmMoves": "TM/HM Moves",
+      "eggMoves": "Egg Moves",
+      "level": "Level",
+      "move": "Move",
+      "category": "Category",
+      "power": "Power",
+      "accuracy": "Accuracy",
+      "noMoves": "No moves data available",
+      "selectGeneration": "Select Generation",
+      "selectGameVersion": "Select Game Version",
+      "filterByType": "Filter by Type",
+      "allTypes": "All Types"
+    }
+  },
+  "teams": {
+    "title": "Public Teams",
+    "description": "Browse and discover competitive Pokemon teams shared by the community",
+    "createTeam": "Create Team",
+    "myTeams": "My Teams",
+    "browseTeams": "Browse Teams",
+    "loading": "Loading teams...",
+    "error": "Error loading teams. Please try again.",
+    "noResults": "No teams found.",
+    "by": "by",
+    "likes": "likes",
+    "pokemon": "Pokemon",
+    "viewDetails": "View Details",
+    "strategy": "Strategy",
+    "sortBy": "Sort By",
+    "sort": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "mostLiked": "Most Liked"
+    },
+    "teamCount": "{{count}} of {{limit}} teams",
+    "limitReached": "Team limit reached",
+    "limitReachedMessage": "You have reached the maximum of 10 teams.",
+    "deleteToCreate": "Please delete a team to create a new one.",
+    "noTeamsYet": "No teams yet",
+    "createFirstTeam": "Create your first team to start building competitive strategies!",
+    "public": "Public",
+    "private": "Private",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Confirm Delete",
+    "cancel": "Cancel",
+    "makePublic": "Make Public",
+    "makePrivate": "Make Private"
+  },
+  "teamBuilder": {
+    "searchItems": "Search items...",
+    "noItemsFound": "No items found",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your team... (Type @ to mention Pokemon, moves, items, or abilities)"
+  },
+  "moves": {
+    "title": "Moves",
+    "description": "Browse all Pokemon moves with their stats and descriptions",
+    "totalMoves": "{{count}} total moves",
+    "filteredMoves": "{{count}} filtered moves",
+    "searchPlaceholder": "Search moves...",
+    "clearFilters": "Clear Filters",
+    "filterByType": "Filter by Type",
+    "filterByCategory": "Filter by Category",
+    "all": "All",
+    "activeFilters": "Active filters:",
+    "search": "Search",
+    "type": "Type",
+    "category": "Category",
+    "categories": {
+      "physical": "Physical",
+      "special": "Special",
+      "status": "Status",
+      "Physical": "Physical",
+      "Special": "Special",
+      "Status": "Status"
+    },
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "category": "Category",
+      "power": "Power",
+      "accuracy": "Accuracy",
+      "pp": "PP",
+      "description": "Description"
+    },
+    "loading": "Loading moves...",
+    "loadingMore": "Loading more moves...",
+    "allLoaded": "All moves loaded",
+    "error": "Error loading moves. Please try again.",
+    "noResults": "No moves found.",
+    "detail": {
+      "backToMoves": "Back to Moves",
+      "loading": "Loading move details...",
+      "error": "Move not found or error loading move details.",
+      "power": "Power",
+      "accuracy": "Accuracy",
+      "pp": "PP",
+      "priority": "Priority",
+      "description": "Description",
+      "pokemonTitle": "Pokemon that can learn {{moveName}}",
+      "pokemonCount": "({{count}})",
+      "noPokemon": "No Pokemon found with this move.",
+      "pokemonTable": {
+        "number": "#",
+        "pokemon": "Pokemon",
+        "type": "Type"
+      }
+    }
+  },
+  "items": {
+    "title": "Items",
+    "description": "Browse all Pokemon items",
+    "totalItems": "{{count}} total items",
+    "filteredItems": "{{count}} items found",
+    "search": "Search items...",
+    "clearFilters": "Clear Filters",
+    "filterByCategory": "Filter by Category",
+    "allCategories": "All Categories",
+    "categories": {
+      "held-items": "Held Items",
+      "choice": "Choice Items",
+      "mega-stones": "Mega Stones",
+      "z-crystals": "Z-Crystals",
+      "type-enhancement": "Type Enhancement",
+      "type-protection": "Type Protection",
+      "in-a-pinch": "In-a-Pinch Berries",
+      "effort-drop": "EV Berries",
+      "healing": "Healing",
+      "revival": "Revival",
+      "status-cures": "Status Cures",
+      "pp-recovery": "PP Recovery",
+      "vitamins": "Vitamins",
+      "stat-boosts": "Stat Boosts",
+      "standard-balls": "Standard Balls",
+      "special-balls": "Special Balls",
+      "species-specific": "Species Specific",
+      "plates": "Plates",
+      "memories": "Memories",
+      "bad-held-items": "Bad Items",
+      "effort-training": "EV Training",
+      "flutes": "Flutes",
+      "spelunking": "Exploration",
+      "training": "Training",
+      "evolution": "Evolution"
+    },
+    "table": {
+      "sprite": "Sprite",
+      "name": "Name",
+      "category": "Category",
+      "description": "Description"
+    },
+    "loading": "Loading items...",
+    "error": "Error loading items. Please try again.",
+    "noResults": "No items found.",
+    "detail": {
+      "backToItems": "Back to Items",
+      "loading": "Loading item details...",
+      "error": "Item not found or error loading item details.",
+      "identifier": "Identifier",
+      "category": "Category"
+    }
+  },
+  "news": {
+    "title": "News",
+    "description": "Latest news and updates",
+    "filterByTag": "Filter by Tag",
+    "allArticles": "All Articles",
+    "translationComingSoon": "Japanese translation coming soon"
+  },
+  "tiers": {
+    "comingSoon": "Comprehensive Pokemon tier lists and rankings are coming soon. Stay tuned for competitive meta analysis!"
+  },
+  "guides": {
+    "comingSoon": "In-depth battle guides, strategies, and tutorials are coming soon. Learn from the best!"
+  },
+  "strategy": {
+    "write": "Write",
+    "preview": "Preview"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "subtitle": "Manage system settings and configurations",
+    "tabs": {
+      "settings": "System Settings",
+      "news": "News Management",
+      "premium": "Premium Management",
+      "users": "User Management"
+    },
+    "readOnlyMode": {
+      "title": "Read-Only Mode",
+      "description": "When enabled, only GET requests are allowed for non-admin users. This prevents users from creating, updating, or deleting content while you perform maintenance.",
+      "status": "Status",
+      "currentlyEnabled": "Currently enabled",
+      "currentlyDisabled": "Currently disabled",
+      "enable": "Enable",
+      "disable": "Disable",
+      "updating": "Updating...",
+      "userMessage": "User Message",
+      "userMessageDescription": "This message will be shown to users when they attempt to make changes while read-only mode is active.",
+      "updateMessage": "Update Message"
+    },
+    "systemSettings": {
+      "title": "All System Settings",
+      "key": "Key",
+      "value": "Value",
+      "description": "Description",
+      "updated": "Updated"
+    },
+    "premium": {
+      "loading": "Loading...",
+      "sections": {
+        "stats": "Statistics",
+        "pending": "Pending Activations",
+        "transactions": "Transaction History"
+      },
+      "stats": {
+        "activePremium": "Active Premium Users",
+        "expiredPremium": "Expired Premium",
+        "totalRevenue": "Total Revenue",
+        "totalTransactions": "Total Transactions",
+        "recentByType": "Recent Transactions (Last 30 Days)"
+      },
+      "pending": {
+        "title": "Pending Premium Activations",
+        "description": "These are Buy Me a Coffee subscriptions that couldn't be automatically linked to a user account. You can manually approve and link them here.",
+        "noPending": "No pending activations"
+      },
+      "transactions": {
+        "title": "Premium Transaction History",
+        "noTransactions": "No transactions found"
+      }
+    },
+    "users": {
+      "loading": "Loading...",
+      "sections": {
+        "stats": "Statistics",
+        "users": "User List",
+        "auditLog": "Audit Log"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "adminUsers": "Admin Users",
+        "premiumUsers": "Premium Users",
+        "verifiedUsers": "Verified Users",
+        "suspendedUsers": "Suspended Users",
+        "bannedUsers": "Banned Users",
+        "recentSignups": "Recent Signups"
+      },
+      "list": {
+        "title": "User Management",
+        "searchPlaceholder": "Search by username, email, or ID..."
+      },
+      "auditLog": {
+        "title": "Admin Audit Log"
+      }
+    },
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}

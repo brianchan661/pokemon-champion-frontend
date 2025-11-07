@@ -1,0 +1,479 @@
+{
+  "common": {
+    "loading": "加载中..."
+  },
+  "comingSoon": {
+    "status": "準備中"
+  },
+  "nav": {
+    "home": "首页",
+    "pokemon": "宝可梦",
+    "teams": "队伍",
+    "data": "数据",
+    "abilities": "特性",
+    "moves": "招式",
+    "items": "道具",
+    "tiers": "分级",
+    "guides": "指南",
+    "news": "新闻",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
+  },
+  "auth": {
+    "login": "Login [NEEDS_TRANSLATION]",
+    "signup": "Sign Up [NEEDS_TRANSLATION]",
+    "logout": "Logout [NEEDS_TRANSLATION]",
+    "verifyingEmail": "Verifying Your Email [NEEDS_TRANSLATION]",
+    "pleaseWait": "Please wait while we verify your email address... [NEEDS_TRANSLATION]",
+    "success": "Success! [NEEDS_TRANSLATION]",
+    "error": "Error [NEEDS_TRANSLATION]",
+    "emailVerified": "Your email has been successfully verified! [NEEDS_TRANSLATION]",
+    "emailVerificationFailed": "Email verification failed. The link may be invalid or expired. [NEEDS_TRANSLATION]",
+    "redirectingToHome": "Redirecting you to the home page... [NEEDS_TRANSLATION]",
+    "backToLogin": "Back to Login [NEEDS_TRANSLATION]",
+    "checkEmail": "Check Your Email [NEEDS_TRANSLATION]",
+    "verificationEmailSent": "We've sent a verification email to your inbox. Please check your email and click the link to verify your account. [NEEDS_TRANSLATION]",
+    "didNotReceive": "Didn't receive the email? [NEEDS_TRANSLATION]",
+    "resendEmail": "Resend Email [NEEDS_TRANSLATION]",
+    "resending": "Resending... [NEEDS_TRANSLATION]",
+    "verificationEmailResent": "Verification email sent! Please check your inbox. [NEEDS_TRANSLATION]",
+    "checkSpam": "Please check your spam folder [NEEDS_TRANSLATION]",
+    "emailAlreadyVerified": "Your email is already verified. [NEEDS_TRANSLATION]"
+  },
+  "profile": {
+    "title": "My Profile [NEEDS_TRANSLATION]",
+    "information": "Profile Information [NEEDS_TRANSLATION]",
+    "editProfile": "Edit Profile [NEEDS_TRANSLATION]",
+    "saveChanges": "Save Changes [NEEDS_TRANSLATION]",
+    "cancel": "Cancel [NEEDS_TRANSLATION]",
+    "memberId": "Member ID [NEEDS_TRANSLATION]",
+    "username": "Username [NEEDS_TRANSLATION]",
+    "email": "Email [NEEDS_TRANSLATION]",
+    "language": "Preferred Language [NEEDS_TRANSLATION]",
+    "accountType": "Account Type [NEEDS_TRANSLATION]",
+    "role": "Role [NEEDS_TRANSLATION]",
+    "memberSince": "Member Since [NEEDS_TRANSLATION]",
+    "avatarUrl": "Avatar URL [NEEDS_TRANSLATION]",
+    "linkedAccounts": "Linked Accounts [NEEDS_TRANSLATION]",
+    "teamStatistics": "Team Statistics [NEEDS_TRANSLATION]",
+    "totalTeams": "Total Teams [NEEDS_TRANSLATION]",
+    "publicTeams": "Public [NEEDS_TRANSLATION]",
+    "privateTeams": "Private [NEEDS_TRANSLATION]",
+    "totalLikes": "Total Likes [NEEDS_TRANSLATION]",
+    "quickActions": "Quick Actions [NEEDS_TRANSLATION]",
+    "myTeams": "My Teams [NEEDS_TRANSLATION]",
+    "createTeam": "Create Team [NEEDS_TRANSLATION]",
+    "free": "Free [NEEDS_TRANSLATION]",
+    "premium": "Premium [NEEDS_TRANSLATION]"
+  },
+  "home": {
+    "title": "Welcome to Pokemon Champion [NEEDS_TRANSLATION]",
+    "description": "The ultimate Pokemon battle experience with comprehensive data, team building tools, and competitive insights. [NEEDS_TRANSLATION]",
+    "hero": {
+      "title": "Pokemon Champion [NEEDS_TRANSLATION]",
+      "subtitle": "Master the art of Pokemon battles with our comprehensive database, team builder, and competitive insights. [NEEDS_TRANSLATION]",
+      "explorePokemon": "Explore Pokemon [NEEDS_TRANSLATION]",
+      "buildTeam": "Build Team [NEEDS_TRANSLATION]"
+    },
+    "mainFeatures": {
+      "title": "Core Features [NEEDS_TRANSLATION]",
+      "subtitle": "Everything you need to become a Pokemon Champion [NEEDS_TRANSLATION]",
+      "database": {
+        "title": "Pokemon Database [NEEDS_TRANSLATION]",
+        "description": "Comprehensive Pokemon data with advanced filtering and search capabilities. [NEEDS_TRANSLATION]",
+        "action": "Explore Database [NEEDS_TRANSLATION]"
+      },
+      "teamBuilder": {
+        "title": "Team Builder [NEEDS_TRANSLATION]",
+        "description": "Create and share your perfect team compositions with detailed strategies. [NEEDS_TRANSLATION]",
+        "action": "Build Teams [NEEDS_TRANSLATION]"
+      },
+      "tiers": {
+        "title": "Tier Lists [NEEDS_TRANSLATION]",
+        "description": "Stay updated with the latest competitive rankings and meta analysis. [NEEDS_TRANSLATION]",
+        "action": "View Rankings [NEEDS_TRANSLATION]"
+      }
+    },
+    "news": {
+      "title": "Latest Pokemon Champion News [NEEDS_TRANSLATION]",
+      "subtitle": "Stay updated with the latest game updates, features, and community events. [NEEDS_TRANSLATION]",
+      "categories": {
+        "update": "Game Update [NEEDS_TRANSLATION]",
+        "feature": "New Feature [NEEDS_TRANSLATION]",
+        "event": "Event [NEEDS_TRANSLATION]"
+      },
+      "items": {
+        "balanceUpdate": {
+          "title": "Balance Update 1.2.0 Released [NEEDS_TRANSLATION]",
+          "excerpt": "Major balance changes to competitive Pokemon and new tier adjustments. [NEEDS_TRANSLATION]",
+          "date": "2 days ago [NEEDS_TRANSLATION]"
+        },
+        "newFeatures": {
+          "title": "Advanced Team Builder Features [NEEDS_TRANSLATION]",
+          "excerpt": "New tools for team optimization and strategy sharing with the community. [NEEDS_TRANSLATION]",
+          "date": "1 week ago [NEEDS_TRANSLATION]"
+        },
+        "tournament": {
+          "title": "Championship Tournament Announced [NEEDS_TRANSLATION]",
+          "excerpt": "Join the first official Pokemon Champion tournament with amazing prizes. [NEEDS_TRANSLATION]",
+          "date": "2 weeks ago [NEEDS_TRANSLATION]"
+        }
+      },
+      "readMore": "Read More [NEEDS_TRANSLATION]",
+      "viewAll": "View All News [NEEDS_TRANSLATION]"
+    },
+    "status": {
+      "title": "Backend Status [NEEDS_TRANSLATION]",
+      "checking": "Checking backend connection... [NEEDS_TRANSLATION]",
+      "connected": "Backend connected successfully [NEEDS_TRANSLATION]",
+      "error": "Backend connection failed [NEEDS_TRANSLATION]",
+      "uptime": "Uptime [NEEDS_TRANSLATION]",
+      "minutes": "minutes [NEEDS_TRANSLATION]",
+      "message": "Status [NEEDS_TRANSLATION]"
+    }
+  },
+  "error": {
+    "notFound": {
+      "title": "Page Not Found [NEEDS_TRANSLATION]",
+      "description": "The page you are looking for does not exist or has been moved. [NEEDS_TRANSLATION]",
+      "goHome": "Go to Home Page [NEEDS_TRANSLATION]",
+      "goBack": "Go Back [NEEDS_TRANSLATION]",
+      "popularPages": "Popular pages [NEEDS_TRANSLATION]"
+    }
+  },
+  "footer": {
+    "description": "The ultimate Pokemon battle experience with comprehensive data, team building tools, and competitive insights. [NEEDS_TRANSLATION]",
+    "quickLinks": "Quick Links [NEEDS_TRANSLATION]",
+    "about": "关于",
+    "support": "Support [NEEDS_TRANSLATION]",
+    "contact": "Contact [NEEDS_TRANSLATION]",
+    "privacy": "Privacy Policy [NEEDS_TRANSLATION]",
+    "terms": "Terms of Service [NEEDS_TRANSLATION]",
+    "rights": "All rights reserved. [NEEDS_TRANSLATION]",
+    "followUs": "Follow us [NEEDS_TRANSLATION]",
+    "disclaimer": "Pokemon and all related properties are © Nintendo/Creatures Inc./GAME FREAK inc. This website is not affiliated with or endorsed by Nintendo, Creatures Inc., or GAME FREAK inc. [NEEDS_REVIEW]"
+  },
+  "support": {
+    "coffee": "请我喝咖啡",
+    "buyMeACoffee": "在 Buy Me a Coffee 上支持我们"
+  },
+  "types": {
+    "normal": "Normal [NEEDS_TRANSLATION]",
+    "fire": "Fire [NEEDS_TRANSLATION]",
+    "water": "Water [NEEDS_TRANSLATION]",
+    "electric": "Electric [NEEDS_TRANSLATION]",
+    "grass": "Grass [NEEDS_TRANSLATION]",
+    "ice": "Ice [NEEDS_TRANSLATION]",
+    "fighting": "Fighting [NEEDS_TRANSLATION]",
+    "poison": "Poison [NEEDS_TRANSLATION]",
+    "ground": "Ground [NEEDS_TRANSLATION]",
+    "flying": "Flying [NEEDS_TRANSLATION]",
+    "psychic": "Psychic [NEEDS_TRANSLATION]",
+    "bug": "Bug [NEEDS_TRANSLATION]",
+    "rock": "Rock [NEEDS_TRANSLATION]",
+    "ghost": "Ghost [NEEDS_TRANSLATION]",
+    "dragon": "Dragon [NEEDS_TRANSLATION]",
+    "dark": "Dark [NEEDS_TRANSLATION]",
+    "steel": "Steel [NEEDS_TRANSLATION]",
+    "fairy": "Fairy [NEEDS_TRANSLATION]"
+  },
+  "pokemon": {
+    "title": "Pokemon Database [NEEDS_TRANSLATION]",
+    "number": "# [NEEDS_TRANSLATION]",
+    "image": "Image [NEEDS_TRANSLATION]",
+    "name": "Name [NEEDS_TRANSLATION]",
+    "type": "Type [NEEDS_TRANSLATION]",
+    "abilities": "Abilities [NEEDS_TRANSLATION]",
+    "filterByType": "Filter by Type [NEEDS_TRANSLATION]",
+    "allTypes": "All Types [NEEDS_TRANSLATION]",
+    "loading": "Loading Pokemon... [NEEDS_TRANSLATION]",
+    "error": "Error loading Pokemon. Please try again. [NEEDS_TRANSLATION]",
+    "noResults": "No Pokemon found. [NEEDS_TRANSLATION]",
+    "stats": {
+      "total": "Total [NEEDS_TRANSLATION]",
+      "hp": "HP [NEEDS_TRANSLATION]",
+      "attack": "Atk [NEEDS_TRANSLATION]",
+      "defense": "Def [NEEDS_TRANSLATION]",
+      "spAtk": "SpA [NEEDS_TRANSLATION]",
+      "spDef": "SpD [NEEDS_TRANSLATION]",
+      "speed": "Spe [NEEDS_TRANSLATION]"
+    },
+    "detail": {
+      "back": "Back to List [NEEDS_TRANSLATION]",
+      "error": "Failed to load Pokemon details. Please try again. [NEEDS_TRANSLATION]",
+      "species": "Species [NEEDS_TRANSLATION]",
+      "height": "Height [NEEDS_TRANSLATION]",
+      "weight": "Weight [NEEDS_TRANSLATION]",
+      "baseStats": "Base Stats [NEEDS_TRANSLATION]",
+      "forms": "Alternative Forms [NEEDS_TRANSLATION]",
+      "evolutionChain": "Evolution Chain [NEEDS_TRANSLATION]",
+      "notFound": {
+        "title": "Pokemon Not Found [NEEDS_TRANSLATION]",
+        "description": "The Pokemon you are looking for does not exist in our database or has not been added yet. [NEEDS_TRANSLATION]",
+        "browsePokemon": "Browse All Pokemon [NEEDS_TRANSLATION]"
+      },
+      "moves": "Moves [NEEDS_TRANSLATION]",
+      "movesFrom": "Moves from [NEEDS_TRANSLATION]",
+      "levelUpMoves": "Level Up Moves [NEEDS_TRANSLATION]",
+      "tmMoves": "TM/HM Moves [NEEDS_TRANSLATION]",
+      "eggMoves": "Egg Moves [NEEDS_TRANSLATION]",
+      "level": "Level [NEEDS_TRANSLATION]",
+      "move": "Move [NEEDS_TRANSLATION]",
+      "category": "Category [NEEDS_TRANSLATION]",
+      "power": "Power [NEEDS_TRANSLATION]",
+      "accuracy": "Accuracy [NEEDS_TRANSLATION]",
+      "noMoves": "No moves data available [NEEDS_TRANSLATION]",
+      "selectGeneration": "Select Generation [NEEDS_TRANSLATION]",
+      "selectGameVersion": "Select Game Version [NEEDS_TRANSLATION]",
+      "filterByType": "按属性筛选",
+      "allTypes": "所有属性"
+    }
+  },
+  "teams": {
+    "title": "Public Teams [NEEDS_TRANSLATION]",
+    "description": "看看大家分享的对战队伍",
+    "createTeam": "Create Team [NEEDS_TRANSLATION]",
+    "myTeams": "My Teams [NEEDS_TRANSLATION]",
+    "browseTeams": "Browse Teams [NEEDS_TRANSLATION]",
+    "loading": "Loading teams... [NEEDS_TRANSLATION]",
+    "error": "Error loading teams. Please try again. [NEEDS_TRANSLATION]",
+    "noResults": "No teams found. [NEEDS_TRANSLATION]",
+    "by": "by [NEEDS_TRANSLATION]",
+    "likes": "likes [NEEDS_TRANSLATION]",
+    "pokemon": "Pokemon [NEEDS_TRANSLATION]",
+    "viewDetails": "View Details [NEEDS_TRANSLATION]",
+    "strategy": "Strategy [NEEDS_TRANSLATION]",
+    "sortBy": "Sort By [NEEDS_TRANSLATION]",
+    "sort": {
+      "newest": "Newest [NEEDS_TRANSLATION]",
+      "oldest": "Oldest [NEEDS_TRANSLATION]",
+      "mostLiked": "Most Liked [NEEDS_TRANSLATION]"
+    },
+    "teamCount": "{{count}} of {{limit}} teams [NEEDS_TRANSLATION]",
+    "limitReached": "Team limit reached [NEEDS_TRANSLATION]",
+    "limitReachedMessage": "You have reached the maximum of 10 teams. [NEEDS_TRANSLATION]",
+    "deleteToCreate": "Please delete a team to create a new one. [NEEDS_TRANSLATION]",
+    "noTeamsYet": "No teams yet [NEEDS_TRANSLATION]",
+    "createFirstTeam": "Create your first team to start building competitive strategies! [NEEDS_TRANSLATION]",
+    "public": "Public [NEEDS_TRANSLATION]",
+    "private": "Private [NEEDS_TRANSLATION]",
+    "edit": "Edit [NEEDS_TRANSLATION]",
+    "delete": "Delete [NEEDS_TRANSLATION]",
+    "confirmDelete": "Confirm Delete [NEEDS_TRANSLATION]",
+    "cancel": "Cancel [NEEDS_TRANSLATION]",
+    "makePublic": "Make Public [NEEDS_TRANSLATION]",
+    "makePrivate": "Make Private [NEEDS_TRANSLATION]"
+  },
+  "teamBuilder": {
+    "searchItems": "搜索道具...",
+    "noItemsFound": "未找到道具",
+    "description": "描述",
+    "descriptionPlaceholder": "描述你的队伍...（输入 @ 可以提及宝可梦、招式、道具或特性）"
+  },
+  "moves": {
+    "title": "Moves [NEEDS_TRANSLATION]",
+    "description": "Browse all Pokemon moves with their stats and descriptions [NEEDS_TRANSLATION]",
+    "totalMoves": "{{count}} total moves [NEEDS_TRANSLATION]",
+    "filteredMoves": "{{count}} filtered moves [NEEDS_TRANSLATION]",
+    "searchPlaceholder": "Search moves... [NEEDS_TRANSLATION]",
+    "clearFilters": "Clear Filters [NEEDS_TRANSLATION]",
+    "filterByType": "Filter by Type [NEEDS_TRANSLATION]",
+    "filterByCategory": "Filter by Category [NEEDS_TRANSLATION]",
+    "all": "All [NEEDS_TRANSLATION]",
+    "activeFilters": "Active filters: [NEEDS_TRANSLATION]",
+    "search": "Search [NEEDS_TRANSLATION]",
+    "type": "Type [NEEDS_TRANSLATION]",
+    "category": "Category [NEEDS_TRANSLATION]",
+    "categories": {
+      "physical": "物理",
+      "special": "特殊",
+      "status": "变化",
+      "Physical": "物理",
+      "Special": "特殊",
+      "Status": "变化"
+    },
+    "table": {
+      "name": "Name [NEEDS_TRANSLATION]",
+      "type": "Type [NEEDS_TRANSLATION]",
+      "category": "Category [NEEDS_TRANSLATION]",
+      "power": "Power [NEEDS_TRANSLATION]",
+      "accuracy": "Accuracy [NEEDS_TRANSLATION]",
+      "pp": "PP [NEEDS_TRANSLATION]",
+      "description": "Description [NEEDS_TRANSLATION]"
+    },
+    "loading": "Loading moves... [NEEDS_TRANSLATION]",
+    "loadingMore": "Loading more moves... [NEEDS_TRANSLATION]",
+    "allLoaded": "All moves loaded [NEEDS_TRANSLATION]",
+    "error": "Error loading moves. Please try again. [NEEDS_TRANSLATION]",
+    "noResults": "No moves found. [NEEDS_TRANSLATION]",
+    "detail": {
+      "backToMoves": "Back to Moves [NEEDS_TRANSLATION]",
+      "loading": "Loading move details... [NEEDS_TRANSLATION]",
+      "error": "Move not found or error loading move details. [NEEDS_TRANSLATION]",
+      "power": "Power [NEEDS_TRANSLATION]",
+      "accuracy": "Accuracy [NEEDS_TRANSLATION]",
+      "pp": "PP [NEEDS_TRANSLATION]",
+      "priority": "Priority [NEEDS_TRANSLATION]",
+      "description": "Description [NEEDS_TRANSLATION]",
+      "pokemonTitle": "Pokemon that can learn {{moveName}} [NEEDS_TRANSLATION]",
+      "pokemonCount": "({{count}}) [NEEDS_TRANSLATION]",
+      "noPokemon": "No Pokemon found with this move. [NEEDS_TRANSLATION]",
+      "pokemonTable": {
+        "number": "# [NEEDS_TRANSLATION]",
+        "pokemon": "Pokemon [NEEDS_TRANSLATION]",
+        "type": "Type [NEEDS_TRANSLATION]"
+      }
+    }
+  },
+  "items": {
+    "title": "道具",
+    "description": "浏览所有宝可梦道具",
+    "totalItems": "共{{count}}个道具",
+    "filteredItems": "找到{{count}}个道具",
+    "search": "搜索道具...",
+    "clearFilters": "清除筛选",
+    "filterByCategory": "按类别筛选",
+    "allCategories": "所有类别",
+    "categories": {
+      "held-items": "携带道具",
+      "choice": "选择系",
+      "mega-stones": "超级石",
+      "z-crystals": "Z纯晶",
+      "type-enhancement": "属性强化",
+      "type-protection": "属性防御",
+      "in-a-pinch": "危急树果",
+      "effort-drop": "努力值树果",
+      "healing": "治疗",
+      "revival": "复活",
+      "status-cures": "状态治疗",
+      "pp-recovery": "PP回复",
+      "vitamins": "营养饮料",
+      "stat-boosts": "能力提升",
+      "standard-balls": "标准精灵球",
+      "special-balls": "特殊精灵球",
+      "species-specific": "专属道具",
+      "plates": "石板",
+      "memories": "存储碟",
+      "bad-held-items": "负面道具",
+      "effort-training": "努力值训练",
+      "flutes": "笛子",
+      "spelunking": "探索",
+      "training": "训练",
+      "evolution": "进化"
+    },
+    "table": {
+      "sprite": "图标",
+      "name": "名称",
+      "category": "类别",
+      "description": "说明"
+    },
+    "loading": "加载中...",
+    "error": "加载道具失败。请重试。",
+    "noResults": "未找到道具。",
+    "detail": {
+      "backToItems": "返回道具列表",
+      "loading": "加载道具详情中...",
+      "error": "道具未找到或加载错误。",
+      "identifier": "标识符",
+      "category": "类别"
+    }
+  },
+  "news": {
+    "title": "新闻",
+    "description": "最新新闻和更新",
+    "filterByTag": "按标签筛选",
+    "allArticles": "所有文章",
+    "translationComingSoon": "中文版正在准备中"
+  },
+  "tiers": {
+    "comingSoon": "分级列表和排名準備中"
+  },
+  "guides": {
+    "comingSoon": "对战指南、策略和教程準備中"
+  },
+  "strategy": {
+    "write": "编辑",
+    "preview": "预览"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "subtitle": "Manage system settings and configurations",
+    "tabs": {
+      "settings": "System Settings",
+      "news": "News Management",
+      "premium": "Premium Management",
+      "users": "User Management"
+    },
+    "readOnlyMode": {
+      "title": "Read-Only Mode",
+      "description": "When enabled, only GET requests are allowed for non-admin users. This prevents users from creating, updating, or deleting content while you perform maintenance.",
+      "status": "Status",
+      "currentlyEnabled": "Currently enabled",
+      "currentlyDisabled": "Currently disabled",
+      "enable": "Enable",
+      "disable": "Disable",
+      "updating": "Updating...",
+      "userMessage": "User Message",
+      "userMessageDescription": "This message will be shown to users when they attempt to make changes while read-only mode is active.",
+      "updateMessage": "Update Message"
+    },
+    "systemSettings": {
+      "title": "All System Settings",
+      "key": "Key",
+      "value": "Value",
+      "description": "Description",
+      "updated": "Updated"
+    },
+    "premium": {
+      "loading": "Loading...",
+      "sections": {
+        "stats": "Statistics",
+        "pending": "Pending Activations",
+        "transactions": "Transaction History"
+      },
+      "stats": {
+        "activePremium": "Active Premium Users",
+        "expiredPremium": "Expired Premium",
+        "totalRevenue": "Total Revenue",
+        "totalTransactions": "Total Transactions",
+        "recentByType": "Recent Transactions (Last 30 Days)"
+      },
+      "pending": {
+        "title": "Pending Premium Activations",
+        "description": "These are Buy Me a Coffee subscriptions that couldn't be automatically linked to a user account. You can manually approve and link them here.",
+        "noPending": "No pending activations"
+      },
+      "transactions": {
+        "title": "Premium Transaction History",
+        "noTransactions": "No transactions found"
+      }
+    },
+    "users": {
+      "loading": "Loading...",
+      "sections": {
+        "stats": "Statistics",
+        "users": "User List",
+        "auditLog": "Audit Log"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "adminUsers": "Admin Users",
+        "premiumUsers": "Premium Users",
+        "verifiedUsers": "Verified Users",
+        "suspendedUsers": "Suspended Users",
+        "bannedUsers": "Banned Users",
+        "recentSignups": "Recent Signups"
+      },
+      "list": {
+        "title": "User Management",
+        "searchPlaceholder": "Search by username, email, or ID..."
+      },
+      "auditLog": {
+        "title": "Admin Audit Log"
+      }
+    },
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}
