@@ -72,7 +72,7 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
                 >
                   {/* Pokemon Image */}
                   <div className="w-full flex-1 flex items-center justify-center mb-2">
-                    {slot.pokemon.pokemonData.imageUrl ? (
+                    {slot.pokemon?.pokemonData?.imageUrl ? (
                       <img
                         src={slot.pokemon.pokemonData.imageUrl}
                         alt={slot.pokemon.pokemonData.name}
@@ -88,16 +88,16 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
                   {/* Pokemon Name */}
                   <div className="text-center w-full">
                     <p className="font-medium text-sm text-gray-900 truncate">
-                      {slot.pokemon.pokemonData.name}
+                      {slot.pokemon?.pokemonData?.name || 'Unknown'}
                     </p>
                     <p className="text-xs text-gray-500">
-                      Lv. {slot.pokemon.level}
+                      Lv. {slot.pokemon?.level || 50}
                     </p>
                   </div>
 
                   {/* Types */}
                   <div className="flex gap-1 mt-1">
-                    {slot.pokemon.pokemonData.types.slice(0, 2).map((type) => (
+                    {slot.pokemon?.pokemonData?.types?.slice(0, 2).map((type) => (
                       <span
                         key={type}
                         className="px-1.5 py-0.5 text-xs rounded bg-gray-100 text-gray-600"

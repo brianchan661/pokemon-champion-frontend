@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
-import { TeamPokemon, PokemonFull } from '@brianchan661/pokemon-champion-shared';
+import { TeamPokemon, PokemonFull, StatSpread } from '@brianchan661/pokemon-champion-shared';
 import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import { naturesService, Nature } from '@/services/naturesService';
 import { teraTypesService, TeraType } from '@/services/teraTypesService';
 import { itemsService, Item } from '@/services/itemsService';
-import { StatSpread, getDefaultIVs, getDefaultEVs, validateEVs } from '@/utils/calculateStats';
+import { getDefaultIVs, getDefaultEVs, validateEVs } from '@/utils/calculateStats';
 import { StatCalculator } from './StatCalculator';
 import { EVInputs } from './EVInputs';
 import { MoveSelector } from './MoveSelector';

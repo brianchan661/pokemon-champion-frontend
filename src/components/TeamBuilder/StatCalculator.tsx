@@ -1,5 +1,6 @@
 import { useTranslation } from 'next-i18next';
-import { StatSpread, calculateAllStats } from '@/utils/calculateStats';
+import { StatSpread } from '@brianchan661/pokemon-champion-shared';
+import { calculateAllStats } from '@/utils/calculateStats';
 import { Nature } from '@/services/naturesService';
 
 interface StatCalculatorProps {
@@ -15,8 +16,8 @@ const STAT_LABELS = {
   hp: 'HP',
   attack: 'Attack',
   defense: 'Defense',
-  spAtk: 'Sp. Atk',
-  spDef: 'Sp. Def',
+  specialAttack: 'Sp. Atk',
+  specialDefense: 'Sp. Def',
   speed: 'Speed',
 };
 
@@ -31,8 +32,8 @@ export function StatCalculator({ baseStats, ivs, evs, level, nature, className =
   const natureModifiers = {
     attack: nature?.increasedStat === 'attack' ? 1.1 : nature?.decreasedStat === 'attack' ? 0.9 : 1.0,
     defense: nature?.increasedStat === 'defense' ? 1.1 : nature?.decreasedStat === 'defense' ? 0.9 : 1.0,
-    spAtk: nature?.increasedStat === 'sp_atk' ? 1.1 : nature?.decreasedStat === 'sp_atk' ? 0.9 : 1.0,
-    spDef: nature?.increasedStat === 'sp_def' ? 1.1 : nature?.decreasedStat === 'sp_def' ? 0.9 : 1.0,
+    specialAttack: nature?.increasedStat === 'sp_atk' ? 1.1 : nature?.decreasedStat === 'sp_atk' ? 0.9 : 1.0,
+    specialDefense: nature?.increasedStat === 'sp_def' ? 1.1 : nature?.decreasedStat === 'sp_def' ? 0.9 : 1.0,
     speed: nature?.increasedStat === 'speed' ? 1.1 : nature?.decreasedStat === 'speed' ? 0.9 : 1.0,
   };
 

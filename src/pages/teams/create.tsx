@@ -62,7 +62,7 @@ export default function CreateTeamPage() {
     // Validate each Pokemon
     for (let i = 0; i < teamPokemon.length; i++) {
       const p = teamPokemon[i];
-      if (!p.pokemon || !p.ability || !p.moves || p.moves.length !== 4) {
+      if (!p.pokemonId || !p.abilityIdentifier || !p.moves || p.moves.length !== 4) {
         setError(`Pokemon ${i + 1} is incomplete. Each Pokemon must have an ability and 4 moves.`);
         return;
       }

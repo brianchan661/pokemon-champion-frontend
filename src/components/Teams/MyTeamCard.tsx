@@ -85,9 +85,9 @@ export const MyTeamCard = ({ team, onUpdate, className = '' }: MyTeamCardProps) 
             <div
               key={index}
               className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-medium text-gray-600"
-              title={p.pokemon.name}
+              title={p.pokemonData?.name || 'Unknown'}
             >
-              {p.pokemon.name.substring(0, 3).toUpperCase()}
+              {p.pokemonData?.name?.substring(0, 3).toUpperCase() || '???'}
             </div>
           ))}
         </div>

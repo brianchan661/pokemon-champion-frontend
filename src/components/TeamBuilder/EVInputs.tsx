@@ -11,18 +11,18 @@ const STAT_LABELS = {
   hp: 'HP',
   attack: 'Attack',
   defense: 'Defense',
-  spAtk: 'Sp. Atk',
-  spDef: 'Sp. Def',
+  specialAttack: 'Sp. Atk',
+  specialDefense: 'Sp. Def',
   speed: 'Speed',
 };
 
 // Common EV spreads
 const PRESET_SPREADS = [
-  { name: 'Offensive', evs: { hp: 4, attack: 252, defense: 0, spAtk: 0, spDef: 0, speed: 252 } },
-  { name: 'Special Offensive', evs: { hp: 4, attack: 0, defense: 0, spAtk: 252, spDef: 0, speed: 252 } },
-  { name: 'Bulky Physical', evs: { hp: 252, attack: 252, defense: 4, spAtk: 0, spDef: 0, speed: 0 } },
-  { name: 'Bulky Special', evs: { hp: 252, attack: 0, defense: 0, spAtk: 252, spDef: 4, speed: 0 } },
-  { name: 'Tank', evs: { hp: 252, attack: 0, defense: 252, spAtk: 0, spDef: 4, speed: 0 } },
+  { name: 'Offensive', evs: { hp: 4, attack: 252, defense: 0, specialAttack: 0, specialDefense: 0, speed: 252 } },
+  { name: 'Special Offensive', evs: { hp: 4, attack: 0, defense: 0, specialAttack: 252, specialDefense: 0, speed: 252 } },
+  { name: 'Bulky Physical', evs: { hp: 252, attack: 252, defense: 4, specialAttack: 0, specialDefense: 0, speed: 0 } },
+  { name: 'Bulky Special', evs: { hp: 252, attack: 0, defense: 0, specialAttack: 252, specialDefense: 4, speed: 0 } },
+  { name: 'Tank', evs: { hp: 252, attack: 0, defense: 252, specialAttack: 0, specialDefense: 4, speed: 0 } },
 ];
 
 /**
@@ -57,8 +57,8 @@ export function EVInputs({ evs, onChange, className = '' }: EVInputsProps) {
       hp: 0,
       attack: 0,
       defense: 0,
-      spAtk: 0,
-      spDef: 0,
+      specialAttack: 0,
+      specialDefense: 0,
       speed: 0,
     });
   };

@@ -20,9 +20,9 @@ export function usePremiumStatus(): PremiumStatus {
     };
   }
 
-  const isPremium = user.is_premium || false;
-  const subscriptionExpiry = user.subscription_expiry
-    ? new Date(user.subscription_expiry)
+  const isPremium = user.isPremium || false;
+  const subscriptionExpiry = user.subscriptionExpiry
+    ? new Date(user.subscriptionExpiry)
     : undefined;
 
   const isExpired = subscriptionExpiry

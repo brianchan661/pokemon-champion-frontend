@@ -135,7 +135,7 @@ export default function TeamDetailPage() {
 
   const team = teamData.team;
   const hasLiked = teamData.hasLiked;
-  const isOwner = user?.userId === team.authorId;
+  const isOwner = user?.id === team.authorId;
   const comments = commentsData || [];
 
   return (
