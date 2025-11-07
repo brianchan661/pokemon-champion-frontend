@@ -47,7 +47,7 @@ export class FeatureErrorBoundary extends Component<Props, State> {
             Something went wrong
           </h3>
           <p className="text-red-600 text-sm mb-4">
-            This section couldn't load properly. Please try refreshing the page.
+            This section couldn&apos;t load properly. Please try refreshing the page.
           </p>
           <button
             onClick={() => window.location.reload()}
