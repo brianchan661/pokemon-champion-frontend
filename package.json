@@ -24,7 +24,7 @@
     "lucide-react": "^0.552.0",
     "next": "13.4.19",
     "next-i18next": "^15.4.2",
-    "pokemon-champion-shared": "file:../pokemon-champion-shared",
+    "@brianchan661/pokemon-champion-shared": "^1.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-i18next": "^13.5.0"
