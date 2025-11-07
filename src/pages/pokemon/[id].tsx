@@ -272,7 +272,7 @@ function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDispla
                   <span key={idx}>
                     {idx > 0 && ', '}
                     <Link
-                      href={`/data/abilities/${ability.toLowerCase().replace(/\s+/g, '-')}`}
+                      href={`/data/abilities/${ability?.toLowerCase().replace(/\s+/g, '-')}`}
                       className="text-primary-600 hover:text-primary-700 hover:underline"
                     >
                       {ability}
@@ -327,7 +327,7 @@ function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDispla
               <div className="flex-1 bg-gray-200 rounded-full h-3">
                 <div
                   className="bg-blue-600 h-3 rounded-full transition-all"
-                  style={{ width: `${Math.min((item.stat.base / 255) * 100, 100)}%` }}
+                  style={{ width: `${Math.min(((item.stat.base || 0) / 255) * 100, 100)}%` }}
                 ></div>
               </div>
               <div className="w-14 text-xs text-gray-500">Max: {item.stat.max}</div>
@@ -525,7 +525,7 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
               onChange={(e) => setSelectedGameVersionIndex(Number(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
-              {selectedGeneration.gameVersions.map((gv, index) => (
+              {selectedGeneration.gameVersions.map((gv: any, index: number) => (
                 <option key={index} value={index}>
                   {gv.gameVersion || gv.version}
                 </option>
