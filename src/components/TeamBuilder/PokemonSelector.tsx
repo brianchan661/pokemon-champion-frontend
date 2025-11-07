@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Pokemon } from 'pokemon-champion-shared';
+import { Pokemon } from '@brianchan661/pokemon-champion-shared';
 import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import { useTranslation } from 'next-i18next';
 import { LoadingSpinner } from '@/components/UI/LoadingSpinner';

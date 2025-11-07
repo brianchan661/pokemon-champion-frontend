@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { Team, ApiResponse } from 'pokemon-champion-shared';
+import { Team, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { Layout } from '@/components/Layout/Layout';
 import { Button, LoadingSpinner, ErrorMessage, Pagination } from '@/components/UI';
 import { TeamCard } from '@/components/Teams';

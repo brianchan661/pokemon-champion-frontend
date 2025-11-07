@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
-import { TeamPokemon, PokemonFull } from 'pokemon-champion-shared';
+import { TeamPokemon, PokemonFull } from '@brianchan661/pokemon-champion-shared';
 import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import { naturesService, Nature } from '@/services/naturesService';
 import { teraTypesService, TeraType } from '@/services/teraTypesService';

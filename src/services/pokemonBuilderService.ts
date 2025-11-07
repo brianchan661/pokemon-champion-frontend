@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, Pokemon, PokemonFull } from 'pokemon-champion-shared';
+import { ApiResponse, Pokemon, PokemonFull } from '@brianchan661/pokemon-champion-shared';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 

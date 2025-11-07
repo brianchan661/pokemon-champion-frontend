@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Team } from 'pokemon-champion-shared';
+import { Team } from '@brianchan661/pokemon-champion-shared';
 import { Layout } from '@/components/Layout/Layout';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';

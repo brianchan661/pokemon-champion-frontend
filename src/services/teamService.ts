@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Team, ApiResponse } from 'pokemon-champion-shared';
+import { Team, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { authService } from './authService';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';

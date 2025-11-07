@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { memo } from 'react';
-import { Team } from 'pokemon-champion-shared';
+import { Team } from '@brianchan661/pokemon-champion-shared';
 import { useTranslation } from 'next-i18next';
 import { TypeIcon } from '@/components/UI';
 

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { Pokemon, ApiResponse } from 'pokemon-champion-shared';
+import { Pokemon, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { Layout } from '@/components/Layout/Layout';
 import { TypeIcon } from '@/components/UI';
 import { GetStaticProps } from 'next';

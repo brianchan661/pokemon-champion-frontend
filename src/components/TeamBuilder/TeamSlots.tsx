@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { TeamPokemon } from 'pokemon-champion-shared';
+import { TeamPokemon } from '@brianchan661/pokemon-champion-shared';
 
 export interface TeamSlot {
   pokemon?: TeamPokemon & {

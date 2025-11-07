@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Team, ApiResponse } from 'pokemon-champion-shared';
+import { Team, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { authService } from './authService';
 
 // Configuration

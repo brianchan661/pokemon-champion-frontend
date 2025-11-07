@@ -12,7 +12,7 @@ import { LoadingSpinner, ErrorMessage, Button, TypeIcon } from '@/components/UI'
 import { useAuth } from '@/contexts/AuthContext';
 import { teamService } from '@/services/teamService';
 import { StrategyDisplay } from '@/components/Strategy/StrategyDisplay';
-import { Team, Comment } from 'pokemon-champion-shared';
+import { Team, Comment } from '@brianchan661/pokemon-champion-shared';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 

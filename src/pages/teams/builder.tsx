@@ -8,7 +8,7 @@ import { Layout } from '@/components/Layout/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/UI';
 import { LoadingSpinner } from '@/components/UI/LoadingSpinner';
-import { Pokemon, TeamPokemon } from 'pokemon-champion-shared';
+import { Pokemon, TeamPokemon } from '@brianchan661/pokemon-champion-shared';
 import { PokemonSelector } from '@/components/TeamBuilder/PokemonSelector';
 import { TeamSlots, TeamSlot } from '@/components/TeamBuilder/TeamSlots';
 import { PokemonConfigurator } from '@/components/TeamBuilder/PokemonConfigurator';

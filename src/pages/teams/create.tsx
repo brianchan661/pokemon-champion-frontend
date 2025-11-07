@@ -8,7 +8,7 @@ import { Layout } from '@/components/Layout/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/UI';
 import axios from 'axios';
-import { Pokemon, TeamPokemon } from 'pokemon-champion-shared';
+import { Pokemon, TeamPokemon } from '@brianchan661/pokemon-champion-shared';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
