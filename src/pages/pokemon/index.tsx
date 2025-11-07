@@ -89,22 +89,18 @@ export default function PokemonListPage() {
 
 
         {/* Loading State */}
-        {isLoading && (
+        {isLoading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
             <p className="mt-4 text-gray-600">{t('pokemon.loading')}</p>
           </div>
-        )}
-
-        {/* Error State */}
-        {error && (
+        ) : error ? (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
             {t('pokemon.error')}
           </div>
-        )}
-
-        {/* Pokemon Table - Desktop */}
-        {!isLoading && !error && pokemon.length > 0 && (
+        ) : pokemon.length > 0 ? (
+          <>
+          {/* Pokemon Table - Desktop */}
           <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -334,10 +330,8 @@ export default function PokemonListPage() {
               </tbody>
             </table>
           </div>
-        )}
 
-        {/* Pokemon Cards - Mobile */}
-        {!isLoading && !error && pokemon.length > 0 && (
+          {/* Pokemon Cards - Mobile */}
           <div className="md:hidden space-y-4">
             {pokemon.map((p) => (
               <div
@@ -416,10 +410,8 @@ export default function PokemonListPage() {
               </div>
             ))}
           </div>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && !error && pokemon.length === 0 && (
+          </>
+        ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow">
             <p className="text-gray-600">{t('pokemon.noResults')}</p>
           </div>

@@ -7,7 +7,6 @@ type ButtonSize = 'sm' | 'md' | 'lg';
 interface BaseButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  children: ReactNode;
   className?: string;
 }
 
@@ -20,6 +19,7 @@ interface ButtonAsLinkProps extends BaseButtonProps {
   onClick?: never;
   type?: never;
   disabled?: never;
+  children?: ReactNode;
 }
 
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;

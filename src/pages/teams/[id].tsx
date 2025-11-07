@@ -121,7 +121,7 @@ export default function TeamDetailPage() {
       <Layout>
         <div className="min-h-screen bg-gray-100 py-8 px-4">
           <div className="max-w-5xl mx-auto">
-            <ErrorMessage message={error instanceof Error ? error.message : t('teams.error')} />
+            <ErrorMessage error={error instanceof Error ? error : new Error(t('teams.error'))} />
             <div className="mt-4 text-center">
               <Button href="/teams" variant="secondary">
                 {t('teams.browseTeams')}

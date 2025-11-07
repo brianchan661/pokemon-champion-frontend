@@ -210,7 +210,7 @@ export default function ProfilePage() {
   if (profileError) {
     return (
       <Layout>
-        <ErrorMessage message="Failed to load profile" />
+        <ErrorMessage error={new Error("Failed to load profile")} />
       </Layout>
     );
   }
@@ -297,7 +297,7 @@ export default function ProfilePage() {
                       </div>
 
                       {errors.submit && (
-                        <ErrorMessage message={errors.submit} />
+                        <ErrorMessage error={new Error(errors.submit)} />
                       )}
 
                       <div className="flex gap-3">
@@ -451,7 +451,7 @@ export default function ProfilePage() {
                             }
 
                             // Declare interval variable that both handlers can access
-                            let checkForResults: NodeJS.Timeout | null = null;
+                            let checkForResults: ReturnType<typeof setInterval> | null = null;
 
                             // Listen for localStorage changes (main communication method)
                             const handleStorageChange = (e: StorageEvent) => {
@@ -460,7 +460,7 @@ export default function ProfilePage() {
                                   const result = JSON.parse(e.newValue);
 
                                   // Clear the polling interval
-                                  if (checkForResults) {
+                                  if (checkForResults !== null) {
                                     clearInterval(checkForResults);
                                   }
 
@@ -524,7 +524,9 @@ export default function ProfilePage() {
                               const storedResult = localStorage.getItem('oauth_link_result');
 
                               if (storedResult) {
-                                clearInterval(checkForResults);
+                                if (checkForResults !== null) {
+                                  clearInterval(checkForResults);
+                                }
                                 window.removeEventListener('message', handleMessage);
                                 window.removeEventListener('storage', handleStorageChange);
 
@@ -545,7 +547,9 @@ export default function ProfilePage() {
                                   queryClient.invalidateQueries({ queryKey: ['profile'] });
                                 }
                               } else if (pollCount >= maxPolls) {
-                                clearInterval(checkForResults);
+                                if (checkForResults !== null) {
+                                  clearInterval(checkForResults);
+                                }
                                 window.removeEventListener('message', handleMessage);
                                 window.removeEventListener('storage', handleStorageChange);
                                 showToast('error', 'OAuth linking timed out');

@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { Layout } from '@/components/Layout/Layout';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -8,8 +7,10 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+import { api } from '@/utils/api';
+import { ITEM_CATEGORIES } from '@/constants/pokemon';
+import { ErrorMessage } from '@/components/UI/ErrorMessage';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface Item {
   id: number;
@@ -20,73 +21,50 @@ interface Item {
   spriteUrl?: string;
 }
 
-const ITEM_CATEGORIES = [
-  'held-items',
-  'choice',
-  'mega-stones',
-  'z-crystals',
-  'type-enhancement',
-  'type-protection',
-  'in-a-pinch',
-  'effort-drop',
-  'healing',
-  'revival',
-  'status-cures',
-  'pp-recovery',
-  'vitamins',
-  'stat-boosts',
-  'standard-balls',
-  'special-balls',
-  'species-specific',
-  'plates',
-  'memories',
-];
-
 export default function ItemsPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
+  
+  // Debounce search query to improve performance
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Fetch all items once with caching
   const {
     data: allItems,
     isLoading,
     error,
+    refetch,
   } = useQuery({
-    queryKey: ['all-items', router.locale],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${API_URL}/items?lang=${router.locale || 'en'}`
-      );
-      return response.data.data as Item[];
-    },
+    queryKey: ['all-items', router.locale || 'en'],
+    queryFn: () => api.get<Item[]>('/items', { lang: router.locale || 'en' }),
     staleTime: 30 * 60 * 1000, // 30 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
-  });
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  }) as { data: Item[] | undefined; isLoading: boolean; error: Error | null; refetch: () => void };
 
   // Client-side filtering with useMemo for performance
-  const filteredItems = useMemo(() => {
+  const filteredItems = useMemo((): Item[] => {
     if (!allItems) return [];
 
-    let result = allItems;
+    let result: Item[] = allItems;
 
     // Apply category filters (OR logic - match ANY selected category)
     if (categoryFilters.length > 0) {
-      result = result.filter(item => categoryFilters.includes(item.category));
+      result = result.filter((item: Item) => categoryFilters.includes(item.category));
     }
 
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(item =>
+    // Apply search filter (using debounced value)
+    if (debouncedSearchQuery) {
+      const query = debouncedSearchQuery.toLowerCase();
+      result = result.filter((item: Item) =>
         item.name.toLowerCase().includes(query) ||
         item.identifier.toLowerCase().includes(query)
       );
     }
 
     return result;
-  }, [allItems, categoryFilters, searchQuery]);
+  }, [allItems, categoryFilters, debouncedSearchQuery]);
 
   const totalCount = allItems?.length ?? 0;
   const filteredCount = filteredItems.length;
@@ -188,23 +166,20 @@ export default function ItemsPage() {
             )}
           </div>
 
+
           {/* Loading State */}
-          {isLoading && (
+          {isLoading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"></div>
               <p className="mt-4 text-gray-600">{t('items.loading')}</p>
             </div>
-          )}
-
-          {/* Error State */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-              {t('items.error')}
-            </div>
-          )}
-
-          {/* Items Table */}
-          {filteredItems.length > 0 && (
+          ) : error ? (
+            <ErrorMessage 
+              error={error} 
+              onRetry={() => refetch()} 
+              context={t('items.title')}
+            />
+          ) : filteredItems.length > 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -262,10 +237,7 @@ export default function ItemsPage() {
                 </table>
               </div>
             </div>
-          )}
-
-          {/* No Results */}
-          {filteredItems.length === 0 && !isLoading && (
+          ) : (
             <div className="text-center py-12">
               <p className="text-gray-600">{t('items.noResults')}</p>
             </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Layout } from '@/components/Layout/Layout';
@@ -24,19 +24,36 @@ export default function AbilitiesPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: abilities, isLoading, error } = useQuery({
-    queryKey: ['abilities', router.locale, searchQuery],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      params.append('lang', router.locale || 'en');
-      if (searchQuery) {
-        params.append('search', searchQuery);
-      }
-
-      const response = await axios.get(`${API_URL}/abilities?${params.toString()}`);
-      return response.data.data as Ability[];
+  // Fetch all abilities once with caching
+  const { data: allAbilities, isLoading, error, refetch } = useQuery({
+    queryKey: ['all-abilities', router.locale || 'en'],
+    queryFn: async (): Promise<Ability[]> => {
+      const response = await axios.get(
+        `${API_URL}/abilities?lang=${router.locale || 'en'}`
+      );
+      return response.data.data;
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    cacheTime: 60 * 60 * 1000, // 1 hour
+    retry: 2,
   });
+
+  // Client-side filtering with useMemo for performance
+  const abilities = useMemo((): Ability[] => {
+    if (!allAbilities) return [];
+    
+    if (!searchQuery) return allAbilities;
+    
+    const query = searchQuery.toLowerCase();
+    return allAbilities.filter((ability: Ability) =>
+      ability.name.toLowerCase().includes(query) ||
+      ability.identifier.toLowerCase().includes(query) ||
+      ability.description?.toLowerCase().includes(query)
+    );
+  }, [allAbilities, searchQuery]);
+
+  const totalCount = allAbilities?.length ?? 0;
+  const filteredCount = abilities.length;
 
   return (
     <Layout>
@@ -45,54 +62,77 @@ export default function AbilitiesPage() {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Abilities
+              {t('abilities.title', 'Abilities')}
             </h1>
-            <p className="text-gray-600">
-              Browse all Pokemon abilities with their descriptions
-            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-gray-600">
+                {t('abilities.description', 'Browse all Pokemon abilities with their descriptions')}
+              </p>
+              {totalCount > 0 && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                  {searchQuery
+                    ? t('abilities.filteredCount', `${filteredCount} of ${totalCount} abilities`, { filtered: filteredCount, total: totalCount })
+                    : t('abilities.totalCount', `${totalCount} abilities`, { count: totalCount })}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Search */}
-          <div className="mb-6">
+          <div className="mb-6 flex gap-2">
             <input
               type="text"
-              placeholder="Search abilities..."
+              placeholder={t('abilities.searchPlaceholder', 'Search abilities...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="flex-1 max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium whitespace-nowrap"
+              >
+                {t('abilities.clearSearch', 'Clear')}
+              </button>
+            )}
           </div>
 
           {/* Loading State */}
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"></div>
-              <p className="mt-4 text-gray-600">Loading abilities...</p>
+          {isLoading ? (
+            <div className="text-center py-12" role="status" aria-live="polite">
+              <div 
+                className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"
+                aria-hidden="true"
+              ></div>
+              <p className="mt-4 text-gray-600">{t('abilities.loading', 'Loading abilities...')}</p>
+              <span className="sr-only">Loading abilities data</span>
             </div>
-          )}
-
-          {/* Error State */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-              Error loading abilities. Please try again.
+          ) : error ? (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-red-700 mb-3">
+                {t('abilities.error', 'Error loading abilities. Please try again.')}
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+              >
+                {t('abilities.retry', 'Retry')}
+              </button>
             </div>
-          )}
-
-          {/* Abilities Table */}
-          {abilities && abilities.length > 0 && (
+          ) : abilities && abilities.length > 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
+                        {t('abilities.table.name', 'Name')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        # Pokemon
+                        {t('abilities.table.pokemonCount', '# Pokemon')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Description
+                        {t('abilities.table.description', 'Description')}
                       </th>
                     </tr>
                   </thead>
@@ -109,7 +149,7 @@ export default function AbilitiesPage() {
                             </Link>
                             {ability.isHidden && (
                               <span className="px-2 py-0.5 text-xs font-semibold rounded bg-purple-100 text-purple-800">
-                                Hidden Ability
+                                {t('abilities.hiddenAbility', 'Hidden Ability')}
                               </span>
                             )}
                           </div>
@@ -130,14 +170,11 @@ export default function AbilitiesPage() {
                 </table>
               </div>
             </div>
-          )}
-
-          {/* No Results */}
-          {abilities && abilities.length === 0 && !isLoading && (
+          ) : abilities && abilities.length === 0 && !isLoading ? (
             <div className="text-center py-12">
-              <p className="text-gray-600">No abilities found.</p>
+              <p className="text-gray-600">{t('abilities.noResults', 'No abilities found.')}</p>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </Layout>

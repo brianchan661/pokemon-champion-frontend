@@ -129,22 +129,16 @@ export default function MyTeamsPage() {
           </div>
 
           {/* Loading State */}
-          {isLoading && (
+          {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
               <span className="ml-3 text-gray-600">{t('teams.loading')}</span>
             </div>
-          )}
-
-          {/* Error State */}
-          {error && (
+          ) : error ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
               {t('teams.error')}
             </div>
-          )}
-
-          {/* Teams List */}
-          {!isLoading && !error && (
+          ) : (
             <>
               {teams.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-sm p-12 text-center">

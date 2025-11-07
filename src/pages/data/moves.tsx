@@ -46,7 +46,7 @@ export default function MovesPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['all-moves', router.locale],
+    queryKey: ['all-moves', router.locale || 'en'],
     queryFn: async () => {
       const response = await axios.get(
         `${API_URL}/moves?lang=${router.locale || 'en'}&pageSize=1000`
@@ -59,23 +59,23 @@ export default function MovesPage() {
       return moves as Move[];
     },
     staleTime: 30 * 60 * 1000, // 30 minutes - moves data rarely changes
-    gcTime: 60 * 60 * 1000, // 1 hour in memory (formerly cacheTime)
-  });
+    cacheTime: 60 * 60 * 1000, // 1 hour in memory
+  }) as { data: Move[] | undefined; isLoading: boolean; error: Error | null };
 
   // Client-side filtering with useMemo for performance
-  const filteredMoves = useMemo(() => {
+  const filteredMoves = useMemo((): Move[] => {
     if (!allMoves) return [];
 
-    let result = allMoves;
+    let result: Move[] = allMoves;
 
     // Apply type filters (OR logic - match ANY selected type)
     if (typeFilters.length > 0) {
-      result = result.filter(move => typeFilters.includes(move.type));
+      result = result.filter((move: Move) => typeFilters.includes(move.type));
     }
 
     // Apply category filters (OR logic - match ANY selected category)
     if (categoryFilters.length > 0) {
-      result = result.filter(move =>
+      result = result.filter((move: Move) =>
         move.category && categoryFilters.includes(move.category)
       );
     }
@@ -83,7 +83,7 @@ export default function MovesPage() {
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(move =>
+      result = result.filter((move: Move) =>
         move.name.toLowerCase().includes(query) ||
         move.identifier.toLowerCase().includes(query)
       );
@@ -238,23 +238,18 @@ export default function MovesPage() {
             </div>
           </div>
 
+
           {/* Loading State */}
-          {isLoading && (
+          {isLoading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"></div>
               <p className="mt-4 text-gray-600">{t('moves.loading')}</p>
             </div>
-          )}
-
-          {/* Error State */}
-          {error && (
+          ) : error ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
               {t('moves.error')}
             </div>
-          )}
-
-          {/* Moves Table */}
-          {filteredMoves.length > 0 && (
+          ) : filteredMoves.length > 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -323,10 +318,7 @@ export default function MovesPage() {
                 </table>
               </div>
             </div>
-          )}
-
-          {/* No Results */}
-          {filteredMoves.length === 0 && !isLoading && (
+          ) : (
             <div className="text-center py-12">
               <p className="text-gray-600">{t('moves.noResults')}</p>
             </div>

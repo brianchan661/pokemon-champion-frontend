@@ -129,13 +129,11 @@ export default function TeamsListPage() {
           </div>
 
           {/* Loading State */}
-          {isLoading && <LoadingSpinner message={t('teams.loading')} />}
-
-          {/* Error State */}
-          {error && <ErrorMessage message={t('teams.error')} />}
-
-          {/* Teams Grid */}
-          {!isLoading && !error && (
+          {isLoading ? (
+            <LoadingSpinner message={t('teams.loading')} />
+          ) : error ? (
+            <ErrorMessage error={new Error(t('teams.error'))} />
+          ) : (
             <>
               {teams.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-sm p-8 text-center">

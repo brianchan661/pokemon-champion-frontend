@@ -32,6 +32,7 @@ interface AbilityDetail {
   shortEffect?: string;
   generation?: number;
   isHidden?: boolean;
+  isHiddenAbility?: boolean;
   pokemon: PokemonWithAbility[];
 }
 
@@ -68,22 +69,16 @@ export default function AbilityDetailPage() {
           </Link>
 
           {/* Loading State */}
-          {isLoading && (
+          {isLoading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"></div>
               <p className="mt-4 text-gray-600">Loading ability...</p>
             </div>
-          )}
-
-          {/* Error State */}
-          {error && (
+          ) : error ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
               Error loading ability details. Please try again.
             </div>
-          )}
-
-          {/* Ability Details */}
-          {ability && (
+          ) : ability ? (
             <div>
               {/* Header */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
@@ -253,7 +248,7 @@ export default function AbilityDetailPage() {
                 )}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </Layout>

@@ -81,7 +81,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
   }
 
   if (error) {
-    return <ErrorMessage message={error} />;
+    return <ErrorMessage error={new Error(error)} />;
   }
 
   return (
