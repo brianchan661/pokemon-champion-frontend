@@ -20,7 +20,7 @@ export default function TiersPage() {
       </Head>
 
       <Layout>
-        <Section>
+        <Section ariaLabel="Tier List Section">
           <ComingSoon
             title={t('nav.tiers', 'Tier List')}
             description={t('tiers.comingSoon', 'Comprehensive Pokemon tier lists and rankings are coming soon. Stay tuned for competitive meta analysis!')}

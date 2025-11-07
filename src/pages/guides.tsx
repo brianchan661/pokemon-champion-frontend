@@ -20,7 +20,7 @@ export default function GuidesPage() {
       </Head>
 
       <Layout>
-        <Section>
+        <Section ariaLabel="Guides Section">
           <ComingSoon
             title={t('nav.guides', 'Guides')}
             description={t('guides.comingSoon', 'In-depth battle guides, strategies, and tutorials are coming soon. Learn from the best!')}

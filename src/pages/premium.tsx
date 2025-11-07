@@ -53,7 +53,7 @@ export default function PremiumPage() {
 
       <Layout>
         {/* Hero Section */}
-        <Section className="bg-gradient-to-br from-primary-50 via-blue-50 to-purple-50">
+        <Section ariaLabel="Premium Subscription Hero" className="bg-gradient-to-br from-primary-50 via-blue-50 to-purple-50">
           <div className="max-w-4xl mx-auto text-center py-12">
             {/* Premium Icon */}
             <div className="flex justify-center mb-6">
@@ -139,7 +139,7 @@ export default function PremiumPage() {
         </Section>
 
         {/* Features Section */}
-        <Section>
+        <Section ariaLabel="Premium Features">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
               {t('premium.features.title', 'Premium Features')}
@@ -175,7 +175,7 @@ export default function PremiumPage() {
         </Section>
 
         {/* FAQ Section */}
-        <Section className="bg-gray-50">
+        <Section ariaLabel="Frequently Asked Questions" className="bg-gray-50">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
               {t('premium.faq.title', 'Frequently Asked Questions')}
@@ -223,7 +223,7 @@ export default function PremiumPage() {
 
         {/* Bottom CTA */}
         {!isPremium && (
-          <Section className="bg-gradient-to-r from-primary-600 to-blue-600 text-white">
+          <Section ariaLabel="Subscribe Call to Action" className="bg-gradient-to-r from-primary-600 to-blue-600 text-white">
             <div className="max-w-4xl mx-auto text-center py-12">
               <h2 className="text-3xl font-bold mb-4">
                 {t('premium.bottomCta.title', 'Ready to upgrade?')}
