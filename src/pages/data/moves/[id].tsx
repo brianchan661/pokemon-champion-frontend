@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Layout } from '@/components/Layout/Layout';
 import { TypeIcon } from '@/components/UI';
-import { MoveCategoryIcon } from '@/components/ui/MoveCategoryIcon';
+import { MoveCategoryIcon } from '@/components/UI/MoveCategoryIcon';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';

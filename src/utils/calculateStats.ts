@@ -3,14 +3,7 @@
  * Based on official Pokemon stat formulas
  */
 
-export interface StatSpread {
-  hp: number;
-  attack: number;
-  defense: number;
-  spAtk: number;
-  spDef: number;
-  speed: number;
-}
+import { StatSpread } from '@brianchan661/pokemon-champion-shared';
 
 /**
  * Calculate HP stat
@@ -51,8 +44,8 @@ export function calculateAllStats(
   natureModifiers: {
     attack: number;
     defense: number;
-    spAtk: number;
-    spDef: number;
+    specialAttack: number;
+    specialDefense: number;
     speed: number;
   }
 ): StatSpread {
@@ -60,8 +53,8 @@ export function calculateAllStats(
     hp: calculateHP(baseStats.hp, ivs.hp, evs.hp, level),
     attack: calculateStat(baseStats.attack, ivs.attack, evs.attack, level, natureModifiers.attack),
     defense: calculateStat(baseStats.defense, ivs.defense, evs.defense, level, natureModifiers.defense),
-    spAtk: calculateStat(baseStats.spAtk, ivs.spAtk, evs.spAtk, level, natureModifiers.spAtk),
-    spDef: calculateStat(baseStats.spDef, ivs.spDef, evs.spDef, level, natureModifiers.spDef),
+    specialAttack: calculateStat(baseStats.specialAttack, ivs.specialAttack, evs.specialAttack, level, natureModifiers.specialAttack),
+    specialDefense: calculateStat(baseStats.specialDefense, ivs.specialDefense, evs.specialDefense, level, natureModifiers.specialDefense),
     speed: calculateStat(baseStats.speed, ivs.speed, evs.speed, level, natureModifiers.speed),
   };
 }
@@ -119,8 +112,8 @@ export function getDefaultIVs(): StatSpread {
     hp: 31,
     attack: 31,
     defense: 31,
-    spAtk: 31,
-    spDef: 31,
+    specialAttack: 31,
+    specialDefense: 31,
     speed: 31,
   };
 }
@@ -133,8 +126,8 @@ export function getDefaultEVs(): StatSpread {
     hp: 0,
     attack: 0,
     defense: 0,
-    spAtk: 0,
-    spDef: 0,
+    specialAttack: 0,
+    specialDefense: 0,
     speed: 0,
   };
 }

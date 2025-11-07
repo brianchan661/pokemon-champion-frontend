@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { StatSpread } from '@/utils/calculateStats';
+import { StatSpread } from '@brianchan661/pokemon-champion-shared';
 
 interface EVInputsProps {
   evs: StatSpread;

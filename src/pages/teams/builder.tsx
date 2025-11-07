@@ -287,22 +287,8 @@ export default function TeamBuilderPage() {
           natureId: p.natureId,
           itemId: p.itemId,
           teraType: p.teraType,
-          evs: p.evs ? {
-            hp: p.evs.hp,
-            attack: p.evs.attack,
-            defense: p.evs.defense,
-            specialAttack: p.evs.spAtk,
-            specialDefense: p.evs.spDef,
-            speed: p.evs.speed,
-          } : undefined,
-          ivs: p.ivs ? {
-            hp: p.ivs.hp,
-            attack: p.ivs.attack,
-            defense: p.ivs.defense,
-            specialAttack: p.ivs.spAtk,
-            specialDefense: p.ivs.spDef,
-            speed: p.ivs.speed,
-          } : undefined,
+          evs: p.evs || undefined,
+          ivs: p.ivs || undefined,
         };
       });
 

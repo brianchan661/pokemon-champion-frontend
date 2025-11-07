@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
 import { movesService, Move } from '@/services/movesService';
-import { MoveCategoryIcon } from '@/components/ui/MoveCategoryIcon';
+import { MoveCategoryIcon } from '@/components/UI/MoveCategoryIcon';
 import { TypeIcon } from '@/components/UI';
 
 interface MoveSelectorProps {
