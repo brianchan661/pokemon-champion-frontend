@@ -203,8 +203,8 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
     hp: pokemon.details?.hpBase || 0,
     attack: pokemon.details?.attackBase || 0,
     defense: pokemon.details?.defenseBase || 0,
-    spAtk: pokemon.details?.spAtkBase || 0,
-    spDef: pokemon.details?.spDefBase || 0,
+    specialAttack: pokemon.details?.spAtkBase || 0,
+    specialDefense: pokemon.details?.spDefBase || 0,
     speed: pokemon.details?.speedBase || 0,
   };
 
