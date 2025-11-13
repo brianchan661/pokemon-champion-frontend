@@ -415,6 +415,7 @@ export default function PokemonListPage() {
                         <img
                           src={p.imageUrl}
                           alt={p.name}
+                          loading="lazy"
                           className="object-contain mx-auto"
                           style={{ width: '80px', height: '80px' }}
                         />
@@ -505,6 +506,7 @@ export default function PokemonListPage() {
                     <img
                       src={p.imageUrl}
                       alt={p.name}
+                      loading="lazy"
                       className="h-40 w-40 object-contain"
                     />
                   )}
