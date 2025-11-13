@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { Pokemon, ApiResponse } from '@brianchan661/pokemon-champion-shared';
+import { Pokemon, ApiResponse, PaginatedResponse } from '@brianchan661/pokemon-champion-shared';
 import { Layout } from '@/components/Layout/Layout';
 import { TypeIcon } from '@/components/UI';
 import { GetStaticProps } from 'next';
@@ -9,8 +9,10 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
+const PAGE_SIZE = 50; // Load 50 Pokemon per page
 
 export default function PokemonListPage() {
   const { t } = useTranslation('common');
@@ -21,7 +23,16 @@ export default function PokemonListPage() {
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const typeFilterRef = useRef<HTMLDivElement>(null);
 
+  // Progressive loading state
+  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPokemon, setTotalPokemon] = useState(0);
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
   const handleSort = (column: 'name' | 'national_number' | 'stat_total' | 'hp_max' | 'attack_max' | 'defense_max' | 'sp_atk_max' | 'sp_def_max' | 'speed_max') => {
+    if (!isFullyLoaded) return; // Disable sorting until fully loaded
+
     if (sortBy === column) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -49,23 +60,125 @@ export default function PokemonListPage() {
     );
   };
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['pokemon', typeFilter, sortBy, sortOrder, locale],
+  // Fetch current page
+  const { data: pageData, isLoading, error } = useQuery({
+    queryKey: ['pokemon-page', currentPage, typeFilter, locale],
     queryFn: async () => {
       const params = new URLSearchParams();
+      params.append('page', currentPage.toString());
+      params.append('pageSize', PAGE_SIZE.toString());
       if (typeFilter) params.append('type', typeFilter);
-      params.append('sortBy', sortBy);
-      params.append('order', sortOrder);
       params.append('lang', locale || 'en');
 
-      const response = await axios.get<ApiResponse<Pokemon[]>>(
+      const response = await axios.get<ApiResponse<PaginatedResponse<Pokemon>>>(
         `${API_URL}/pokemon?${params.toString()}`
       );
-      return response.data.data || [];
+      return response.data.data;
     },
+    enabled: !isFullyLoaded, // Stop fetching when fully loaded
   });
 
-  const pokemon = data || [];
+  // Progressive loading: fetch next page automatically
+  useEffect(() => {
+    if (pageData && !isFetchingMore) {
+      // First page or new page loaded
+      if (currentPage === 1) {
+        // Initial load
+        setAllPokemon(pageData.data);
+        setTotalPokemon(pageData.total);
+      } else {
+        // Append to existing data
+        setAllPokemon(prev => [...prev, ...pageData.data]);
+      }
+
+      // Check if there are more pages
+      if (pageData.hasMore && currentPage < pageData.totalPages) {
+        setIsFetchingMore(true);
+        // Fetch next page after a short delay
+        setTimeout(() => {
+          setCurrentPage(prev => prev + 1);
+          setIsFetchingMore(false);
+        }, 100);
+      } else {
+        // All pages loaded
+        setIsFullyLoaded(true);
+      }
+    }
+  }, [pageData, currentPage, isFetchingMore]);
+
+  // Reset when filter changes
+  useEffect(() => {
+    setAllPokemon([]);
+    setCurrentPage(1);
+    setIsFullyLoaded(false);
+    setIsFetchingMore(false);
+  }, [typeFilter, locale]);
+
+  // Client-side sorting (only when fully loaded)
+  const pokemon = useMemo(() => {
+    if (!isFullyLoaded) {
+      // Return unsorted data while loading
+      return allPokemon;
+    }
+
+    return allPokemon.slice().sort((a, b) => {
+    let aValue: number | string;
+    let bValue: number | string;
+
+    switch (sortBy) {
+      case 'name':
+        aValue = a.name;
+        bValue = b.name;
+        break;
+      case 'national_number':
+        aValue = a.nationalNumber;
+        bValue = b.nationalNumber;
+        break;
+      case 'stat_total':
+        aValue = a.statTotal;
+        bValue = b.statTotal;
+        break;
+      case 'hp_max':
+        aValue = a.hpMax;
+        bValue = b.hpMax;
+        break;
+      case 'attack_max':
+        aValue = a.attackMax;
+        bValue = b.attackMax;
+        break;
+      case 'defense_max':
+        aValue = a.defenseMax;
+        bValue = b.defenseMax;
+        break;
+      case 'sp_atk_max':
+        aValue = a.spAtkMax;
+        bValue = b.spAtkMax;
+        break;
+      case 'sp_def_max':
+        aValue = a.spDefMax;
+        bValue = b.spDefMax;
+        break;
+      case 'speed_max':
+        aValue = a.speedMax;
+        bValue = b.speedMax;
+        break;
+      default:
+        aValue = a.nationalNumber;
+        bValue = b.nationalNumber;
+    }
+
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortOrder === 'asc' 
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+
+    return sortOrder === 'asc'
+      ? (aValue as number) - (bValue as number)
+      : (bValue as number) - (aValue as number);
+    });
+  }, [allPokemon, isFullyLoaded, sortBy, sortOrder]);
+
   const allTypes = Array.from(
     new Set(pokemon.flatMap((p) => p.types))
   ).sort();
@@ -85,11 +198,39 @@ export default function PokemonListPage() {
     <Layout>
       <div className="min-h-screen bg-gray-100 py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">{t('pokemon.title')}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('pokemon.title')}</h1>
 
+          {/* Loading Progress Indicator */}
+          {!isFullyLoaded && allPokemon.length > 0 && (
+            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-blue-700 text-sm font-medium">
+                  Loading Pokemon... {allPokemon.length} / {totalPokemon} ({Math.round((allPokemon.length / totalPokemon) * 100)}%)
+                </span>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-blue-600"></div>
+              </div>
+              <div className="mt-2 bg-blue-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(allPokemon.length / totalPokemon) * 100}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-blue-600 mt-2">
+                You can scroll and view loaded Pokemon. Sorting will be enabled when all Pokemon are loaded.
+              </p>
+            </div>
+          )}
+
+          {isFullyLoaded && (
+            <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
+              <span className="text-green-700 text-sm font-medium">
+                ✓ All {totalPokemon} Pokemon loaded! Sorting and filtering are now available.
+              </span>
+            </div>
+          )}
 
         {/* Loading State */}
-        {isLoading ? (
+        {isLoading && currentPage === 1 ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
             <p className="mt-4 text-gray-600">{t('pokemon.loading')}</p>
@@ -108,7 +249,9 @@ export default function PokemonListPage() {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('national_number')}
-                      className="flex items-center gap-1 hover:text-gray-700"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       {t('pokemon.number')}
                       <SortIcon column="national_number" />
