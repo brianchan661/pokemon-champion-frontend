@@ -16,8 +16,9 @@ import { TeamSummary } from '@/components/TeamBuilder/TeamSummary';
 import { MentionTextarea } from '@/components/Strategy/MentionTextarea';
 import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
 
 export default function TeamBuilderPage() {
   const { t } = useTranslation('common');

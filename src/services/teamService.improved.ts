@@ -1,14 +1,15 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Team, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { authService } from './authService';
+import { getApiBaseUrl } from '@/config/api';
 
 // Configuration
 const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  BASE_URL: getApiBaseUrl(),
   TIMEOUT: 10000,
 } as const;
 
-const API_BASE = `${API_CONFIG.BASE_URL}/api/teams`;
+const API_BASE = `${API_CONFIG.BASE_URL}/teams`;
 
 // Error messages (should be moved to constants file for i18n)
 const ERROR_MESSAGES = {

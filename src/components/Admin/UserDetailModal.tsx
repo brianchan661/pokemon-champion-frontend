@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
 interface UserDetailModalProps {
   userId: string;
@@ -68,7 +69,7 @@ export const UserDetailModal = ({ userId, onClose, onUserUpdated }: UserDetailMo
       setLoading(true);
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}`,
+        `${getApiBaseUrl()}/admin/users/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -95,7 +96,7 @@ export const UserDetailModal = ({ userId, onClose, onUserUpdated }: UserDetailMo
       const token = localStorage.getItem('authToken');
 
       await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/role`,
+        `${getApiBaseUrl()}/admin/users/${userId}/role`,
         { role: newRole, reason },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -126,7 +127,7 @@ export const UserDetailModal = ({ userId, onClose, onUserUpdated }: UserDetailMo
       const token = localStorage.getItem('authToken');
 
       await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/status`,
+        `${getApiBaseUrl()}/admin/users/${userId}/status`,
         { status: newStatus, reason },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -158,7 +159,7 @@ export const UserDetailModal = ({ userId, onClose, onUserUpdated }: UserDetailMo
       const token = localStorage.getItem('authToken');
 
       await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/premium`,
+        `${getApiBaseUrl()}/admin/users/${userId}/premium`,
         { isPremium: newPremiumStatus, reason: 'Admin testing' },
         {
           headers: { Authorization: `Bearer ${token}` }

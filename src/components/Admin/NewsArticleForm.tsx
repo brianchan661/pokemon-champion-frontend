@@ -5,8 +5,9 @@ import { ArticleContent } from '@/components/Editor/ArticleContent';
 import { Button } from '@/components/UI';
 import { Upload, X, Eye, Edit3 } from 'lucide-react';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
 
 interface ArticleTranslation {
   language: 'en' | 'ja';

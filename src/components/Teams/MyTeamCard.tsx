@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { Team } from '@brianchan661/pokemon-champion-shared';
 import { useTranslation } from 'next-i18next';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
 
 interface MyTeamCardProps {
   team: Team;

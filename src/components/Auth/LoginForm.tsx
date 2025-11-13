@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'next-i18next';
+import { getBackendBaseUrl } from '@/config/api';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -61,7 +62,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
       sessionStorage.setItem('returnUrl', window.location.pathname);
     }
     // Redirect to Google OAuth endpoint
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    window.location.href = `${getBackendBaseUrl()}/auth/google`;
   };
 
   return (

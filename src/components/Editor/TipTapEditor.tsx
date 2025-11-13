@@ -25,8 +25,9 @@ import {
   Link as LinkIcon,
   Youtube as YoutubeIcon,
 } from 'lucide-react';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
 
 interface TipTapEditorProps {
   content: string;

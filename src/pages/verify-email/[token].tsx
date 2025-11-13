@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
 const VerifyEmail = () => {
   const router = useRouter();
@@ -16,7 +17,7 @@ const VerifyEmail = () => {
     const verifyEmail = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/verify-email/${token}`
+          `${getApiBaseUrl()}/auth/verify-email/${token}`
         );
 
         if (response.data.success) {

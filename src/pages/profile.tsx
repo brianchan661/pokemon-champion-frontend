@@ -9,8 +9,9 @@ import axios from 'axios';
 import { Layout } from '@/components/Layout/Layout';
 import { Button, LoadingSpinner, ErrorMessage } from '@/components/UI';
 import { useAuth } from '@/contexts/AuthContext';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
 
 interface ToastMessage {
   type: 'success' | 'error';

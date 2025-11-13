@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
 interface CheckEmailProps {
   email: string;
@@ -18,7 +19,7 @@ export const CheckEmail: React.FC<CheckEmailProps> = ({ email, onBackToLogin }) 
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/resend-verification`,
+        `${getApiBaseUrl()}/auth/resend-verification`,
         { email }
       );
 

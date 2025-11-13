@@ -5,6 +5,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   i18n,
+  output: 'standalone', // Enable standalone output for Docker deployment
   images: {
     domains: [
       'pokemon-champion.com',

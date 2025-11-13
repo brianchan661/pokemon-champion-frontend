@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next';
 import axios from 'axios';
 import { UserTable } from './UserTable';
 import { UserDetailModal } from './UserDetailModal';
+import { getApiBaseUrl } from '@/config/api';
 
 interface UserManagementStats {
   totalUsers: number;
@@ -71,7 +72,7 @@ export const UserManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/stats`,
+        `${getApiBaseUrl()}/admin/users/stats`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -102,7 +103,7 @@ export const UserManagement = () => {
       if (premiumFilter) params.isPremium = premiumFilter === 'true';
 
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users`,
+        `${getApiBaseUrl()}/admin/users`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params
@@ -125,7 +126,7 @@ export const UserManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/audit-log?limit=100`,
+        `${getApiBaseUrl()}/admin/users/audit-log?limit=100`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

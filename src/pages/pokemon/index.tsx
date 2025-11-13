@@ -265,8 +265,10 @@ export default function PokemonListPage() {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap relative">
                     <button
-                      onClick={() => setShowTypeFilter(!showTypeFilter)}
-                      className="flex items-center gap-1 hover:text-gray-700"
+                      onClick={() => isFullyLoaded && setShowTypeFilter(!showTypeFilter)}
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Filtering will be available when all Pokemon are loaded' : ''}
                     >
                       {t('pokemon.type')}
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,26 +282,28 @@ export default function PokemonListPage() {
                       >
                         <div className="text-sm font-semibold text-gray-700 mb-2">{t('pokemon.filterByType')}</div>
                         <div className="space-y-2">
-                          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                          <label className={`flex items-center gap-2 p-1 rounded ${isFullyLoaded ? 'cursor-pointer hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'}`}>
                             <input
                               type="radio"
                               name="typeFilter"
                               value=""
                               checked={typeFilter === ''}
                               onChange={() => setTypeFilter('')}
-                              className="cursor-pointer"
+                              disabled={!isFullyLoaded}
+                              className={isFullyLoaded ? 'cursor-pointer' : 'cursor-not-allowed'}
                             />
                             <span className="text-sm">{t('pokemon.allTypes')}</span>
                           </label>
                           {allTypes.map((type) => (
-                            <label key={type} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                            <label key={type} className={`flex items-center gap-2 p-1 rounded ${isFullyLoaded ? 'cursor-pointer hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'}`}>
                               <input
                                 type="radio"
                                 name="typeFilter"
                                 value={type}
                                 checked={typeFilter === type}
                                 onChange={() => setTypeFilter(type)}
-                                className="cursor-pointer"
+                                disabled={!isFullyLoaded}
+                                className={isFullyLoaded ? 'cursor-pointer' : 'cursor-not-allowed'}
                               />
                               <TypeIcon type={type} size="sm" showLabel={true} />
                             </label>
@@ -311,7 +315,9 @@ export default function PokemonListPage() {
                   <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('stat_total')}
-                      className="flex items-center gap-1 hover:text-gray-700 mx-auto whitespace-nowrap"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       {t('pokemon.stats.total')}
                       <SortIcon column="stat_total" />
@@ -320,7 +326,9 @@ export default function PokemonListPage() {
                   <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('hp_max')}
-                      className="flex items-center gap-1 hover:text-gray-700 mx-auto whitespace-nowrap"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       HP
                       <SortIcon column="hp_max" />
@@ -329,7 +337,9 @@ export default function PokemonListPage() {
                   <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('attack_max')}
-                      className="flex items-center gap-1 hover:text-gray-700 mx-auto whitespace-nowrap"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       Atk
                       <SortIcon column="attack_max" />
@@ -338,7 +348,9 @@ export default function PokemonListPage() {
                   <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('defense_max')}
-                      className="flex items-center gap-1 hover:text-gray-700 mx-auto whitespace-nowrap"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       Def
                       <SortIcon column="defense_max" />
@@ -347,7 +359,9 @@ export default function PokemonListPage() {
                   <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('sp_atk_max')}
-                      className="flex items-center gap-1 hover:text-gray-700 mx-auto whitespace-nowrap"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       SpA
                       <SortIcon column="sp_atk_max" />
@@ -356,7 +370,9 @@ export default function PokemonListPage() {
                   <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('sp_def_max')}
-                      className="flex items-center gap-1 hover:text-gray-700 mx-auto whitespace-nowrap"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       SpD
                       <SortIcon column="sp_def_max" />
@@ -365,7 +381,9 @@ export default function PokemonListPage() {
                   <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('speed_max')}
-                      className="flex items-center gap-1 hover:text-gray-700 mx-auto whitespace-nowrap"
+                      disabled={!isFullyLoaded}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       Spe
                       <SortIcon column="speed_max" />

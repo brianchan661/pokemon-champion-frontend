@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
 interface PremiumStats {
   activePremiumUsers: number;
@@ -57,7 +58,7 @@ export const PremiumManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/premium/stats`,
+        `${getApiBaseUrl()}/admin/premium/stats`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -77,7 +78,7 @@ export const PremiumManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/premium/pending`,
+        `${getApiBaseUrl()}/admin/premium/pending`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -97,7 +98,7 @@ export const PremiumManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/premium/transactions?limit=50`,
+        `${getApiBaseUrl()}/admin/premium/transactions?limit=50`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -134,7 +135,7 @@ export const PremiumManagement = () => {
 
       const token = localStorage.getItem('authToken');
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/premium/approve`,
+        `${getApiBaseUrl()}/admin/premium/approve`,
         { webhookEventId, userId },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -165,7 +166,7 @@ export const PremiumManagement = () => {
 
       const token = localStorage.getItem('authToken');
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/premium/revoke/${userId}`,
+        `${getApiBaseUrl()}/admin/premium/revoke/${userId}`,
         { reason },
         {
           headers: { Authorization: `Bearer ${token}` }

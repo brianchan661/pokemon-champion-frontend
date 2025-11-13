@@ -7,8 +7,9 @@ import { Layout } from '@/components/Layout/Layout';
 import { ArticleContent } from '@/components/Editor/ArticleContent';
 import { Calendar, User, Tag, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
 
 interface Article {
   id: string;

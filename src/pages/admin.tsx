@@ -8,6 +8,7 @@ import { NewsManagement } from '../components/Admin/NewsManagement';
 import { PremiumManagement } from '../components/Admin/PremiumManagement';
 import { UserManagement } from '../components/Admin/UserManagement';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
 interface SystemSetting {
   id: number;
@@ -48,7 +49,7 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/settings`,
+        `${getApiBaseUrl()}/admin/settings`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -66,7 +67,7 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/read-only-mode`,
+        `${getApiBaseUrl()}/admin/read-only-mode`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -86,7 +87,7 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/read-only-mode`,
+        `${getApiBaseUrl()}/admin/read-only-mode`,
         { enabled: !readOnlyMode },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -112,7 +113,7 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem('authToken');
       await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/settings/read_only_message`,
+        `${getApiBaseUrl()}/admin/settings/read_only_message`,
         { value: readOnlyMessage },
         {
           headers: { Authorization: `Bearer ${token}` }

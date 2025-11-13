@@ -4,8 +4,9 @@ import { NewsArticleForm } from './NewsArticleForm';
 import { Button } from '@/components/UI';
 import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import { getApiBaseUrl } from '@/config/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = getApiBaseUrl();
 
 interface Article {
   id: string;
