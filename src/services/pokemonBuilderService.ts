@@ -49,7 +49,7 @@ class PokemonBuilderService {
    * Get full Pokemon details by national number
    */
   async getPokemonByNationalNumber(
-    nationalNumber: string,
+    nationalNumber: string | number,
     lang: 'en' | 'ja' = 'en'
   ): Promise<ApiResponse<PokemonFull>> {
     try {

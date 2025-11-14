@@ -13,7 +13,7 @@ import { LoadingSpinner } from '@/components/UI/LoadingSpinner';
 import { TypeIcon } from '@/components/UI';
 
 interface PokemonConfiguratorProps {
-  pokemonNationalNumber: string;
+  pokemonNationalNumber: string | number;
   existingConfig?: Partial<TeamPokemon>;
   onSave: (config: TeamPokemon) => void;
   onCancel: () => void;

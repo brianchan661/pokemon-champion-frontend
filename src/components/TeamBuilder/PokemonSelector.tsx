@@ -56,7 +56,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
     const query = searchQuery.toLowerCase();
     return pokemon.filter((p) =>
       p.name.toLowerCase().includes(query) ||
-      p.nationalNumber.includes(query)
+      p.nationalNumber.toString().includes(query)
     );
   }, [pokemon, searchQuery]);
 

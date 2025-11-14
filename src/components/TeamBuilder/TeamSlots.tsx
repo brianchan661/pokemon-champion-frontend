@@ -5,7 +5,7 @@ export interface TeamSlot {
   pokemon?: TeamPokemon & {
     pokemonData: {
       id: number;
-      nationalNumber: string;
+      nationalNumber: number;
       name: string;
       imageUrl?: string;
       types: string[];

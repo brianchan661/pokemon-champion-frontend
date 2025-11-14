@@ -53,7 +53,7 @@ export function useMentions(): UseMentionsResult {
               name: p.name,
               sprite: p.imageUrl,
               meta: p.types.join(', '),
-              nationalNumber: p.nationalNumber,
+              nationalNumber: p.nationalNumber.toString(),
             });
           });
         }
