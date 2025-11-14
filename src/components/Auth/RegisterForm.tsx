@@ -102,7 +102,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError, 
       sessionStorage.setItem('returnUrl', window.location.pathname);
     }
     // Redirect to Google OAuth endpoint
-    window.location.href = `${getBackendBaseUrl()}/auth/google`;
+    window.location.href = `${getBackendBaseUrl()}/api/auth/google`;
   };
 
   return (

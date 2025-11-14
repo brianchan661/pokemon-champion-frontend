@@ -62,7 +62,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
       sessionStorage.setItem('returnUrl', window.location.pathname);
     }
     // Redirect to Google OAuth endpoint
-    window.location.href = `${getBackendBaseUrl()}/auth/google`;
+    window.location.href = `${getBackendBaseUrl()}/api/auth/google`;
   };
 
   return (
