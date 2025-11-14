@@ -221,14 +221,6 @@ export default function PokemonListPage() {
             </div>
           )}
 
-          {isFullyLoaded && (
-            <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
-              <span className="text-green-700 text-sm font-medium">
-                ✓ All {totalPokemon} Pokemon loaded! Sorting and filtering are now available.
-              </span>
-            </div>
-          )}
-
         {/* Loading State */}
         {isLoading && currentPage === 1 ? (
           <div className="text-center py-12">
