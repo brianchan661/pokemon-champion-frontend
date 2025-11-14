@@ -12,7 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@brianchan661/pokemon-champion-shared": "^1.0.3",
+    "@brianchan661/pokemon-champion-shared": "file:../pokemon-champion-shared",
     "@tanstack/react-query": "^4.36.0",
     "@tiptap/extension-image": "^3.10.1",
     "@tiptap/extension-link": "^3.10.1",
@@ -20,6 +20,7 @@
     "@tiptap/extension-youtube": "^3.10.1",
     "@tiptap/react": "^3.10.1",
     "@tiptap/starter-kit": "^3.10.1",
+    "@types/react-window": "^1.8.8",
     "axios": "^1.6.0",
     "i18next": "^23.7.0",
     "lucide-react": "^0.552.0",
@@ -27,7 +28,8 @@
     "next-i18next": "^15.4.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-i18next": "^13.5.0"
+    "react-i18next": "^13.5.0",
+    "react-window": "^2.2.3"
   },
   "devDependencies": {
     "@types/node": "20.4.5",
