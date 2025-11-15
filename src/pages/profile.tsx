@@ -84,10 +84,10 @@ export default function ProfilePage() {
         headers: { Authorization: `Bearer ${token}` }
       });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      showToast('success', 'Google account unlinked successfully');
+      showToast('success', t('profile.googleUnlinkedSuccess'));
       setShowUnlinkConfirm(false);
     } catch (error: any) {
-      showToast('error', error.response?.data?.error || 'Failed to unlink Google account');
+      showToast('error', error.response?.data?.error || t('profile.unlinkFailed'));
       setShowUnlinkConfirm(false);
     }
   };
@@ -153,7 +153,7 @@ export default function ProfilePage() {
       setErrors({});
     },
     onError: (error: any) => {
-      setErrors({ submit: error.response?.data?.error || 'Failed to update profile' });
+      setErrors({ submit: error.response?.data?.error || t('profile.failedToUpdate') });
     },
   });
 
@@ -174,10 +174,10 @@ export default function ProfilePage() {
     // Validation
     const newErrors: Record<string, string> = {};
     if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
+      newErrors.username = t('profile.usernameRequired');
     }
     if (formData.username.length < 2) {
-      newErrors.username = 'Username must be at least 2 characters';
+      newErrors.username = t('profile.usernameMinLength');
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -203,7 +203,7 @@ export default function ProfilePage() {
   if (authLoading || profileLoading) {
     return (
       <Layout>
-        <LoadingSpinner message="Loading profile..." />
+        <LoadingSpinner message={t('profile.loadingProfile')} />
       </Layout>
     );
   }
@@ -211,7 +211,7 @@ export default function ProfilePage() {
   if (profileError) {
     return (
       <Layout>
-        <ErrorMessage error={new Error("Failed to load profile")} />
+        <ErrorMessage error={new Error(t('profile.failedToLoad'))} />
       </Layout>
     );
   }
@@ -236,14 +236,14 @@ export default function ProfilePage() {
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <div className="flex items-start justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Profile Information</h2>
+                    <h2 className="text-xl font-bold text-gray-900">{t('profile.information')}</h2>
                     {!isEditing && (
                       <Button
                         onClick={() => setIsEditing(true)}
                         variant="secondary"
                         size="sm"
                       >
-                        Edit Profile
+                        {t('profile.editProfile')}
                       </Button>
                     )}
                   </div>
@@ -253,7 +253,7 @@ export default function ProfilePage() {
                       {/* Username */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Username
+                          {t('profile.username')}
                         </label>
                         <input
                           type="text"
@@ -271,29 +271,30 @@ export default function ProfilePage() {
                       {/* Avatar URL */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Avatar URL
+                          {t('profile.avatarUrl')}
                         </label>
                         <input
                           type="url"
                           value={formData.avatar_url}
                           onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                          placeholder="https://example.com/avatar.jpg"
+                          placeholder={t('profile.avatarPlaceholder')}
                         />
                       </div>
 
                       {/* Language */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Preferred Language
+                          {t('profile.language')}
                         </label>
                         <select
                           value={formData.preferred_language}
                           onChange={(e) => setFormData({ ...formData, preferred_language: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md"
                         >
-                          <option value="en">English</option>
-                          <option value="ja">日本語</option>
+                          <option value="en">{t('profile.languages.en')}</option>
+                          <option value="ja">{t('profile.languages.ja')}</option>
+                          <option value="zh-CN">{t('profile.languages.zh-CN')}</option>
                         </select>
                       </div>
 
@@ -307,14 +308,14 @@ export default function ProfilePage() {
                           variant="primary"
                           disabled={updateProfileMutation.isPending}
                         >
-                          {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
+                          {updateProfileMutation.isPending ? t('profile.saving') : t('profile.saveChanges')}
                         </Button>
                         <Button
                           type="button"
                           variant="secondary"
                           onClick={handleCancel}
                         >
-                          Cancel
+                          {t('profile.cancel')}
                         </Button>
                       </div>
                     </form>
@@ -334,39 +335,39 @@ export default function ProfilePage() {
                       {/* Info Grid */}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-500">Member ID</p>
+                          <p className="text-sm text-gray-500">{t('profile.memberId')}</p>
                           <p className="font-medium text-gray-900">#{profileData.user.member_id}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Username</p>
+                          <p className="text-sm text-gray-500">{t('profile.username')}</p>
                           <p className="font-medium text-gray-900">{profileData.user.username}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-sm text-gray-500">Email</p>
+                          <p className="text-sm text-gray-500">{t('profile.email')}</p>
                           <p className="font-medium text-gray-900">{profileData.user.email}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Language</p>
+                          <p className="text-sm text-gray-500">{t('profile.language')}</p>
                           <p className="font-medium text-gray-900">
-                            {profileData.user.preferred_language === 'en' ? 'English' : '日本語'}
+                            {t(`profile.languages.${profileData.user.preferred_language}`)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Account Type</p>
+                          <p className="text-sm text-gray-500">{t('profile.accountType')}</p>
                           <p className="font-medium text-gray-900">
                             {profileData.user.is_premium ? (
-                              <span className="text-yellow-600">Premium ⭐</span>
+                              <span className="text-yellow-600">{t('profile.premium')} ⭐</span>
                             ) : (
-                              'Free'
+                              t('profile.free')
                             )}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Role</p>
+                          <p className="text-sm text-gray-500">{t('profile.role')}</p>
                           <p className="font-medium text-gray-900 capitalize">{profileData.user.role}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Member Since</p>
+                          <p className="text-sm text-gray-500">{t('profile.memberSince')}</p>
                           <p className="font-medium text-gray-900">
                             {new Date(profileData.user.created_at).toLocaleDateString()}
                           </p>
@@ -378,9 +379,9 @@ export default function ProfilePage() {
 
                 {/* Linked Accounts */}
                 <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Linked Accounts</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">{t('profile.linkedAccounts')}</h2>
                   <p className="text-sm text-gray-600 mb-4">
-                    Connect your account with OAuth providers for easier sign in.
+                    {t('profile.linkedAccountsDescription')}
                   </p>
 
                   <div className="space-y-3">
@@ -405,7 +406,7 @@ export default function ProfilePage() {
                           onClick={() => setShowUnlinkConfirm(true)}
                           className="px-4 py-2 text-sm text-red-600 hover:text-red-700 font-medium"
                         >
-                          Unlink
+                          {t('profile.unlink')}
                         </button>
                       </div>
                     ) : (
@@ -419,7 +420,7 @@ export default function ProfilePage() {
                           </svg>
                           <div>
                             <p className="font-medium text-gray-900">Google</p>
-                            <p className="text-sm text-gray-500">Not linked</p>
+                            <p className="text-sm text-gray-500">{t('profile.notLinked')}</p>
                           </div>
                         </div>
                         <button
@@ -440,7 +441,7 @@ export default function ProfilePage() {
                             );
 
                             if (!popup) {
-                              showToast('error', 'Popup was blocked. Please allow popups for this site.');
+                              showToast('error', t('profile.popupBlocked'));
                               return;
                             }
 
@@ -477,9 +478,9 @@ export default function ProfilePage() {
 
                                   // Show success/error message
                                   if (result.success) {
-                                    showToast('success', 'Google account linked successfully!');
+                                    showToast('success', t('profile.googleLinkedSuccess'));
                                   } else if (result.error) {
-                                    showToast('error', `Failed to link: ${result.error}`);
+                                    showToast('error', `${t('profile.linkFailed')}: ${result.error}`);
                                   }
                                 } catch (err) {
                                   // Silently fail on parse error
@@ -504,9 +505,9 @@ export default function ProfilePage() {
 
                                 // Show success/error message
                                 if (event.data.success) {
-                                  showToast('success', 'Google account linked successfully!');
+                                  showToast('success', t('profile.googleLinkedSuccess'));
                                 } else if (event.data.error) {
-                                  showToast('error', `Failed to link: ${event.data.error}`);
+                                  showToast('error', `${t('profile.linkFailed')}: ${event.data.error}`);
                                 }
                               }
                             };
@@ -540,9 +541,9 @@ export default function ProfilePage() {
 
                                   // Show success/error message
                                   if (result.success) {
-                                    showToast('success', 'Google account linked successfully!');
+                                    showToast('success', t('profile.googleLinkedSuccess'));
                                   } else if (result.error) {
-                                    showToast('error', `Failed to link: ${result.error}`);
+                                    showToast('error', `${t('profile.linkFailed')}: ${result.error}`);
                                   }
                                 } catch (err) {
                                   queryClient.invalidateQueries({ queryKey: ['profile'] });
@@ -553,13 +554,13 @@ export default function ProfilePage() {
                                 }
                                 window.removeEventListener('message', handleMessage);
                                 window.removeEventListener('storage', handleStorageChange);
-                                showToast('error', 'OAuth linking timed out');
+                                showToast('error', t('profile.oauthTimeout'));
                               }
                             }, 1000); // Check every second
                           }}
                           className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
                         >
-                          Link Account
+                          {t('profile.linkAccount')}
                         </button>
                       </div>
                     )}
@@ -577,7 +578,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-gray-500">{account.provider_email || 'N/A'}</p>
                           </div>
                           <span className="text-xs text-gray-500">
-                            Linked {new Date(account.linked_at).toLocaleDateString()}
+                            {t('profile.linked')} {new Date(account.linked_at).toLocaleDateString()}
                           </span>
                         </div>
                       ))}
@@ -589,24 +590,24 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 {/* Team Stats */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Team Statistics</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profile.teamStatistics')}</h3>
                   {teamStats ? (
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Total Teams</span>
+                        <span className="text-sm text-gray-600">{t('profile.totalTeams')}</span>
                         <span className="text-lg font-bold text-primary-600">{teamStats.totalTeams}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Public</span>
+                        <span className="text-sm text-gray-600">{t('profile.publicTeams')}</span>
                         <span className="text-lg font-bold text-green-600">{teamStats.publicTeams}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Private</span>
+                        <span className="text-sm text-gray-600">{t('profile.privateTeams')}</span>
                         <span className="text-lg font-bold text-gray-600">{teamStats.privateTeams}</span>
                       </div>
                       <div className="pt-3 border-t border-gray-200">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Total Likes</span>
+                          <span className="text-sm text-gray-600">{t('profile.totalLikes')}</span>
                           <span className="text-lg font-bold text-red-500">{teamStats.totalLikes} ❤️</span>
                         </div>
                       </div>
@@ -618,13 +619,13 @@ export default function ProfilePage() {
 
                 {/* Quick Actions */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profile.quickActions')}</h3>
                   <div className="space-y-2">
                     <Button href="/teams/my" variant="secondary" className="w-full">
-                      My Teams
+                      {t('profile.myTeams')}
                     </Button>
                     <Button href="/teams/create" variant="primary" className="w-full">
-                      Create Team
+                      {t('profile.createTeam')}
                     </Button>
                   </div>
                 </div>
@@ -656,10 +657,10 @@ export default function ProfilePage() {
               </div>
               <div className="ml-3 flex-1">
                 <h3 className="text-lg font-medium text-gray-900">
-                  Unlink Google Account
+                  {t('profile.unlinkGoogleTitle')}
                 </h3>
                 <p className="mt-2 text-sm text-gray-600">
-                  Are you sure you want to unlink your Google account? You will need to use your password to log in after unlinking.
+                  {t('profile.unlinkGoogleMessage')}
                 </p>
               </div>
             </div>
@@ -668,13 +669,13 @@ export default function ProfilePage() {
                 onClick={() => setShowUnlinkConfirm(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
-                Cancel
+                {t('profile.cancel')}
               </button>
               <button
                 onClick={handleUnlinkGoogle}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
-                Unlink Account
+                {t('profile.unlinkAccount')}
               </button>
             </div>
           </div>
