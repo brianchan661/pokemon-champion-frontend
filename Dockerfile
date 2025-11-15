@@ -8,14 +8,13 @@ WORKDIR /app
 # Install libc6-compat for compatibility
 RUN apk add --no-cache libc6-compat
 
-# Copy package files and npm config
+# Copy package files
 COPY package*.json ./
-COPY .npmrc ./
 
 # Install production dependencies using BuildKit secret for GitHub token
 RUN --mount=type=secret,id=github_token \
     if [ -f /run/secrets/github_token ]; then \
-      echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/github_token)" >> .npmrc; \
+      echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/github_token)" > .npmrc; \
     fi && \
     npm ci --omit=dev && \
     rm -f .npmrc
@@ -24,14 +23,13 @@ RUN --mount=type=secret,id=github_token \
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy package files and npm config
+# Copy package files
 COPY package*.json ./
-COPY .npmrc ./
 
 # Install all dependencies using BuildKit secret for GitHub token
 RUN --mount=type=secret,id=github_token \
     if [ -f /run/secrets/github_token ]; then \
-      echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/github_token)" >> .npmrc; \
+      echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/github_token)" > .npmrc; \
     fi && \
     npm ci && \
     rm -f .npmrc
