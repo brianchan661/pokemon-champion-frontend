@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
 import { SetPasswordForm } from '@/components/Auth/SetPasswordForm';
 import { getApiBaseUrl } from '@/config/api';
 
 const VerifyEmail = () => {
   const router = useRouter();
+  const { t } = useTranslation('common');
   const { token } = router.query;
   const [status, setStatus] = useState<'loading' | 'new-user' | 'existing-user' | 'error'>('loading');
   const [message, setMessage] = useState('');
@@ -108,8 +110,8 @@ const VerifyEmail = () => {
               100% { transform: rotate(360deg); }
             }
           `}</style>
-          <h2 style={{ color: '#333', marginBottom: '10px' }}>Verifying...</h2>
-          <p style={{ color: '#666' }}>Please wait</p>
+          <h2 style={{ color: '#333', marginBottom: '10px' }}>{t('auth.verifying')}</h2>
+          <p style={{ color: '#666' }}>{t('auth.pleaseWait')}</p>
         </div>
       )}
 
@@ -146,8 +148,8 @@ const VerifyEmail = () => {
           }}>
             ✓
           </div>
-          <h2 style={{ color: '#333', marginBottom: '10px' }}>Welcome back!</h2>
-          <p style={{ color: '#666', marginBottom: '20px' }}>Signing you in...</p>
+          <h2 style={{ color: '#333', marginBottom: '10px' }}>{t('auth.welcomeBack')}</h2>
+          <p style={{ color: '#666', marginBottom: '20px' }}>{t('auth.signingIn')}</p>
         </div>
       )}
 
@@ -175,7 +177,7 @@ const VerifyEmail = () => {
           }}>
             ✕
           </div>
-          <h2 style={{ color: '#333', marginBottom: '10px' }}>Error</h2>
+          <h2 style={{ color: '#333', marginBottom: '10px' }}>{t('auth.error')}</h2>
           <p style={{ color: '#666', marginBottom: '20px' }}>{message}</p>
           <button
             onClick={() => router.push('/auth')}
@@ -190,7 +192,7 @@ const VerifyEmail = () => {
               fontWeight: 'bold'
             }}
           >
-            Back to Login
+            {t('auth.backToLogin')}
           </button>
         </div>
       )}

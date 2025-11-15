@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { getApiBaseUrl, getBackendBaseUrl } from '@/config/api';
 
 interface UnifiedAuthFormProps {
@@ -7,6 +8,7 @@ interface UnifiedAuthFormProps {
 }
 
 export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onError }) => {
+  const { t } = useTranslation('common');
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -71,12 +73,12 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Check your email</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('auth.checkEmail')}</h2>
           <p className="text-gray-600 mb-6">
-            We&apos;ve sent a login link to <strong>{email}</strong>
+            {t('auth.loginEmailSent')} <strong>{email}</strong>
           </p>
           <p className="text-sm text-gray-500 mb-6">
-            Click the link in the email to continue. The link will expire in 24 hours.
+            {t('auth.clickLink')}
           </p>
           <button
             onClick={() => {
@@ -85,7 +87,7 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
             }}
             className="text-primary-600 hover:text-primary-700 font-medium"
           >
-            Use a different email
+            {t('auth.useDifferentEmail')}
           </button>
         </div>
       </div>
@@ -95,13 +97,13 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200">
       <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-        Sign in to Pokemon Champion
+        {t('auth.signInTitle')}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email Address
+            {t('auth.emailAddress')}
           </label>
           <input
             type="email"
@@ -109,7 +111,7 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            placeholder="Enter your email"
+            placeholder={t('auth.enterEmail')}
             required
             disabled={isLoading}
           />
@@ -120,7 +122,7 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
           disabled={isLoading}
           className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-2 px-4 rounded-md hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
         >
-          {isLoading ? 'Sending...' : 'Continue'}
+          {isLoading ? t('auth.sending') : t('auth.continue')}
         </button>
       </form>
 
@@ -131,7 +133,7 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            <span className="px-2 bg-white text-gray-500">{t('auth.orContinueWith')}</span>
           </div>
         </div>
       </div>
@@ -160,12 +162,12 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        Sign in with Google
+        {t('auth.signInWithGoogle')}
       </button>
 
       <div className="mt-6">
         <p className="text-center text-sm text-gray-600 mb-4">
-          Don&apos;t have an account? No worries! We&apos;ll create one for you.
+          {t('auth.noAccount')}
         </p>
       </div>
     </div>
