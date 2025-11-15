@@ -51,3 +51,9 @@ coverage/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Temporary translation files
+*-profile-update.json
