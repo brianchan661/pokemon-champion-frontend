@@ -1,49 +1,78 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import { SetPasswordForm } from '@/components/Auth/SetPasswordForm';
 import { getApiBaseUrl } from '@/config/api';
 
 const VerifyEmail = () => {
   const router = useRouter();
   const { token } = router.query;
-  const { t } = useTranslation('common');
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'new-user' | 'existing-user' | 'error'>('loading');
   const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || typeof token !== 'string') return;
 
-    const verifyEmail = async () => {
+    const verifyToken = async () => {
       try {
-        const response = await axios.get(
-          `${getApiBaseUrl()}/auth/verify-email/${token}`
+        const response = await fetch(
+          `${getApiBaseUrl()}/auth/verify-login/${token}`
         );
 
-        if (response.data.success) {
-          setStatus('success');
-          setMessage(t('auth.emailVerified'));
+        const data = await response.json();
 
-          // Store the token
-          if (response.data.data.token) {
-            localStorage.setItem('token', response.data.data.token);
+        if (data.success) {
+          setEmail(data.data.email);
+
+          if (data.data.isNewUser) {
+            // New user - show password setup form
+            setStatus('new-user');
+          } else {
+            // Existing user - auto-login
+            setStatus('existing-user');
+
+            // For existing users, we need to get the actual JWT token
+            // by calling verify-email endpoint (old flow for existing users)
+            const loginResponse = await fetch(
+              `${getApiBaseUrl()}/auth/verify-email/${token}`
+            );
+
+            const loginData = await loginResponse.json();
+
+            if (loginData.success && loginData.data.token) {
+              // Store the token
+              localStorage.setItem('token', loginData.data.token);
+
+              // Redirect to last accessed page or home
+              const returnUrl = sessionStorage.getItem('returnUrl') || '/';
+              sessionStorage.removeItem('returnUrl');
+
+              setTimeout(() => {
+                router.push(returnUrl);
+              }, 2000);
+            }
           }
-
-          // Redirect to home after 3 seconds
-          setTimeout(() => {
-            router.push('/');
-          }, 3000);
+        } else {
+          setStatus('error');
+          setMessage(data.error || 'Invalid or expired link');
         }
       } catch (error: any) {
+        console.error('Verify token error:', error);
         setStatus('error');
-        const errorMessage =
-          error.response?.data?.error || t('auth.emailVerificationFailed');
-        setMessage(errorMessage);
+        setMessage('An error occurred. Please try again.');
       }
     };
 
-    verifyEmail();
-  }, [token, router, t]);
+    verifyToken();
+  }, [token, router]);
+
+  const handleRegistrationSuccess = (authToken: string) => {
+    // Store the token
+    localStorage.setItem('token', authToken);
+
+    // Redirect to profile page for new users
+    router.push('/profile');
+  };
 
   return (
     <div style={{
@@ -54,103 +83,117 @@ const VerifyEmail = () => {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       padding: '20px'
     }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '10px',
-        padding: '40px',
-        maxWidth: '500px',
-        width: '100%',
-        textAlign: 'center',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
-      }}>
-        {status === 'loading' && (
-          <>
-            <div style={{
-              width: '50px',
-              height: '50px',
-              border: '4px solid #f3f3f3',
-              borderTop: '4px solid #667eea',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 20px'
-            }}></div>
-            <style>{`
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-            `}</style>
-            <h2 style={{ color: '#333', marginBottom: '10px' }}>
-              {t('auth.verifyingEmail')}
-            </h2>
-            <p style={{ color: '#666' }}>{t('auth.pleaseWait')}</p>
-          </>
-        )}
+      {status === 'loading' && (
+        <div style={{
+          background: 'white',
+          borderRadius: '10px',
+          padding: '40px',
+          maxWidth: '500px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+        }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #667eea',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 20px'
+          }}></div>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+          <h2 style={{ color: '#333', marginBottom: '10px' }}>Verifying...</h2>
+          <p style={{ color: '#666' }}>Please wait</p>
+        </div>
+      )}
 
-        {status === 'success' && (
-          <>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              background: '#4CAF50',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 20px',
-              fontSize: '30px',
-              color: 'white'
-            }}>
-              ✓
-            </div>
-            <h2 style={{ color: '#333', marginBottom: '10px' }}>
-              {t('auth.success')}
-            </h2>
-            <p style={{ color: '#666', marginBottom: '20px' }}>{message}</p>
-            <p style={{ color: '#999', fontSize: '14px' }}>
-              {t('auth.redirectingToHome')}
-            </p>
-          </>
-        )}
+      {status === 'new-user' && token && typeof token === 'string' && (
+        <SetPasswordForm
+          token={token}
+          email={email}
+          onSuccess={handleRegistrationSuccess}
+          onError={setMessage}
+        />
+      )}
 
-        {status === 'error' && (
-          <>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              background: '#f44336',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 20px',
-              fontSize: '30px',
-              color: 'white'
-            }}>
-              ✕
-            </div>
-            <h2 style={{ color: '#333', marginBottom: '10px' }}>
-              {t('auth.error')}
-            </h2>
-            <p style={{ color: '#666', marginBottom: '20px' }}>{message}</p>
-            <button
-              onClick={() => router.push('/auth')}
-              style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                border: 'none',
-                padding: '12px 30px',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold'
-              }}
-            >
-              {t('auth.backToLogin')}
-            </button>
-          </>
-        )}
-      </div>
+      {status === 'existing-user' && (
+        <div style={{
+          background: 'white',
+          borderRadius: '10px',
+          padding: '40px',
+          maxWidth: '500px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: '#4CAF50',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 20px',
+            fontSize: '30px',
+            color: 'white'
+          }}>
+            ✓
+          </div>
+          <h2 style={{ color: '#333', marginBottom: '10px' }}>Welcome back!</h2>
+          <p style={{ color: '#666', marginBottom: '20px' }}>Signing you in...</p>
+        </div>
+      )}
+
+      {status === 'error' && (
+        <div style={{
+          background: 'white',
+          borderRadius: '10px',
+          padding: '40px',
+          maxWidth: '500px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: '#f44336',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 20px',
+            fontSize: '30px',
+            color: 'white'
+          }}>
+            ✕
+          </div>
+          <h2 style={{ color: '#333', marginBottom: '10px' }}>Error</h2>
+          <p style={{ color: '#666', marginBottom: '20px' }}>{message}</p>
+          <button
+            onClick={() => router.push('/auth')}
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 30px',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: 'bold'
+            }}
+          >
+            Back to Login
+          </button>
+        </div>
+      )}
     </div>
   );
 };

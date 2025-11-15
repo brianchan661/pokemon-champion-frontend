@@ -12,8 +12,8 @@ const OAuthCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get token from URL parameter
-        const { token, error: urlError } = router.query;
+        // Get token and newUser flag from URL parameters
+        const { token, error: urlError, newUser } = router.query;
 
         if (urlError) {
           // Handle error from OAuth flow
@@ -48,11 +48,16 @@ const OAuthCallback = () => {
         // Refresh user profile to update auth context
         await refreshProfile();
 
-        // Redirect to teams page (or wherever the user was before)
-        const returnUrl = sessionStorage.getItem('returnUrl') || '/teams';
-        sessionStorage.removeItem('returnUrl');
-
-        router.push(returnUrl);
+        // Redirect based on whether this is a new user
+        if (newUser === 'true') {
+          // New user - redirect to profile page to complete setup
+          router.push('/profile');
+        } else {
+          // Existing user - redirect to last accessed page or teams page
+          const returnUrl = sessionStorage.getItem('returnUrl') || '/teams';
+          sessionStorage.removeItem('returnUrl');
+          router.push(returnUrl);
+        }
       } catch (err) {
         console.error('Error handling OAuth callback:', err);
         setError('Failed to complete authentication');
