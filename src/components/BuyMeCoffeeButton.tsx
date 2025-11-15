@@ -1,12 +1,30 @@
 import { Coffee } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
-export const BuyMeCoffeeButton = () => {
+interface BuyMeCoffeeButtonProps {
+  compact?: boolean;
+}
+
+export const BuyMeCoffeeButton = ({ compact = false }: BuyMeCoffeeButtonProps) => {
   const { t } = useTranslation('common');
 
   const handleClick = () => {
     window.open('https://www.buymeacoffee.com/pokemon.champion', '_blank', 'noopener,noreferrer');
   };
+
+  if (compact) {
+    // Compact version - just icon with tooltip
+    return (
+      <button
+        onClick={handleClick}
+        className="inline-flex items-center justify-center p-2 text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+        aria-label={t('support.buyMeACoffee', 'Support us on Buy Me a Coffee')}
+        title={t('support.coffee', 'Buy me a coffee')}
+      >
+        <Coffee size={18} />
+      </button>
+    );
+  }
 
   return (
     <>

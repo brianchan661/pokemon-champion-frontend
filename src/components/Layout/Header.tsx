@@ -51,9 +51,9 @@ export const Header = () => {
     }), [t]);
 
   // Split navigation for responsive display
-  // Show first 3 items always, rest in "More" dropdown on medium screens
-  const primaryNavItems = navigation.slice(0, 3);
-  const moreNavItems = navigation.slice(3);
+  // Show first 2 items on medium screens, rest in "More" dropdown
+  const primaryNavItems = navigation.slice(0, 2);
+  const moreNavItems = navigation.slice(2);
 
   // Memoize toggle function to prevent child re-renders
   const toggleMenu = useCallback(() => {
@@ -74,16 +74,21 @@ export const Header = () => {
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-lg">PC</span>
               </div>
-              <span className="text-xl font-bold text-gray-900 whitespace-nowrap">
+              {/* Full name on large screens, 2 rows on medium */}
+              <span className="hidden lg:inline text-xl font-bold text-gray-900 whitespace-nowrap">
                 Pokemon Champion
               </span>
+              <div className="hidden md:flex lg:hidden flex-col leading-tight">
+                <span className="text-sm font-bold text-gray-900">Pokemon</span>
+                <span className="text-sm font-bold text-gray-900">Champion</span>
+              </div>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-4 lg:space-x-8 flex-1 justify-center">
+          <nav className="hidden md:flex space-x-2 lg:space-x-8 flex-1 justify-center">
             {/* Show all items on large screens */}
-            <div className="hidden lg:flex space-x-8">
+            <div className="hidden lg:flex space-x-6">
               {navigation.map((item) => {
                 const hasDropdown = 'dropdown' in item && item.dropdown;
 
@@ -135,7 +140,7 @@ export const Header = () => {
             </div>
 
             {/* Show primary items + More dropdown on medium screens */}
-            <div className="flex lg:hidden space-x-4">
+            <div className="flex lg:hidden space-x-2">
               {primaryNavItems.map((item) => {
                 const hasDropdown = 'dropdown' in item && item.dropdown;
 
@@ -178,7 +183,7 @@ export const Header = () => {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+                    className="text-gray-600 hover:text-primary-600 px-2 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap"
                   >
                     {item.name}
                   </Link>
@@ -192,7 +197,7 @@ export const Header = () => {
                 onMouseLeave={() => setMoreDropdownOpen(false)}
               >
                 <button
-                  className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center whitespace-nowrap"
+                  className="text-gray-600 hover:text-primary-600 px-2 py-2 text-sm font-medium transition-colors duration-200 flex items-center whitespace-nowrap"
                 >
                   {t('nav.more', 'More')}
                   <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -242,42 +247,45 @@ export const Header = () => {
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center space-x-2 md:space-x-4">
+          <div className="flex items-center space-x-1 md:space-x-2 lg:space-x-4 flex-shrink-0">
             <LanguageSelector />
 
-            {/* Buy Me a Coffee Button - Desktop only (hidden on tablet) */}
-            <div className="hidden lg:block">
+            {/* Buy Me a Coffee Button - Compact icon on medium, full on xl */}
+            <div className="hidden md:block xl:hidden">
+              <BuyMeCoffeeButton compact />
+            </div>
+            <div className="hidden xl:block">
               <BuyMeCoffeeButton />
             </div>
 
             {/* Auth section */}
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
               {isAuthenticated ? (
-                <div className="flex items-center space-x-2 lg:space-x-3">
+                <div className="flex items-center space-x-1 lg:space-x-2">
                   {user?.role === 'admin' && (
                     <Link
                       href="/admin"
-                      className="text-sm text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
+                      className="text-xs lg:text-sm text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
                     >
                       Admin
                     </Link>
                   )}
                   <Link
                     href="/profile"
-                    className="text-sm text-gray-600 hover:text-primary-600 font-medium whitespace-nowrap max-w-[100px] lg:max-w-none truncate"
+                    className="text-xs lg:text-sm text-gray-600 hover:text-primary-600 font-medium whitespace-nowrap max-w-[80px] lg:max-w-none truncate"
                     title={user?.username}
                   >
                     {user?.username}
                   </Link>
                   <button
                     onClick={logout}
-                    className="btn-secondary text-sm whitespace-nowrap"
+                    className="btn-secondary text-xs lg:text-sm whitespace-nowrap px-2 py-1 lg:px-3 lg:py-2"
                   >
                     Sign Out
                   </button>
                 </div>
               ) : (
-                <Link href="/auth" className="btn-secondary text-sm whitespace-nowrap">
+                <Link href="/auth" className="btn-secondary text-xs lg:text-sm whitespace-nowrap px-2 py-1 lg:px-3 lg:py-2">
                   Sign In
                 </Link>
               )}
