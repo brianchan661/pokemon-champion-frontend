@@ -176,8 +176,8 @@ export default function ProfilePage() {
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
     }
-    if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
+    if (formData.username.length < 2) {
+      newErrors.username = 'Username must be at least 2 characters';
     }
 
     if (Object.keys(newErrors).length > 0) {

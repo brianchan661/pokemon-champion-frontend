@@ -39,8 +39,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError, 
       return 'Please fill in all required fields';
     }
     
-    if (formData.username.length < 3) {
-      return 'Username must be at least 3 characters long';
+    if (formData.username.length < 2) {
+      return 'Username must be at least 2 characters long';
     }
     
     if (formData.password.length < 8) {
