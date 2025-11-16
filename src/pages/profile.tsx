@@ -10,6 +10,7 @@ import { Layout } from '@/components/Layout/Layout';
 import { Button, LoadingSpinner, ErrorMessage } from '@/components/UI';
 import { useAuth } from '@/contexts/AuthContext';
 import { getApiBaseUrl } from '@/config/api';
+import { Avatar, AvatarUpload } from '@/components/Avatar';
 
 const API_URL = getApiBaseUrl();
 
@@ -268,17 +269,22 @@ export default function ProfilePage() {
                         )}
                       </div>
 
-                      {/* Avatar URL */}
+                      {/* Avatar Upload */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          {t('profile.avatarUrl')}
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                          {t('profile.avatar')}
                         </label>
-                        <input
-                          type="url"
-                          value={formData.avatar_url}
-                          onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                          placeholder={t('profile.avatarPlaceholder')}
+                        <AvatarUpload
+                          currentAvatarUrl={formData.avatar_url}
+                          onSuccess={(newAvatarUrl) => {
+                            setFormData({ ...formData, avatar_url: newAvatarUrl });
+                            // Invalidate profile query to refresh the data
+                            queryClient.invalidateQueries({ queryKey: ['profile'] });
+                            showToast('success', t('profile.avatarUpdated'));
+                          }}
+                          onError={(error) => {
+                            showToast('error', error);
+                          }}
                         />
                       </div>
 
@@ -322,15 +328,15 @@ export default function ProfilePage() {
                   ) : (
                     <div className="space-y-4">
                       {/* Avatar */}
-                      {profileData.user.avatar_url && (
-                        <div className="flex justify-center mb-4">
-                          <img
-                            src={profileData.user.avatar_url}
-                            alt={profileData.user.username}
-                            className="w-24 h-24 rounded-full object-cover border-4 border-primary-200"
-                          />
-                        </div>
-                      )}
+                      <div className="flex justify-center mb-4">
+                        <Avatar
+                          src={profileData.user.avatar_url}
+                          alt={profileData.user.username}
+                          fallbackText={profileData.user.username}
+                          size="xl"
+                          className="border-4 border-primary-200"
+                        />
+                      </div>
 
                       {/* Info Grid */}
                       <div className="grid grid-cols-2 gap-4">
@@ -573,9 +579,20 @@ export default function ProfilePage() {
                           key={index}
                           className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
                         >
-                          <div>
-                            <p className="font-medium text-gray-900 capitalize">{account.provider}</p>
-                            <p className="text-sm text-gray-500">{account.provider_email || 'N/A'}</p>
+                          <div className="flex items-center gap-3">
+                            {account.provider === 'local' ? (
+                              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                            ) : (
+                              <div className="w-6 h-6 bg-gray-400 rounded-full"></div>
+                            )}
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {account.provider === 'local' ? 'Email' : account.provider}
+                              </p>
+                              <p className="text-sm text-gray-500">{account.provider_email || 'N/A'}</p>
+                            </div>
                           </div>
                           <span className="text-xs text-gray-500">
                             {t('profile.linked')} {new Date(account.linked_at).toLocaleDateString()}
