@@ -366,7 +366,7 @@ export default function TeamBuilderPage() {
 
   const teamPokemonCount = team.filter(s => s.pokemon).length;
   const selectedPokemonIds = team
-    .filter(s => s.pokemon)
+    .filter(s => s.pokemon && s.pokemon.pokemonData)
     .map(s => s.pokemon!.pokemonData.id);
 
   return (

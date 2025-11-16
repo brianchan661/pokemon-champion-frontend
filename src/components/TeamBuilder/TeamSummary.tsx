@@ -18,7 +18,7 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
 
   // Get all types from team
   const teamTypes = team
-    .filter((slot) => slot.pokemon)
+    .filter((slot) => slot.pokemon && slot.pokemon.pokemonData)
     .flatMap((slot) => slot.pokemon!.pokemonData.types);
 
   // Count type occurrences
@@ -99,7 +99,7 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
               {t('teamBuilder.members', 'Members')}
             </h4>
             <div className="space-y-2">
-              {team.filter((slot) => slot.pokemon).map((slot, index) => {
+              {team.filter((slot) => slot.pokemon && slot.pokemon.pokemonData).map((slot, index) => {
                 const pokemon = slot.pokemon!;
                 return (
                   <div
