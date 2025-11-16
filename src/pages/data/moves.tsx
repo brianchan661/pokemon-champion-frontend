@@ -60,7 +60,7 @@ export default function MovesPage() {
       return moves as Move[];
     },
     staleTime: 30 * 60 * 1000, // 30 minutes - moves data rarely changes
-    cacheTime: 60 * 60 * 1000, // 1 hour in memory
+    gcTime: 60 * 60 * 1000, // 1 hour in memory
   }) as { data: Move[] | undefined; isLoading: boolean; error: Error | null };
 
   // Client-side filtering with useMemo for performance

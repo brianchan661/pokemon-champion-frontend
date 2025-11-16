@@ -35,7 +35,7 @@ export default function AbilitiesPage() {
       return response.data.data;
     },
     staleTime: 30 * 60 * 1000, // 30 minutes
-    cacheTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 60 * 60 * 1000, // 1 hour
     retry: 2,
   });
 

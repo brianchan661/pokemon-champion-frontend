@@ -40,7 +40,7 @@ export default function ItemsPage() {
     queryKey: ['all-items', router.locale || 'en'],
     queryFn: () => api.get<Item[]>('/items', { lang: router.locale || 'en' }),
     staleTime: 30 * 60 * 1000, // 30 minutes
-    cacheTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 60 * 60 * 1000, // 1 hour
   }) as { data: Item[] | undefined; isLoading: boolean; error: Error | null; refetch: () => void };
 
   // Client-side filtering with useMemo for performance
