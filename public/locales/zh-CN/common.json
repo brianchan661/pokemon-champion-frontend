@@ -1,6 +1,7 @@
 {
   "common": {
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "cancel": "取消"
   },
   "comingSoon": {
     "status": "準備中"

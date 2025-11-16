@@ -127,7 +127,7 @@ export const MyTeamCard = ({ team, onUpdate, className = '' }: MyTeamCardProps) 
             {t('teams.viewDetails')}
           </Link>
           <Link
-            href={`/teams/edit/${team.id}`}
+            href={`/teams/${team.id}/edit`}
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors"
           >
             {t('teams.edit')}

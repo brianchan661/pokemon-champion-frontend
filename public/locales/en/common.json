@@ -1,6 +1,7 @@
 {
   "common": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "cancel": "Cancel"
   },
   "comingSoon": {
     "status": "Coming Soon"
