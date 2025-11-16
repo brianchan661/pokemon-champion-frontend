@@ -60,6 +60,7 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/next-i18next.config.js ./
 
 # Copy Next.js build output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
