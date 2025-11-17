@@ -196,26 +196,26 @@ export default function PokemonListPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('pokemon.title')}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('pokemon.title')}</h1>
 
           {/* Loading Progress Indicator */}
           {!isFullyLoaded && allPokemon.length > 0 && (
-            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="mb-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
               <div className="flex items-center justify-between">
-                <span className="text-blue-700 text-sm font-medium">
+                <span className="text-blue-700 dark:text-blue-300 text-sm font-medium">
                   Loading Pokemon... {allPokemon.length} / {totalPokemon} ({Math.round((allPokemon.length / totalPokemon) * 100)}%)
                 </span>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-blue-600"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 dark:border-blue-700 border-t-blue-600 dark:border-t-blue-400"></div>
               </div>
-              <div className="mt-2 bg-blue-200 rounded-full h-2">
+              <div className="mt-2 bg-blue-200 dark:bg-blue-800 rounded-full h-2">
                 <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${(allPokemon.length / totalPokemon) * 100}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-blue-600 mt-2">
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
                 You can scroll and view loaded Pokemon. Sorting will be enabled when all Pokemon are loaded.
               </p>
             </div>
@@ -224,42 +224,42 @@ export default function PokemonListPage() {
         {/* Loading State */}
         {isLoading && currentPage === 1 ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
-            <p className="mt-4 text-gray-600">{t('pokemon.loading')}</p>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400"></div>
+            <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('pokemon.loading')}</p>
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300">
             {t('pokemon.error')}
           </div>
         ) : pokemon.length > 0 ? (
           <>
           {/* Pokemon Table - Desktop */}
-          <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="hidden md:block bg-white dark:bg-dark-bg-secondary rounded-lg shadow overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+              <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                 <tr>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('national_number')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       {t('pokemon.number')}
                       <SortIcon column="national_number" />
                     </button>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap" style={{ width: '100px' }}>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap" style={{ width: '100px' }}>
                     {t('pokemon.image')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     {t('pokemon.name')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap relative">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap relative">
                     <button
                       onClick={() => isFullyLoaded && setShowTypeFilter(!showTypeFilter)}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Filtering will be available when all Pokemon are loaded' : ''}
                     >
                       {t('pokemon.type')}
@@ -270,11 +270,11 @@ export default function PokemonListPage() {
                     {showTypeFilter && (
                       <div
                         ref={typeFilterRef}
-                        className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 min-w-[200px]"
+                        className="absolute top-full left-0 mt-2 bg-white dark:bg-dark-bg-secondary border border-gray-300 dark:border-dark-border rounded-lg shadow-lg p-4 z-50 min-w-[200px]"
                       >
-                        <div className="text-sm font-semibold text-gray-700 mb-2">{t('pokemon.filterByType')}</div>
+                        <div className="text-sm font-semibold text-gray-700 dark:text-dark-text-primary mb-2">{t('pokemon.filterByType')}</div>
                         <div className="space-y-2">
-                          <label className={`flex items-center gap-2 p-1 rounded ${isFullyLoaded ? 'cursor-pointer hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'}`}>
+                          <label className={`flex items-center gap-2 p-1 rounded ${isFullyLoaded ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary' : 'opacity-50 cursor-not-allowed'}`}>
                             <input
                               type="radio"
                               name="typeFilter"
@@ -284,10 +284,10 @@ export default function PokemonListPage() {
                               disabled={!isFullyLoaded}
                               className={isFullyLoaded ? 'cursor-pointer' : 'cursor-not-allowed'}
                             />
-                            <span className="text-sm">{t('pokemon.allTypes')}</span>
+                            <span className="text-sm dark:text-dark-text-primary">{t('pokemon.allTypes')}</span>
                           </label>
                           {allTypes.map((type) => (
-                            <label key={type} className={`flex items-center gap-2 p-1 rounded ${isFullyLoaded ? 'cursor-pointer hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'}`}>
+                            <label key={type} className={`flex items-center gap-2 p-1 rounded ${isFullyLoaded ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary' : 'opacity-50 cursor-not-allowed'}`}>
                               <input
                                 type="radio"
                                 name="typeFilter"
@@ -304,102 +304,102 @@ export default function PokemonListPage() {
                       </div>
                     )}
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('stat_total')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       {t('pokemon.stats.total')}
                       <SortIcon column="stat_total" />
                     </button>
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('hp_max')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       HP
                       <SortIcon column="hp_max" />
                     </button>
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('attack_max')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       Atk
                       <SortIcon column="attack_max" />
                     </button>
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('defense_max')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       Def
                       <SortIcon column="defense_max" />
                     </button>
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('sp_atk_max')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       SpA
                       <SortIcon column="sp_atk_max" />
                     </button>
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('sp_def_max')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       SpD
                       <SortIcon column="sp_def_max" />
                     </button>
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     <button
                       onClick={() => handleSort('speed_max')}
                       disabled={!isFullyLoaded}
-                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      className={`flex items-center gap-1 mx-auto whitespace-nowrap ${isFullyLoaded ? 'hover:text-gray-700 dark:hover:text-dark-text-primary cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                       title={!isFullyLoaded ? 'Sorting will be available when all Pokemon are loaded' : ''}
                     >
                       Spe
                       <SortIcon column="speed_max" />
                     </button>
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     {t('pokemon.ability1')}
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase whitespace-nowrap">
                     {t('pokemon.ability2')}
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary">
                     {t('pokemon.abilityHidden')}
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                 {pokemon.map((p) => (
                   <tr
                     key={p.id}
-                    className="hover:bg-gray-50 cursor-pointer"
+                    className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary cursor-pointer"
                     onClick={() => window.open(`/pokemon/${p.nationalNumber}`, '_blank')}
                   >
-                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-500 dark:text-dark-text-secondary">
                       {p.nationalNumber}
                     </td>
                     <td className="px-2 py-1">
@@ -413,7 +413,7 @@ export default function PokemonListPage() {
                         />
                       )}
                     </td>
-                    <td className="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-dark-text-primary">
                       {p.name}
                     </td>
                     <td className="px-6 py-1 whitespace-nowrap">
@@ -423,60 +423,60 @@ export default function PokemonListPage() {
                         ))}
                       </div>
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm font-bold text-gray-900">
+                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm font-bold text-gray-900 dark:text-dark-text-primary">
                       {p.statTotal}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.hpMax}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.attackMax}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.defenseMax}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.spAtkMax}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.spDefMax}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-center text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.speedMax}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-600 dark:text-dark-text-secondary">
                       <Link
                         href={`/data/abilities/${p.ability1.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="text-primary-600 hover:text-primary-700 hover:underline"
+                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {p.ability1}
                       </Link>
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.ability2 ? (
                         <Link
                           href={`/data/abilities/${p.ability2.toLowerCase().replace(/\s+/g, '-')}`}
-                          className="text-primary-600 hover:text-primary-700 hover:underline"
+                          className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {p.ability2}
                         </Link>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-gray-400 dark:text-gray-600">-</span>
                       )}
                     </td>
-                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-3 py-1 whitespace-nowrap text-sm text-gray-600 dark:text-dark-text-secondary">
                       {p.abilityHidden ? (
                         <Link
                           href={`/data/abilities/${p.abilityHidden.toLowerCase().replace(/\s+/g, '-')}`}
-                          className="text-primary-600 hover:text-primary-700 hover:underline"
+                          className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {p.abilityHidden}
                         </Link>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-gray-400 dark:text-gray-600">-</span>
                       )}
                     </td>
                   </tr>
@@ -490,7 +490,7 @@ export default function PokemonListPage() {
             {pokemon.map((p) => (
               <div
                 key={p.id}
-                className="bg-white rounded-lg shadow p-4 cursor-pointer hover:shadow-lg"
+                className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow p-4 cursor-pointer hover:shadow-lg border border-gray-200 dark:border-dark-border"
                 onClick={() => window.open(`/pokemon/${p.nationalNumber}`, '_blank')}
               >
                 <div className="flex items-start gap-4">
@@ -504,15 +504,15 @@ export default function PokemonListPage() {
                   )}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm text-gray-500">#{p.nationalNumber}</span>
-                      <h3 className="text-lg font-bold text-gray-900">{p.name}</h3>
+                      <span className="text-sm text-gray-500 dark:text-dark-text-secondary">#{p.nationalNumber}</span>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary">{p.name}</h3>
                     </div>
                     <div className="flex gap-1 mb-2">
                       {p.types.map((type, idx) => (
                         <TypeIcon key={idx} type={type} size="sm" />
                       ))}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-dark-text-secondary">
                       <p className="font-semibold">Total: {p.statTotal}</p>
                       <p>
                         HP {p.hpMax} / Atk {p.attackMax} / Def {p.defenseMax}
@@ -521,13 +521,13 @@ export default function PokemonListPage() {
                         SpA {p.spAtkMax} / SpD {p.spDefMax} / Spe {p.speedMax}
                       </p>
                       <div className="mt-2">
-                        <p className="font-semibold text-gray-700 mb-1">Abilities:</p>
+                        <p className="font-semibold text-gray-700 dark:text-dark-text-primary mb-1">Abilities:</p>
                         <div className="space-y-1">
                           <div>
-                            <span className="text-gray-500 text-xs">Ability 1: </span>
+                            <span className="text-gray-500 dark:text-dark-text-tertiary text-xs">Ability 1: </span>
                             <Link
                               href={`/data/abilities/${p.ability1.toLowerCase().replace(/\s+/g, '-')}`}
-                              className="text-primary-600 hover:text-primary-700 hover:underline"
+                              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                               onClick={(e) => e.stopPropagation()}
                             >
                               {p.ability1}
@@ -535,10 +535,10 @@ export default function PokemonListPage() {
                           </div>
                           {p.ability2 && (
                             <div>
-                              <span className="text-gray-500 text-xs">Ability 2: </span>
+                              <span className="text-gray-500 dark:text-dark-text-tertiary text-xs">Ability 2: </span>
                               <Link
                                 href={`/data/abilities/${p.ability2.toLowerCase().replace(/\s+/g, '-')}`}
-                                className="text-primary-600 hover:text-primary-700 hover:underline"
+                                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {p.ability2}
@@ -547,10 +547,10 @@ export default function PokemonListPage() {
                           )}
                           {p.abilityHidden && (
                             <div>
-                              <span className="text-gray-500 text-xs">Hidden: </span>
+                              <span className="text-gray-500 dark:text-dark-text-tertiary text-xs">Hidden: </span>
                               <Link
                                 href={`/data/abilities/${p.abilityHidden.toLowerCase().replace(/\s+/g, '-')}`}
-                                className="text-primary-600 hover:text-primary-700 hover:underline"
+                                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {p.abilityHidden}
@@ -567,8 +567,8 @@ export default function PokemonListPage() {
           </div>
           </>
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-600">{t('pokemon.noResults')}</p>
+          <div className="text-center py-12 bg-white dark:bg-dark-bg-secondary rounded-lg shadow border border-gray-200 dark:border-dark-border">
+            <p className="text-gray-600 dark:text-dark-text-secondary">{t('pokemon.noResults')}</p>
           </div>
         )}
         </div>

@@ -87,7 +87,7 @@ export default function HomePage({ newsArticles }: HomePageProps) {
         <h1 className="sr-only">{translationValues.title}</h1>
 
         {/* Main Features Section */}
-        <Section className="pt-8 pb-8 bg-white" ariaLabel="Main features">
+        <Section className="pt-8 pb-8 bg-white dark:bg-dark-bg-primary" ariaLabel="Main features">
           <ErrorBoundary>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
               {FEATURES.map((feature) => (
@@ -103,17 +103,17 @@ export default function HomePage({ newsArticles }: HomePageProps) {
         </Section>
 
         {/* Main Content with Sidebar Layout */}
-        <Section className="pt-8 pb-16 bg-white" ariaLabel="Main content">
+        <Section className="pt-8 pb-16 bg-white dark:bg-dark-bg-primary" ariaLabel="Main content">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Content Area */}
             <div className="flex-1">
               {/* Game News Section */}
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-8">
                   新着情報
                 </h2>
                 <ErrorBoundary>
-                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                  <div className="bg-white dark:bg-dark-bg-secondary rounded-lg border border-gray-200 dark:border-dark-border overflow-hidden">
                     {newsArticles.length > 0 ? (
                       newsArticles.slice(0, 5).map((article) => (
                         <NewsListItem
@@ -129,7 +129,7 @@ export default function HomePage({ newsArticles }: HomePageProps) {
                         />
                       ))
                     ) : (
-                      <div className="py-8 px-6 text-center text-gray-500">
+                      <div className="py-8 px-6 text-center text-gray-500 dark:text-dark-text-secondary">
                         {t('home.news.noArticles', 'No news articles yet')}
                       </div>
                     )}
@@ -139,7 +139,7 @@ export default function HomePage({ newsArticles }: HomePageProps) {
                 <div className="mt-8">
                   <Link
                     href="/news"
-                    className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                    className="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
                     aria-label={`${translationValues.newsViewAll} - Navigate to news page`}
                   >
                     {translationValues.newsViewAll}
@@ -194,7 +194,7 @@ export default function HomePage({ newsArticles }: HomePageProps) {
 
         {/* Bottom Banner Ad */}
         {!isPremium && (
-          <Section className="pt-0 pb-8 bg-white" ariaLabel="Advertisement">
+          <Section className="pt-0 pb-8 bg-white dark:bg-dark-bg-primary" ariaLabel="Advertisement">
             <ErrorBoundary>
               <div className="flex justify-center">
                 <div className="adsense-sidebar-container w-full max-w-4xl" style={{ minHeight: '100px' }}>

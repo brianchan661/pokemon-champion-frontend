@@ -21,7 +21,7 @@ export const LanguageSelector = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap"
+        className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary rounded-md hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary transition-colors duration-200 whitespace-nowrap"
       >
         <span>{currentLanguage.flag}</span>
         <span className="hidden sm:block">{currentLanguage.name}</span>
@@ -31,14 +31,14 @@ export const LanguageSelector = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-bg-tertiary rounded-md shadow-lg border border-gray-200 dark:border-dark-border z-50">
           <div className="py-1">
             {languages.map((language) => (
               <button
                 key={language.code}
                 onClick={() => handleLanguageChange(language.code)}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 whitespace-nowrap ${
-                  language.code === router.locale ? 'bg-primary-50 text-primary-600' : 'text-gray-700'
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-bg-primary flex items-center space-x-2 whitespace-nowrap ${
+                  language.code === router.locale ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-dark-text-primary'
                 }`}
               >
                 <span>{language.flag}</span>

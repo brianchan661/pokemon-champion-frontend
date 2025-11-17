@@ -17,7 +17,7 @@ export const BuyMeCoffeeButton = ({ compact = false }: BuyMeCoffeeButtonProps) =
     return (
       <button
         onClick={handleClick}
-        className="inline-flex items-center justify-center p-2 text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+        className="inline-flex items-center justify-center p-2 text-white bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
         aria-label={t('support.buyMeACoffee', 'Support us on Buy Me a Coffee')}
         title={t('support.coffee', 'Buy me a coffee')}
       >
@@ -31,7 +31,7 @@ export const BuyMeCoffeeButton = ({ compact = false }: BuyMeCoffeeButtonProps) =
       {/* Desktop Button */}
       <button
         onClick={handleClick}
-        className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
+        className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
         aria-label={t('support.buyMeACoffee', 'Support us on Buy Me a Coffee')}
       >
         <Coffee size={16} />
@@ -41,7 +41,7 @@ export const BuyMeCoffeeButton = ({ compact = false }: BuyMeCoffeeButtonProps) =
       {/* Mobile Button */}
       <button
         onClick={handleClick}
-        className="md:hidden w-full text-left inline-flex items-center gap-2 px-3 py-2 text-base font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors duration-200"
+        className="md:hidden w-full text-left inline-flex items-center gap-2 px-3 py-2 text-base font-medium text-white bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 rounded-lg transition-colors duration-200"
         aria-label={t('support.buyMeACoffee', 'Support us on Buy Me a Coffee')}
       >
         <Coffee size={18} />

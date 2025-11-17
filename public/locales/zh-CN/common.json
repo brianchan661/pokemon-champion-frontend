@@ -221,6 +221,15 @@
     "coffee": "请我喝咖啡",
     "buyMeACoffee": "在 Buy Me a Coffee 上支持我们"
   },
+  "theme": {
+    "toggle": "主题",
+    "light": "浅色",
+    "dark": "深色",
+    "lightMode": "浅色模式",
+    "darkMode": "深色模式",
+    "switchToLight": "切换到浅色模式",
+    "switchToDark": "切换到深色模式"
+  },
   "types": {
     "normal": "Normal [NEEDS_TRANSLATION]",
     "fire": "Fire [NEEDS_TRANSLATION]",

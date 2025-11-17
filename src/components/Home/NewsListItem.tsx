@@ -29,11 +29,11 @@ export const NewsListItem = memo(({
   return (
     <Link
       href={href}
-      className="group block py-4 px-6 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0"
+      className="group block py-4 px-6 hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors duration-200 border-b border-gray-100 dark:border-dark-border last:border-b-0"
     >
       <div className="flex items-center gap-4 min-h-[5rem]">
         {/* Thumbnail Image or Placeholder */}
-        <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+        <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-dark-bg-tertiary">
           {thumbnail ? (
             <img
               src={thumbnail}
@@ -43,7 +43,7 @@ export const NewsListItem = memo(({
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <svg
-                className="w-8 h-8 text-gray-400"
+                className="w-8 h-8 text-gray-400 dark:text-dark-text-tertiary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -62,7 +62,7 @@ export const NewsListItem = memo(({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-sm text-gray-500 font-mono">
+            <span className="text-sm text-gray-500 dark:text-dark-text-secondary font-mono">
               {date}
             </span>
             {category && (
@@ -71,7 +71,7 @@ export const NewsListItem = memo(({
               </span>
             )}
           </div>
-          <h3 className="text-gray-900 group-hover:text-primary-600 transition-colors duration-200 line-clamp-2">
+          <h3 className="text-gray-900 dark:text-dark-text-primary group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200 line-clamp-2">
             {title}
           </h3>
         </div>
@@ -79,7 +79,7 @@ export const NewsListItem = memo(({
         {/* Arrow Icon */}
         <div className="ml-4 flex-shrink-0">
           <svg
-            className="w-5 h-5 text-gray-400 group-hover:text-primary-600 transition-colors duration-200"
+            className="w-5 h-5 text-gray-400 dark:text-dark-text-secondary group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

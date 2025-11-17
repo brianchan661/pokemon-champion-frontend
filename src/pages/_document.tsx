@@ -4,6 +4,26 @@ export default function Document() {
   return (
     <Html>
       <Head>
+        {/* FOUC Prevention Script - Must run before React hydration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var shouldBeDark = theme === 'dark' || (!theme && systemPrefersDark);
+                  
+                  if (shouldBeDark) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {
+                  console.warn('Theme initialization failed:', e);
+                }
+              })();
+            `,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link

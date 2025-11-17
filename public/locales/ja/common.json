@@ -221,6 +221,15 @@
     "coffee": "コーヒーをおごる",
     "buyMeACoffee": "Buy Me a Coffeeでサポート"
   },
+  "theme": {
+    "toggle": "テーマ",
+    "light": "ライト",
+    "dark": "ダーク",
+    "lightMode": "ライトモード",
+    "darkMode": "ダークモード",
+    "switchToLight": "ライトモードに切り替え",
+    "switchToDark": "ダークモードに切り替え"
+  },
   "types": {
     "normal": "ノーマル",
     "fire": "ほのお",

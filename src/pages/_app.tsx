@@ -3,6 +3,7 @@ import { appWithTranslation } from 'next-i18next';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import '@/styles/globals.css';
 
 function App({ Component, pageProps }: AppProps) {
@@ -16,11 +17,13 @@ function App({ Component, pageProps }: AppProps) {
   }));
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Component {...pageProps} />
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Component {...pageProps} />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

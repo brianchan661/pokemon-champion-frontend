@@ -221,6 +221,15 @@
     "coffee": "Buy me a coffee",
     "buyMeACoffee": "Support us on Buy Me a Coffee"
   },
+  "theme": {
+    "toggle": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
   "types": {
     "normal": "Normal",
     "fire": "Fire",

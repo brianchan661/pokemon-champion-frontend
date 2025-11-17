@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class', // Enable class-based dark mode strategy
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -19,6 +20,20 @@ module.exports = {
           700: '#1d4ed8',
           800: '#1e40af',
           900: '#1e3a8a',
+        },
+        // Dark mode color palette
+        dark: {
+          bg: {
+            primary: '#1a1a1a',
+            secondary: '#2d2d2d',
+            tertiary: '#3a3a3a',
+          },
+          text: {
+            primary: '#e5e5e5',
+            secondary: '#b3b3b3',
+            tertiary: '#8a8a8a',
+          },
+          border: '#404040',
         },
         // Pokemon type colors
         pokemon: {

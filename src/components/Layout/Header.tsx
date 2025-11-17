@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next';
 import { LanguageSelector } from './LanguageSelector';
 import { useAuth } from '@/contexts/AuthContext';
 import { BuyMeCoffeeButton } from '@/components/BuyMeCoffeeButton';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 // Move navigation config outside component to prevent recreation
 const NAVIGATION_ITEMS = [
@@ -65,7 +66,7 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-white dark:bg-dark-bg-secondary shadow-sm border-b border-gray-200 dark:border-dark-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -75,12 +76,12 @@ export const Header = () => {
                 <span className="text-white font-bold text-lg">PC</span>
               </div>
               {/* Full name on large screens, 2 rows on medium */}
-              <span className="hidden lg:inline text-xl font-bold text-gray-900 whitespace-nowrap">
+              <span className="hidden lg:inline text-xl font-bold text-gray-900 dark:text-dark-text-primary whitespace-nowrap">
                 Pokemon Champion
               </span>
               <div className="hidden md:flex lg:hidden flex-col leading-tight">
-                <span className="text-sm font-bold text-gray-900">Pokemon</span>
-                <span className="text-sm font-bold text-gray-900">Champion</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-dark-text-primary">Pokemon</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-dark-text-primary">Champion</span>
               </div>
             </Link>
           </div>
@@ -101,7 +102,7 @@ export const Header = () => {
                       onMouseLeave={() => setOpenDropdown(null)}
                     >
                       <button
-                        className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center whitespace-nowrap"
+                        className="text-gray-600 dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center whitespace-nowrap"
                       >
                         {item.name}
                         <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,12 +111,12 @@ export const Header = () => {
                       </button>
                       {openDropdown === item.key && (
                         <div className="absolute left-0 pt-2 w-48 z-50">
-                          <div className="rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1">
+                          <div className="rounded-md shadow-lg bg-white dark:bg-dark-bg-tertiary ring-1 ring-black ring-opacity-5 dark:ring-dark-border py-1">
                             {item.dropdown.map((subItem) => (
                               <Link
                                 key={subItem.key}
                                 href={subItem.href}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-primary-600"
+                                className="block px-4 py-2 text-sm text-gray-700 dark:text-dark-text-primary hover:bg-gray-100 dark:hover:bg-dark-bg-secondary hover:text-primary-600 dark:hover:text-primary-400"
                               >
                                 {t(`nav.${subItem.key}`)}
                               </Link>
@@ -131,7 +132,7 @@ export const Header = () => {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+                    className="text-gray-600 dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap"
                   >
                     {item.name}
                   </Link>
@@ -249,6 +250,8 @@ export const Header = () => {
           {/* Right side */}
           <div className="flex items-center space-x-1 md:space-x-2 lg:space-x-4 flex-shrink-0">
             <LanguageSelector />
+            
+            <ThemeToggle />
 
             {/* Buy Me a Coffee Button - Compact icon on medium, full on xl */}
             <div className="hidden md:block xl:hidden">
@@ -313,6 +316,14 @@ export const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-2">
+              {/* Theme Toggle - Mobile */}
+              <div className="flex items-center justify-between px-3 py-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-dark-text-primary">
+                  {t('theme.toggle', 'Theme')}
+                </span>
+                <ThemeToggle />
+              </div>
+              
               {navigation.map((item) => {
                 const hasDropdown = 'dropdown' in item && item.dropdown;
 
