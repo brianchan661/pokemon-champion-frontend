@@ -8,7 +8,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import axios from 'axios';
 import { Layout } from '@/components/Layout/Layout';
-import { LoadingSpinner, ErrorMessage, Button, TypeIcon } from '@/components/UI';
+import { LoadingSpinner, ErrorMessage, Button, PokemonCard } from '@/components/UI';
 import { useAuth } from '@/contexts/AuthContext';
 import { teamService } from '@/services/teamService';
 import { StrategyDisplay } from '@/components/Strategy/StrategyDisplay';
@@ -194,97 +194,13 @@ export default function TeamDetailPage() {
               {/* Pokemon Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {team.pokemon.map((p, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200 relative">
-                    {/* Ability - Top Right */}
-                    <div className="absolute top-4 right-4">
-                      <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
-                        {p.abilityData?.name || p.abilityIdentifier}
-                      </span>
-                    </div>
-
-                    {/* Pokemon Header */}
-                    <div className="flex items-center gap-3 mb-3 pr-24">
-                      {p.pokemonData?.imageUrl && (
-                        <img
-                          src={p.pokemonData.imageUrl}
-                          alt={p.pokemonData.name}
-                          className="w-16 h-16 object-contain"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <Link
-                          href={`/pokemon/${p.pokemonData?.nationalNumber || p.pokemonId}`}
-                          className="font-bold text-lg text-gray-900 hover:text-primary-600 transition-colors"
-                        >
-                          {p.pokemonData?.name || `Pokemon #${p.pokemonId}`}
-                        </Link>
-                        <p className="text-sm text-gray-600">
-                          Lv. {p.level} • {p.natureData?.name || p.natureId}
-                        </p>
-                        {p.pokemonData?.types && (
-                          <div className="flex gap-1 mt-1">
-                            {p.pokemonData.types.map((type: string) => (
-                              <TypeIcon key={type} type={type} size="sm" />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Item */}
-                    {p.itemData && (
-                      <div className="mb-2">
-                        <p className="text-xs font-semibold text-gray-700 mb-1">Item:</p>
-                        <Link
-                          href={`/data/items/${p.itemData.identifier}`}
-                          className="flex items-center gap-2 hover:text-primary-600 transition-colors w-fit"
-                        >
-                          {p.itemData.spriteUrl && (
-                            <img
-                              src={p.itemData.spriteUrl}
-                              alt={p.itemData.name}
-                              className="w-6 h-6 object-contain"
-                            />
-                          )}
-                          <span className="text-xs text-gray-700">{p.itemData.name}</span>
-                        </Link>
-                      </div>
-                    )}
-
-                    {/* Moves */}
-                    <div>
-                      <p className="text-xs font-semibold text-gray-700 mb-1">Moves:</p>
-                      <div className="space-y-1">
-                        {p.movesData?.map((move: any) => (
-                          <Link
-                            key={move.id}
-                            href={`/data/moves/${move.identifier}`}
-                            className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded hover:bg-gray-50 transition-colors"
-                          >
-                            <TypeIcon type={move.type} size="xs" />
-                            <span className="font-medium flex-1">{move.name}</span>
-                            <div className="flex items-center gap-1 text-gray-500">
-                              <span className="min-w-[2rem] text-right">{move.power || '-'}</span>
-                              <span className="text-gray-400">/</span>
-                              <span className="min-w-[2rem] text-right">{move.accuracy ? `${move.accuracy}%` : '-'}</span>
-                              <span className="text-gray-400">/</span>
-                              <span className="min-w-[1.5rem] text-right">{move.pp ? `${move.pp}PP` : '-'}</span>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Tera Type */}
-                    {p.teraType && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <span className="text-xs font-semibold text-gray-700">Tera Type:</span>
-                        <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">
-                          {p.teraType}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  <PokemonCard
+                    key={index}
+                    pokemon={p}
+                    variant="detailed"
+                    enableLinks={true}
+                    className="bg-gray-50 rounded-lg p-4 border border-gray-200 relative"
+                  />
                 ))}
               </div>
             </div>

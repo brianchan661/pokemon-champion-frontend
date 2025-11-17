@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import { TypeIcon } from './TypeIcon';
 
 interface PokemonCardProps {
   pokemon?: {
     level?: number;
+    pokemonId?: number;
     pokemonData?: {
       name?: string;
       imageUrl?: string;
@@ -37,6 +39,7 @@ interface PokemonCardProps {
   showSlotNumber?: boolean;
   slotNumber?: number;
   variant?: 'compact' | 'detailed';
+  enableLinks?: boolean;
   className?: string;
 }
 
@@ -52,6 +55,7 @@ export function PokemonCard({
   showSlotNumber = false,
   slotNumber,
   variant = 'compact',
+  enableLinks = false,
   className = '',
 }: PokemonCardProps) {
   if (variant === 'detailed') {
@@ -76,9 +80,18 @@ export function PokemonCard({
             />
           )}
           <div className="flex-1">
-            <h3 className="font-bold text-lg text-gray-900">
-              {pokemon?.pokemonData?.name || 'Unknown'}
-            </h3>
+            {enableLinks && (pokemon?.pokemonData?.nationalNumber || pokemon?.pokemonId) ? (
+              <Link
+                href={`/pokemon/${pokemon.pokemonData?.nationalNumber || pokemon.pokemonId}`}
+                className="font-bold text-lg text-gray-900 hover:text-primary-600 transition-colors"
+              >
+                {pokemon?.pokemonData?.name || 'Unknown'}
+              </Link>
+            ) : (
+              <h3 className="font-bold text-lg text-gray-900">
+                {pokemon?.pokemonData?.name || 'Unknown'}
+              </h3>
+            )}
             <p className="text-sm text-gray-600">
               Lv. {pokemon?.level || 50} • {pokemon?.natureData?.name || pokemon?.natureId || 'Unknown'}
             </p>
@@ -93,42 +106,76 @@ export function PokemonCard({
         </div>
 
         {/* Item */}
-        {pokemon?.itemData && (
-          <div className="mb-2">
-            <p className="text-xs font-semibold text-gray-700 mb-1">Item:</p>
-            <div className="flex items-center gap-2">
-              {pokemon.itemData.spriteUrl && (
-                <img
-                  src={pokemon.itemData.spriteUrl}
-                  alt={pokemon.itemData.name || 'Item'}
-                  className="w-6 h-6 object-contain"
-                />
-              )}
-              <span className="text-xs text-gray-700">{pokemon.itemData.name}</span>
-            </div>
-          </div>
-        )}
+        <div className="mb-2">
+          <p className="text-xs font-semibold text-gray-700 mb-1">Item:</p>
+          {pokemon?.itemData ? (
+            enableLinks && pokemon.itemData.identifier ? (
+              <Link
+                href={`/data/items/${pokemon.itemData.identifier}`}
+                className="flex items-center gap-2 hover:text-primary-600 transition-colors w-fit"
+              >
+                {pokemon.itemData.spriteUrl && (
+                  <img
+                    src={pokemon.itemData.spriteUrl}
+                    alt={pokemon.itemData.name || 'Item'}
+                    className="w-6 h-6 object-contain"
+                  />
+                )}
+                <span className="text-xs text-gray-700">{pokemon.itemData.name}</span>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2">
+                {pokemon.itemData.spriteUrl && (
+                  <img
+                    src={pokemon.itemData.spriteUrl}
+                    alt={pokemon.itemData.name || 'Item'}
+                    className="w-6 h-6 object-contain"
+                  />
+                )}
+                <span className="text-xs text-gray-700">{pokemon.itemData.name}</span>
+              </div>
+            )
+          ) : (
+            <span className="text-xs text-gray-400">None</span>
+          )}
+        </div>
 
         {/* Moves */}
         <div>
           <p className="text-xs font-semibold text-gray-700 mb-1">Moves:</p>
           <div className="space-y-1">
-            {pokemon?.movesData?.map((move, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded"
-              >
-                {move.type && <TypeIcon type={move.type} size="xs" />}
-                <span className="font-medium flex-1">{move.name || '-'}</span>
-                <div className="flex items-center gap-1 text-gray-500">
-                  <span className="min-w-[2rem] text-right">{move.power || '-'}</span>
-                  <span className="text-gray-400">/</span>
-                  <span className="min-w-[2rem] text-right">{move.accuracy ? `${move.accuracy}%` : '-'}</span>
-                  <span className="text-gray-400">/</span>
-                  <span className="min-w-[1.5rem] text-right">{move.pp ? `${move.pp}PP` : '-'}</span>
+            {pokemon?.movesData?.map((move, index) => {
+              const MoveContent = () => (
+                <>
+                  {move.type && <TypeIcon type={move.type} size="xs" />}
+                  <span className="font-medium flex-1">{move.name || '-'}</span>
+                  <div className="flex items-center gap-1 text-gray-500">
+                    <span className="min-w-[2rem] text-right">{move.power || '-'}</span>
+                    <span className="text-gray-400">/</span>
+                    <span className="min-w-[2rem] text-right">{move.accuracy ? `${move.accuracy}%` : '-'}</span>
+                    <span className="text-gray-400">/</span>
+                    <span className="min-w-[1.5rem] text-right">{move.pp ? `${move.pp}PP` : '-'}</span>
+                  </div>
+                </>
+              );
+
+              return enableLinks && move.identifier ? (
+                <Link
+                  key={index}
+                  href={`/data/moves/${move.identifier}`}
+                  className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded hover:bg-gray-50 transition-colors"
+                >
+                  <MoveContent />
+                </Link>
+              ) : (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded"
+                >
+                  <MoveContent />
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {/* Show empty slots */}
             {pokemon?.movesData && pokemon.movesData.length < 4 && Array.from({ length: 4 - pokemon.movesData.length }).map((_, index) => (
               <div key={`empty-${index}`} className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded">
