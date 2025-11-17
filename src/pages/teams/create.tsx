@@ -9,10 +9,8 @@ export default function CreateTeamPage() {
   const { t } = useTranslation('common');
 
   useEffect(() => {
-    // Clear auto-save when explicitly creating a new team
-    localStorage.removeItem('teamBuilder_autoSave');
     // Redirect to team builder for creating new teams
-    router.replace('/teams/builder?new=true');
+    router.replace('/teams/builder');
   }, [router]);
 
   return (

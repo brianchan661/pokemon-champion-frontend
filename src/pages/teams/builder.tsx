@@ -71,9 +71,9 @@ export default function TeamBuilderPage() {
     }
   }, [team, teamName, teamDescription, isPublic, isAuthenticated]);
 
-  // Load auto-saved data on mount (only if not explicitly creating new)
+  // Load auto-saved data on mount (for new teams only, not when editing)
   useEffect(() => {
-    if (!teamId && !isNew && isAuthenticated) {
+    if (!teamId && isAuthenticated) {
       const autoSave = localStorage.getItem('teamBuilder_autoSave');
       if (autoSave) {
         try {
@@ -84,13 +84,16 @@ export default function TeamBuilderPage() {
             setTeamDescription(data.teamDescription || '');
             setIsPublic(data.isPublic ?? true);
             setTeam(data.team || Array.from({ length: 6 }, () => ({})));
+          } else {
+            localStorage.removeItem('teamBuilder_autoSave');
           }
         } catch (e) {
           console.error('Failed to load auto-save:', e);
+          localStorage.removeItem('teamBuilder_autoSave');
         }
       }
     }
-  }, [teamId, isNew, isAuthenticated]);
+  }, [teamId, isAuthenticated]);
 
   async function loadExistingTeam(id: string) {
     try {
