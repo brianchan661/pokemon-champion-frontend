@@ -2,30 +2,48 @@ import { TypeIcon } from './TypeIcon';
 
 interface PokemonCardProps {
   pokemon?: {
+    level?: number;
     pokemonData?: {
       name?: string;
       imageUrl?: string;
       types?: string[];
+      nationalNumber?: number;
     };
     itemData?: {
       spriteUrl?: string;
       name?: string;
+      identifier?: string;
     };
     movesData?: Array<{
       name?: string;
       type?: string;
+      identifier?: string;
+      power?: number | null;
+      accuracy?: number | null;
+      pp?: number | null;
     }>;
+    abilityData?: {
+      name?: string;
+    };
+    abilityIdentifier?: string;
+    natureData?: {
+      name?: string;
+    };
+    natureId?: number;
+    teraType?: string;
   };
   onRemove?: (e: React.MouseEvent) => void;
   showRemoveButton?: boolean;
   showSlotNumber?: boolean;
   slotNumber?: number;
+  variant?: 'compact' | 'detailed';
   className?: string;
 }
 
 /**
  * Reusable Pokemon card display component
  * Shows Pokemon sprite, name, types, item, and moves
+ * Supports compact (simple) and detailed (with stats) variants
  */
 export function PokemonCard({
   pokemon,
@@ -33,8 +51,127 @@ export function PokemonCard({
   showRemoveButton = false,
   showSlotNumber = false,
   slotNumber,
+  variant = 'compact',
   className = '',
 }: PokemonCardProps) {
+  if (variant === 'detailed') {
+    return (
+      <div className={className}>
+        {/* Ability - Top Right */}
+        {(pokemon?.abilityData?.name || pokemon?.abilityIdentifier) && (
+          <div className="absolute top-4 right-4">
+            <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+              {pokemon.abilityData?.name || pokemon.abilityIdentifier}
+            </span>
+          </div>
+        )}
+
+        {/* Pokemon Header */}
+        <div className="flex items-center gap-3 mb-3 pr-24">
+          {pokemon?.pokemonData?.imageUrl && (
+            <img
+              src={pokemon.pokemonData.imageUrl}
+              alt={pokemon.pokemonData.name || 'Pokemon'}
+              className="w-16 h-16 object-contain"
+            />
+          )}
+          <div className="flex-1">
+            <h3 className="font-bold text-lg text-gray-900">
+              {pokemon?.pokemonData?.name || 'Unknown'}
+            </h3>
+            <p className="text-sm text-gray-600">
+              Lv. {pokemon?.level || 50} • {pokemon?.natureData?.name || pokemon?.natureId || 'Unknown'}
+            </p>
+            {pokemon?.pokemonData?.types && pokemon.pokemonData.types.length > 0 && (
+              <div className="flex gap-1 mt-1">
+                {pokemon.pokemonData.types.map((type) => (
+                  <TypeIcon key={type} type={type} size="sm" />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Item */}
+        {pokemon?.itemData && (
+          <div className="mb-2">
+            <p className="text-xs font-semibold text-gray-700 mb-1">Item:</p>
+            <div className="flex items-center gap-2">
+              {pokemon.itemData.spriteUrl && (
+                <img
+                  src={pokemon.itemData.spriteUrl}
+                  alt={pokemon.itemData.name || 'Item'}
+                  className="w-6 h-6 object-contain"
+                />
+              )}
+              <span className="text-xs text-gray-700">{pokemon.itemData.name}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Moves */}
+        <div>
+          <p className="text-xs font-semibold text-gray-700 mb-1">Moves:</p>
+          <div className="space-y-1">
+            {pokemon?.movesData?.map((move, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded"
+              >
+                {move.type && <TypeIcon type={move.type} size="xs" />}
+                <span className="font-medium flex-1">{move.name || '-'}</span>
+                <div className="flex items-center gap-1 text-gray-500">
+                  <span className="min-w-[2rem] text-right">{move.power || '-'}</span>
+                  <span className="text-gray-400">/</span>
+                  <span className="min-w-[2rem] text-right">{move.accuracy ? `${move.accuracy}%` : '-'}</span>
+                  <span className="text-gray-400">/</span>
+                  <span className="min-w-[1.5rem] text-right">{move.pp ? `${move.pp}PP` : '-'}</span>
+                </div>
+              </div>
+            ))}
+            {/* Show empty slots */}
+            {pokemon?.movesData && pokemon.movesData.length < 4 && Array.from({ length: 4 - pokemon.movesData.length }).map((_, index) => (
+              <div key={`empty-${index}`} className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded">
+                <span className="text-gray-400 flex-1">-</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Tera Type */}
+        {pokemon?.teraType && (
+          <div className="mt-3 pt-3 border-t border-gray-200">
+            <span className="text-xs font-semibold text-gray-700">Tera Type:</span>
+            <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">
+              {pokemon.teraType}
+            </span>
+          </div>
+        )}
+
+        {/* Remove Button */}
+        {showRemoveButton && onRemove && (
+          <button
+            onClick={onRemove}
+            className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors z-10"
+            title="Remove"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+
+        {/* Slot Number */}
+        {showSlotNumber && slotNumber !== undefined && (
+          <div className="absolute bottom-1 left-1 w-5 h-5 bg-gray-700 text-white text-xs rounded-full flex items-center justify-center font-medium">
+            {slotNumber}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Compact variant (original)
   return (
     <div className={className}>
       {/* Pokemon Header with Sprite */}

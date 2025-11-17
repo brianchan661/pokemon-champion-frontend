@@ -38,7 +38,7 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
         {t('teamBuilder.yourTeam', 'Your Team')} ({team.filter(s => s.pokemon).length}/6)
       </h3>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {slots.map((slot, index) => {
           const isEmpty = !slot.pokemon;
           const isActive = activeSlot === index;
@@ -47,7 +47,7 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
           return (
             <div
               key={index}
-              className={`relative aspect-square rounded-lg border-2 transition-all ${
+              className={`relative rounded-lg border-2 transition-all ${
                 isActive
                   ? 'border-primary-500 ring-2 ring-primary-200'
                   : isEmpty
@@ -58,7 +58,7 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
               {isEmpty ? (
                 <button
                   onClick={() => onSlotClick(index)}
-                  className="w-full h-full flex flex-col items-center justify-center text-gray-400 hover:text-primary-600 transition-colors"
+                  className="w-full p-8 flex flex-col items-center justify-center text-gray-400 hover:text-primary-600 transition-colors"
                 >
                   <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -70,10 +70,11 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
               ) : (
                 <button
                   onClick={() => onSlotClick(index)}
-                  className="w-full h-full p-3 bg-gray-50 flex flex-col relative"
+                  className="w-full p-4 bg-gray-50 flex flex-col relative text-left"
                 >
                   <PokemonCard
                     pokemon={pokemon}
+                    variant="detailed"
                     showRemoveButton={true}
                     onRemove={(e) => {
                       e.stopPropagation();
