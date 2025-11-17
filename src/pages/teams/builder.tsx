@@ -24,7 +24,7 @@ export default function TeamBuilderPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { teamId } = router.query; // Optional: for editing existing teams
+  const { teamId, new: isNew } = router.query; // teamId for editing, new for fresh start
 
   // Team metadata
   const [teamName, setTeamName] = useState('');
@@ -32,7 +32,7 @@ export default function TeamBuilderPage() {
   const [isPublic, setIsPublic] = useState(true);
 
   // Team state
-  const [team, setTeam] = useState<TeamSlot[]>(Array(6).fill({}));
+  const [team, setTeam] = useState<TeamSlot[]>(Array.from({ length: 6 }, () => ({})));
   const [activeSlot, setActiveSlot] = useState<number | undefined>(undefined);
   const [configuringPokemon, setConfiguringPokemon] = useState<Pokemon | null>(null);
 
@@ -71,9 +71,9 @@ export default function TeamBuilderPage() {
     }
   }, [team, teamName, teamDescription, isPublic, isAuthenticated]);
 
-  // Load auto-saved data on mount
+  // Load auto-saved data on mount (only if not explicitly creating new)
   useEffect(() => {
-    if (!teamId && isAuthenticated) {
+    if (!teamId && !isNew && isAuthenticated) {
       const autoSave = localStorage.getItem('teamBuilder_autoSave');
       if (autoSave) {
         try {
@@ -83,14 +83,14 @@ export default function TeamBuilderPage() {
             setTeamName(data.teamName || '');
             setTeamDescription(data.teamDescription || '');
             setIsPublic(data.isPublic ?? true);
-            setTeam(data.team || Array(6).fill({}));
+            setTeam(data.team || Array.from({ length: 6 }, () => ({})));
           }
         } catch (e) {
           console.error('Failed to load auto-save:', e);
         }
       }
     }
-  }, [teamId, isAuthenticated]);
+  }, [teamId, isNew, isAuthenticated]);
 
   async function loadExistingTeam(id: string) {
     try {
@@ -106,14 +106,12 @@ export default function TeamBuilderPage() {
         setIsPublic(teamData.isPublic);
 
         // Load Pokemon data
-        const loadedTeam: TeamSlot[] = Array(6).fill({});
+        // Backend enrichTeamPokemon already returns pokemonData at the top level
+        const loadedTeam: TeamSlot[] = Array.from({ length: 6 }, () => ({}));
         for (let i = 0; i < teamData.pokemon.length; i++) {
           const tp = teamData.pokemon[i];
           loadedTeam[i] = {
-            pokemon: {
-              ...tp,
-              pokemonData: tp.pokemon,
-            },
+            pokemon: tp, // tp already has pokemonData from backend enrichment
           };
         }
         setTeam(loadedTeam);
@@ -227,21 +225,9 @@ export default function TeamBuilderPage() {
     }
 
     // Validate each Pokemon has required fields
-    console.log('Team Pokemon before validation:', teamPokemon);
-
     for (let i = 0; i < teamPokemon.length; i++) {
       const pokemon = teamPokemon[i];
       const missingFields: string[] = [];
-
-      console.log(`Validating Pokemon ${i + 1}:`, {
-        pokemonId: pokemon.pokemonId,
-        level: pokemon.level,
-        abilityIdentifier: pokemon.abilityIdentifier,
-        moves: pokemon.moves,
-        natureId: pokemon.natureId,
-        evs: pokemon.evs,
-        ivs: pokemon.ivs,
-      });
 
       if (!pokemon.pokemonId) missingFields.push('pokemonId');
       if (!pokemon.level) missingFields.push('level');
@@ -257,8 +243,6 @@ export default function TeamBuilderPage() {
         return;
       }
     }
-
-    console.log('All Pokemon validated successfully');
 
     setIsSaving(true);
 
@@ -276,10 +260,6 @@ export default function TeamBuilderPage() {
 
       // Transform stat names from frontend format to backend format
       const transformedPokemon = teamPokemon.map(p => {
-        console.log('Original Pokemon data:', p);
-        console.log('EVs:', p.evs);
-        console.log('IVs:', p.ivs);
-
         return {
           pokemonId: p.pokemonId,
           level: p.level,
@@ -293,8 +273,6 @@ export default function TeamBuilderPage() {
         };
       });
 
-      console.log('Transformed Pokemon:', transformedPokemon);
-
       const payload = {
         name: teamName.trim(),
         description: teamDescription.trim(), // This is strategy content now
@@ -303,8 +281,6 @@ export default function TeamBuilderPage() {
         isPublic,
       };
 
-      console.log('Final payload:', JSON.stringify(payload, null, 2));
-
       const response = await axios[method](
         endpoint,
         payload,
@@ -312,8 +288,6 @@ export default function TeamBuilderPage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      console.log('Backend response:', response.data);
 
       if (response.data.success) {
         // Clear auto-save
@@ -460,8 +434,6 @@ export default function TeamBuilderPage() {
                 <div className="lg:col-span-1">
                   <TeamSummary
                     team={team}
-                    teamName={teamName}
-                    teamDescription={teamDescription}
                   />
                 </div>
               </div>

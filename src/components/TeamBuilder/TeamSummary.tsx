@@ -1,6 +1,7 @@
 import { useTranslation } from 'next-i18next';
 import { TeamSlot } from './TeamSlots';
 import { TypeIcon } from '@/components/UI';
+import { StrategyDisplay } from '@/components/Strategy/StrategyDisplay';
 
 interface TeamSummaryProps {
   team: TeamSlot[];
@@ -47,7 +48,9 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
           <div className="mb-4">
             <h4 className="font-semibold text-gray-900">{teamName}</h4>
             {teamDescription && (
-              <p className="text-sm text-gray-600 mt-1">{teamDescription}</p>
+              <div className="text-sm text-gray-600 mt-1">
+                <StrategyDisplay strategy={teamDescription} />
+              </div>
             )}
           </div>
         )}
