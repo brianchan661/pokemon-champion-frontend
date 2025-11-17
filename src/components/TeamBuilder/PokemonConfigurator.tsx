@@ -5,6 +5,7 @@ import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import { naturesService, Nature } from '@/services/naturesService';
 import { teraTypesService, TeraType } from '@/services/teraTypesService';
 import { itemsService, Item } from '@/services/itemsService';
+import { movesService } from '@/services/movesService';
 import { getDefaultIVs, getDefaultEVs, validateEVs } from '@/utils/calculateStats';
 import { StatCalculator } from './StatCalculator';
 import { EVInputs } from './EVInputs';
@@ -39,6 +40,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   const [level, setLevel] = useState(existingConfig?.level || 100);
   const [abilityIdentifier, setAbilityIdentifier] = useState(existingConfig?.abilityIdentifier || '');
   const [moves, setMoves] = useState<number[]>(existingConfig?.moves || []);
+  const [selectedMovesData, setSelectedMovesData] = useState<any[]>(existingConfig?.movesData || []);
   const [natureId, setNatureId] = useState<number>(existingConfig?.natureId || 0);
   const [ivs, setIvs] = useState<StatSpread>(existingConfig?.ivs || getDefaultIVs());
   const [evs, setEvs] = useState<StatSpread>(existingConfig?.evs || getDefaultEVs());
@@ -173,6 +175,11 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       return;
     }
 
+    // Get enriched data for display purposes
+    const selectedAbility = abilities.find(a => a.identifier === abilityIdentifier);
+    const selectedNature = natures.find(n => n.id === natureId);
+    const selectedItem = items.find(i => i.id === itemId);
+
     const config: TeamPokemon = {
       pokemonId: pokemon.id,
       level,
@@ -183,6 +190,24 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       ivs,
       teraType,
       itemId,
+      // Include enriched data for display
+      abilityData: selectedAbility ? {
+        id: selectedAbility.id,
+        identifier: selectedAbility.identifier,
+        name: selectedAbility.name,
+      } : undefined,
+      natureData: selectedNature ? {
+        id: selectedNature.id,
+        identifier: selectedNature.identifier,
+        name: selectedNature.name,
+      } : undefined,
+      itemData: selectedItem ? {
+        id: selectedItem.id,
+        identifier: selectedItem.identifier,
+        name: selectedItem.name,
+        spriteUrl: selectedItem.spriteUrl,
+      } : undefined,
+      movesData: selectedMovesData, // Use the tracked moves data
     };
 
     onSave(config);
@@ -468,8 +493,27 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
           <div>
             <MoveSelector
               selectedMoveIds={moves}
-              onMoveSelect={(moveId) => setMoves([...moves, moveId])}
-              onMoveRemove={(moveId) => setMoves(moves.filter((id) => id !== moveId))}
+              onMoveSelect={async (moveId) => {
+                setMoves([...moves, moveId]);
+                // Fetch and store move data
+                const moveResult = await movesService.getMoveById(moveId);
+                if (moveResult.success && moveResult.data) {
+                  setSelectedMovesData([...selectedMovesData, {
+                    id: moveResult.data.id,
+                    identifier: moveResult.data.identifier,
+                    name: moveResult.data.name,
+                    type: moveResult.data.type,
+                    category: moveResult.data.category,
+                    power: moveResult.data.power,
+                    accuracy: moveResult.data.accuracy,
+                    pp: moveResult.data.pp,
+                  }]);
+                }
+              }}
+              onMoveRemove={(moveId) => {
+                setMoves(moves.filter((id) => id !== moveId));
+                setSelectedMovesData(selectedMovesData.filter((m) => m.id !== moveId));
+              }}
               availableMoveNames={availableMoveNames}
             />
           </div>

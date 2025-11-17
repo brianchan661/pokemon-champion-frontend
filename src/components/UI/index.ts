@@ -3,3 +3,4 @@ export { LoadingSpinner } from './LoadingSpinner';
 export { ErrorMessage } from './ErrorMessage';
 export { Pagination } from './Pagination';
 export { TypeIcon } from './TypeIcon';
+export { PokemonCard } from './PokemonCard';

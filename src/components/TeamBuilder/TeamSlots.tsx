@@ -1,5 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { TeamPokemon } from '@brianchan661/pokemon-champion-shared';
+import { PokemonCard } from '@/components/UI';
 
 export interface TeamSlot {
   pokemon?: TeamPokemon & {
@@ -41,6 +42,7 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
         {slots.map((slot, index) => {
           const isEmpty = !slot.pokemon;
           const isActive = activeSlot === index;
+          const pokemon = slot.pokemon;
 
           return (
             <div
@@ -68,63 +70,16 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
               ) : (
                 <button
                   onClick={() => onSlotClick(index)}
-                  className="w-full h-full p-3 flex flex-col items-center justify-center"
+                  className="w-full h-full p-3 bg-gray-50 flex flex-col relative"
                 >
-                  {/* Pokemon Image */}
-                  <div className="w-full flex-1 flex items-center justify-center mb-2">
-                    {slot.pokemon?.pokemonData?.imageUrl ? (
-                      <img
-                        src={slot.pokemon.pokemonData.imageUrl}
-                        alt={slot.pokemon.pokemonData.name}
-                        className="max-w-full max-h-full object-contain"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                        <span className="text-gray-400">?</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Pokemon Name */}
-                  <div className="text-center w-full">
-                    <p className="font-medium text-sm text-gray-900 truncate">
-                      {slot.pokemon?.pokemonData?.name || 'Unknown'}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Lv. {slot.pokemon?.level || 50}
-                    </p>
-                  </div>
-
-                  {/* Types */}
-                  <div className="flex gap-1 mt-1">
-                    {slot.pokemon?.pokemonData?.types?.slice(0, 2).map((type) => (
-                      <span
-                        key={type}
-                        className="px-1.5 py-0.5 text-xs rounded bg-gray-100 text-gray-600"
-                      >
-                        {type}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Remove Button */}
-                  <button
-                    onClick={(e) => {
+                  <PokemonCard
+                    pokemon={pokemon}
+                    showRemoveButton={true}
+                    onRemove={(e) => {
                       e.stopPropagation();
                       onRemovePokemon(index);
                     }}
-                    className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-                    title={t('teamBuilder.remove', 'Remove')}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-
-                  {/* Slot Number */}
-                  <div className="absolute bottom-1 left-1 w-5 h-5 bg-gray-700 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                    {index + 1}
-                  </div>
+                  />
                 </button>
               )}
             </div>
