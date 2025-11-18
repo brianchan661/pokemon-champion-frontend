@@ -108,7 +108,7 @@ export default function TeamDetailPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-5xl mx-auto">
             <LoadingSpinner message={t('teams.loading')} />
           </div>
@@ -120,7 +120,7 @@ export default function TeamDetailPage() {
   if (error || !teamData?.team) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-5xl mx-auto">
             <ErrorMessage error={error instanceof Error ? error : new Error(t('teams.error'))} />
             <div className="mt-4 text-center">
@@ -147,13 +147,13 @@ export default function TeamDetailPage() {
       </Head>
 
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-5xl mx-auto">
             {/* Back Button */}
             <div className="mb-6">
               <Link
                 href="/teams"
-                className="inline-flex items-center text-gray-600 hover:text-gray-900"
+                className="inline-flex items-center text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -163,11 +163,11 @@ export default function TeamDetailPage() {
             </div>
 
             {/* Team Name and Pokemon Combined */}
-            <div className="bg-white rounded-lg shadow-sm p-8 mb-6 relative">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 mb-6 relative">
               {/* Author - Top Right */}
               <div className="absolute top-8 right-8 text-right">
-                <p className="text-sm text-gray-600">
-                  {t('teams.by')} <span className="font-medium">{team.authorUsername || 'Unknown'}</span>
+                <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
+                  {t('teams.by')} <span className="font-medium dark:text-dark-text-primary">{team.authorUsername || 'Unknown'}</span>
                 </p>
                 {isOwner && (
                   <Link
@@ -182,9 +182,9 @@ export default function TeamDetailPage() {
               {/* Team Name */}
               <div className="mb-6 pr-48">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-4xl font-bold text-gray-900">{team.name}</h1>
+                  <h1 className="text-4xl font-bold text-gray-900 dark:text-dark-text-primary">{team.name}</h1>
                   {!team.isPublic && (
-                    <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-sm font-medium">
                       {t('teams.private')}
                     </span>
                   )}
@@ -199,16 +199,16 @@ export default function TeamDetailPage() {
                     pokemon={p}
                     variant="detailed"
                     enableLinks={true}
-                    className="bg-gray-50 rounded-lg p-4 border border-gray-200 relative"
+                    className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-4 border border-gray-200 dark:border-dark-border relative"
                   />
                 ))}
               </div>
             </div>
 
             {/* Strategy and Stats */}
-            <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 mb-6">
               {/* Stats */}
-              <div className="flex items-center gap-6 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
+              <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-dark-text-secondary mb-6 pb-6 border-b border-gray-200 dark:border-dark-border">
                 {team.isPublic && (
                   <>
                     <button
@@ -216,8 +216,8 @@ export default function TeamDetailPage() {
                       disabled={likeMutation.isPending}
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                         hasLiked
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-200'
+                          : 'bg-gray-100 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
                       <svg className="w-5 h-5" fill={hasLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 20 20">
@@ -237,15 +237,15 @@ export default function TeamDetailPage() {
 
               {/* Strategy */}
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-3">{t('teams.strategy')}</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary mb-3">{t('teams.strategy')}</h2>
                 <StrategyDisplay strategy={team.strategy} />
               </div>
             </div>
 
             {/* Comments Section (Only for public teams) */}
             {team.isPublic && (
-              <div className="bg-white rounded-lg shadow-sm p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">
                   Comments ({comments.length})
                 </h2>
 
@@ -253,12 +253,12 @@ export default function TeamDetailPage() {
                 {isAuthenticated ? (
                   <form onSubmit={handleComment} className="mb-8">
                     {replyTo && (
-                      <div className="mb-2 text-sm text-gray-600">
+                      <div className="mb-2 text-sm text-gray-600 dark:text-dark-text-secondary">
                         Replying to comment{' '}
                         <button
                           type="button"
                           onClick={() => setReplyTo(null)}
-                          className="text-primary-600 hover:underline"
+                          className="text-primary-600 dark:text-primary-400 hover:underline"
                         >
                           Cancel
                         </button>
@@ -268,12 +268,12 @@ export default function TeamDetailPage() {
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       placeholder="Share your thoughts..."
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary"
                       rows={3}
                       maxLength={1000}
                     />
                     <div className="mt-2 flex justify-between items-center">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-dark-text-tertiary">
                         {commentText.length}/1000
                       </span>
                       <button
@@ -286,8 +286,8 @@ export default function TeamDetailPage() {
                     </div>
                   </form>
                 ) : (
-                  <div className="mb-8 text-center py-6 bg-gray-50 rounded-lg">
-                    <p className="text-gray-600 mb-4">
+                  <div className="mb-8 text-center py-6 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg">
+                    <p className="text-gray-600 dark:text-dark-text-secondary mb-4">
                       Please log in to leave a comment
                     </p>
                     <Button href={`/auth?redirect=/teams/${id}`} variant="primary">
@@ -299,26 +299,26 @@ export default function TeamDetailPage() {
                 {/* Comments List */}
                 <div className="space-y-4">
                   {comments.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">
+                    <p className="text-gray-500 dark:text-dark-text-secondary text-center py-8">
                       No comments yet. Be the first to comment!
                     </p>
                   ) : (
                     comments.map((comment) => (
                       <div
                         key={comment.id}
-                        className="bg-gray-50 rounded-lg p-4"
+                        className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-4"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <span className="font-medium text-gray-900">
+                            <span className="font-medium text-gray-900 dark:text-dark-text-primary">
                               {comment.authorUsername || 'Unknown'}
                             </span>
-                            <span className="text-sm text-gray-500 ml-2">
+                            <span className="text-sm text-gray-500 dark:text-dark-text-tertiary ml-2">
                               {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
-                        <p className="text-gray-700 whitespace-pre-wrap">
+                        <p className="text-gray-700 dark:text-dark-text-secondary whitespace-pre-wrap">
                           {comment.content}
                         </p>
                       </div>

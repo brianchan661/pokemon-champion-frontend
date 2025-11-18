@@ -127,15 +127,15 @@ export default function NewsListPage() {
         <meta name="description" content={t('news.description', 'Latest news and updates')} />
       </Head>
 
-      <div className="min-h-screen bg-gray-100 py-8">
+      <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-8">{t('news.title', 'News')}</h1>
+          <h1 className="text-4xl font-bold mb-8 dark:text-dark-text-primary">{t('news.title', 'News')}</h1>
 
           {/* Tag Filter */}
-          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-md p-4 mb-6">
             <div className="flex items-center gap-2 mb-3">
-              <Tag size={20} className="text-gray-600" />
-              <h2 className="text-lg font-semibold">{t('news.filterByTag', 'Filter by Tag')}</h2>
+              <Tag size={20} className="text-gray-600 dark:text-dark-text-secondary" />
+              <h2 className="text-lg font-semibold dark:text-dark-text-primary">{t('news.filterByTag', 'Filter by Tag')}</h2>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
@@ -143,7 +143,7 @@ export default function NewsListPage() {
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   !selectedTag
                     ? 'bg-primary-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
                 }`}
               >
                 {t('news.allArticles', 'All Articles')}
@@ -155,7 +155,7 @@ export default function NewsListPage() {
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     selectedTag === tag.slug
                       ? 'bg-primary-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
                   }`}
                 >
                   {tag.tagName}
@@ -165,7 +165,7 @@ export default function NewsListPage() {
           </div>
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded mb-4">
               {error}
             </div>
           )}
@@ -173,11 +173,11 @@ export default function NewsListPage() {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">{t('common.loading', 'Loading...')}</p>
+              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('common.loading', 'Loading...')}</p>
             </div>
           ) : articles.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-md p-12 text-center">
-              <p className="text-gray-600 text-lg">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-md p-12 text-center">
+              <p className="text-gray-600 dark:text-dark-text-secondary text-lg">
                 {selectedTag
                   ? t('news.noArticlesWithTag', 'No articles found with this tag')
                   : t('news.noArticles', 'No articles published yet')}
@@ -189,7 +189,7 @@ export default function NewsListPage() {
                 const translation = getTranslation(article);
                 return (
                   <Link key={article.id} href={`/news/${article.slug}`}>
-                    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col">
+                    <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col">
                       {article.featuredImage && (
                         <img
                           src={`${API_URL.replace('/api', '')}${article.featuredImage}`}
@@ -202,28 +202,28 @@ export default function NewsListPage() {
                           {article.tags.slice(0, 2).map(tag => (
                             <span
                               key={tag}
-                              className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium"
+                              className="px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-200 rounded-full text-xs font-medium"
                             >
                               {tag}
                             </span>
                           ))}
                         </div>
 
-                        <h2 className="text-xl font-bold mb-2 line-clamp-2">
+                        <h2 className="text-xl font-bold mb-2 line-clamp-2 dark:text-dark-text-primary">
                           {translation.title}
                         </h2>
 
                         {!hasTranslation(article, i18n.language) && i18n.language === 'ja' && (
-                          <p className="text-sm text-amber-600 mb-2 italic">
+                          <p className="text-sm text-amber-600 dark:text-amber-400 mb-2 italic">
                             {t('news.translationComingSoon', 'Japanese translation coming soon')}
                           </p>
                         )}
 
-                        <p className="text-gray-600 mb-4 line-clamp-3 flex-1">
+                        <p className="text-gray-600 dark:text-dark-text-secondary mb-4 line-clamp-3 flex-1">
                           {getPreview(translation.content)}
                         </p>
 
-                        <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
+                        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-dark-text-tertiary mt-auto">
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1">
                               <User size={16} />
@@ -234,7 +234,7 @@ export default function NewsListPage() {
                               <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          <ChevronRight size={20} className="text-primary-600" />
+                          <ChevronRight size={20} className="text-primary-600 dark:text-primary-400" />
                         </div>
                       </div>
                     </div>

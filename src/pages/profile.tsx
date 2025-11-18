@@ -226,18 +226,18 @@ export default function ProfilePage() {
       </Head>
 
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-8">
               {t('profile.title')}
             </h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Profile Card */}
               <div className="lg:col-span-2">
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-6">
                   <div className="flex items-start justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">{t('profile.information')}</h2>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">{t('profile.information')}</h2>
                     {!isEditing && (
                       <Button
                         onClick={() => setIsEditing(true)}
@@ -253,25 +253,25 @@ export default function ProfilePage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                       {/* Username */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                           {t('profile.username')}
                         </label>
                         <input
                           type="text"
                           value={formData.username}
                           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                          className={`w-full px-3 py-2 border rounded-md ${
-                            errors.username ? 'border-red-500' : 'border-gray-300'
+                          className={`w-full px-3 py-2 border rounded-md dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary ${
+                            errors.username ? 'border-red-500 dark:border-red-800' : 'border-gray-300 dark:border-dark-border'
                           }`}
                         />
                         {errors.username && (
-                          <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+                          <p className="text-red-500 dark:text-red-300 text-sm mt-1">{errors.username}</p>
                         )}
                       </div>
 
                       {/* Avatar Upload */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">
                           {t('profile.avatar')}
                         </label>
                         <AvatarUpload
@@ -290,13 +290,13 @@ export default function ProfilePage() {
 
                       {/* Language */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                           {t('profile.language')}
                         </label>
                         <select
                           value={formData.preferred_language}
                           onChange={(e) => setFormData({ ...formData, preferred_language: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
                         >
                           <option value="en">{t('profile.languages.en')}</option>
                           <option value="ja">{t('profile.languages.ja')}</option>
@@ -341,40 +341,40 @@ export default function ProfilePage() {
                       {/* Info Grid */}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-500">{t('profile.memberId')}</p>
-                          <p className="font-medium text-gray-900">#{profileData.user.member_id}</p>
+                          <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.memberId')}</p>
+                          <p className="font-medium text-gray-900 dark:text-dark-text-primary">#{profileData.user.member_id}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">{t('profile.username')}</p>
-                          <p className="font-medium text-gray-900">{profileData.user.username}</p>
+                          <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.username')}</p>
+                          <p className="font-medium text-gray-900 dark:text-dark-text-primary">{profileData.user.username}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-sm text-gray-500">{t('profile.email')}</p>
-                          <p className="font-medium text-gray-900">{profileData.user.email}</p>
+                          <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.email')}</p>
+                          <p className="font-medium text-gray-900 dark:text-dark-text-primary">{profileData.user.email}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">{t('profile.language')}</p>
-                          <p className="font-medium text-gray-900">
+                          <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.language')}</p>
+                          <p className="font-medium text-gray-900 dark:text-dark-text-primary">
                             {t(`profile.languages.${profileData.user.preferred_language}`)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">{t('profile.accountType')}</p>
-                          <p className="font-medium text-gray-900">
+                          <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.accountType')}</p>
+                          <p className="font-medium text-gray-900 dark:text-dark-text-primary">
                             {profileData.user.is_premium ? (
-                              <span className="text-yellow-600">{t('profile.premium')} ⭐</span>
+                              <span className="text-yellow-600 dark:text-yellow-500">{t('profile.premium')} ⭐</span>
                             ) : (
                               t('profile.free')
                             )}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">{t('profile.role')}</p>
-                          <p className="font-medium text-gray-900 capitalize">{profileData.user.role}</p>
+                          <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.role')}</p>
+                          <p className="font-medium text-gray-900 dark:text-dark-text-primary capitalize">{profileData.user.role}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">{t('profile.memberSince')}</p>
-                          <p className="font-medium text-gray-900">
+                          <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.memberSince')}</p>
+                          <p className="font-medium text-gray-900 dark:text-dark-text-primary">
                             {new Date(profileData.user.created_at).toLocaleDateString()}
                           </p>
                         </div>
@@ -384,16 +384,16 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Linked Accounts */}
-                <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">{t('profile.linkedAccounts')}</h2>
-                  <p className="text-sm text-gray-600 mb-4">
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-6 mt-6">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('profile.linkedAccounts')}</h2>
+                  <p className="text-sm text-gray-600 dark:text-dark-text-secondary mb-4">
                     {t('profile.linkedAccountsDescription')}
                   </p>
 
                   <div className="space-y-3">
                     {/* Google Account */}
                     {profileData.linked_accounts.find(acc => acc.provider === 'google') ? (
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg border border-gray-200 dark:border-dark-border">
                         <div className="flex items-center gap-3">
                           <svg className="w-6 h-6" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -402,21 +402,21 @@ export default function ProfilePage() {
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                           </svg>
                           <div>
-                            <p className="font-medium text-gray-900">Google</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="font-medium text-gray-900 dark:text-dark-text-primary">Google</p>
+                            <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">
                               {profileData.linked_accounts.find(acc => acc.provider === 'google')?.provider_email}
                             </p>
                           </div>
                         </div>
                         <button
                           onClick={() => setShowUnlinkConfirm(true)}
-                          className="px-4 py-2 text-sm text-red-600 hover:text-red-700 font-medium"
+                          className="px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
                         >
                           {t('profile.unlink')}
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                      <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg border border-dashed border-gray-300 dark:border-dark-border">
                         <div className="flex items-center gap-3">
                           <svg className="w-6 h-6 opacity-50" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -425,8 +425,8 @@ export default function ProfilePage() {
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                           </svg>
                           <div>
-                            <p className="font-medium text-gray-900">Google</p>
-                            <p className="text-sm text-gray-500">{t('profile.notLinked')}</p>
+                            <p className="font-medium text-gray-900 dark:text-dark-text-primary">Google</p>
+                            <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{t('profile.notLinked')}</p>
                           </div>
                         </div>
                         <button
@@ -564,7 +564,7 @@ export default function ProfilePage() {
                               }
                             }, 1000); // Check every second
                           }}
-                          className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
+                          className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md font-medium"
                         >
                           {t('profile.linkAccount')}
                         </button>
@@ -577,24 +577,24 @@ export default function ProfilePage() {
                       .map((account, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+                          className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg border border-gray-200 dark:border-dark-border"
                         >
                           <div className="flex items-center gap-3">
                             {account.provider === 'local' ? (
-                              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                               </svg>
                             ) : (
-                              <div className="w-6 h-6 bg-gray-400 rounded-full"></div>
+                              <div className="w-6 h-6 bg-gray-400 dark:bg-dark-bg-primary rounded-full"></div>
                             )}
                             <div>
-                              <p className="font-medium text-gray-900">
+                              <p className="font-medium text-gray-900 dark:text-dark-text-primary">
                                 {account.provider === 'local' ? 'Email' : account.provider}
                               </p>
-                              <p className="text-sm text-gray-500">{account.provider_email || 'N/A'}</p>
+                              <p className="text-sm text-gray-500 dark:text-dark-text-tertiary">{account.provider_email || 'N/A'}</p>
                             </div>
                           </div>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-dark-text-tertiary">
                             {t('profile.linked')} {new Date(account.linked_at).toLocaleDateString()}
                           </span>
                         </div>
@@ -606,26 +606,26 @@ export default function ProfilePage() {
               {/* Stats Sidebar */}
               <div className="space-y-6">
                 {/* Team Stats */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profile.teamStatistics')}</h3>
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-6">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('profile.teamStatistics')}</h3>
                   {teamStats ? (
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">{t('profile.totalTeams')}</span>
-                        <span className="text-lg font-bold text-primary-600">{teamStats.totalTeams}</span>
+                        <span className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('profile.totalTeams')}</span>
+                        <span className="text-lg font-bold text-primary-600 dark:text-primary-400">{teamStats.totalTeams}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">{t('profile.publicTeams')}</span>
-                        <span className="text-lg font-bold text-green-600">{teamStats.publicTeams}</span>
+                        <span className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('profile.publicTeams')}</span>
+                        <span className="text-lg font-bold text-green-600 dark:text-green-400">{teamStats.publicTeams}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">{t('profile.privateTeams')}</span>
-                        <span className="text-lg font-bold text-gray-600">{teamStats.privateTeams}</span>
+                        <span className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('profile.privateTeams')}</span>
+                        <span className="text-lg font-bold text-gray-600 dark:text-dark-text-secondary">{teamStats.privateTeams}</span>
                       </div>
-                      <div className="pt-3 border-t border-gray-200">
+                      <div className="pt-3 border-t border-gray-200 dark:border-dark-border">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">{t('profile.totalLikes')}</span>
-                          <span className="text-lg font-bold text-red-500">{teamStats.totalLikes} ❤️</span>
+                          <span className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('profile.totalLikes')}</span>
+                          <span className="text-lg font-bold text-red-500 dark:text-red-400">{teamStats.totalLikes} ❤️</span>
                         </div>
                       </div>
                     </div>
@@ -635,8 +635,8 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profile.quickActions')}</h3>
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-6">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('profile.quickActions')}</h3>
                   <div className="space-y-2">
                     <Button href="/teams/my" variant="secondary" className="w-full">
                       {t('profile.myTeams')}
@@ -655,11 +655,11 @@ export default function ProfilePage() {
       {/* Unlink Confirmation Modal */}
       {showUnlinkConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex items-start mb-4">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-6 w-6 text-red-600"
+                  className="h-6 w-6 text-red-600 dark:text-red-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -673,10 +673,10 @@ export default function ProfilePage() {
                 </svg>
               </div>
               <div className="ml-3 flex-1">
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-dark-text-primary">
                   {t('profile.unlinkGoogleTitle')}
                 </h3>
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-2 text-sm text-gray-600 dark:text-dark-text-secondary">
                   {t('profile.unlinkGoogleMessage')}
                 </p>
               </div>
@@ -684,7 +684,7 @@ export default function ProfilePage() {
             <div className="flex gap-3 justify-end mt-6">
               <button
                 onClick={() => setShowUnlinkConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-dark-text-primary bg-white dark:bg-dark-bg-tertiary border border-gray-300 dark:border-dark-border rounded-md hover:bg-gray-50 dark:hover:bg-dark-bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 {t('profile.cancel')}
               </button>
@@ -705,15 +705,15 @@ export default function ProfilePage() {
           <div
             className={`rounded-lg shadow-lg p-4 min-w-[320px] max-w-md ${
               toast.type === 'success'
-                ? 'bg-green-50 border border-green-200'
-                : 'bg-red-50 border border-red-200'
+                ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
             }`}
           >
             <div className="flex items-start">
               <div className="flex-shrink-0">
                 {toast.type === 'success' ? (
                   <svg
-                    className="h-6 w-6 text-green-600"
+                    className="h-6 w-6 text-green-600 dark:text-green-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -727,7 +727,7 @@ export default function ProfilePage() {
                   </svg>
                 ) : (
                   <svg
-                    className="h-6 w-6 text-red-600"
+                    className="h-6 w-6 text-red-600 dark:text-red-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -744,7 +744,7 @@ export default function ProfilePage() {
               <div className="ml-3 flex-1">
                 <p
                   className={`text-sm font-medium ${
-                    toast.type === 'success' ? 'text-green-800' : 'text-red-800'
+                    toast.type === 'success' ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'
                   }`}
                 >
                   {toast.message}
@@ -754,8 +754,8 @@ export default function ProfilePage() {
                 onClick={() => setToast(null)}
                 className={`ml-4 inline-flex flex-shrink-0 ${
                   toast.type === 'success'
-                    ? 'text-green-500 hover:text-green-700'
-                    : 'text-red-500 hover:text-red-700'
+                    ? 'text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
+                    : 'text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
                 }`}
               >
                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

@@ -50,11 +50,11 @@ export default function PokemonDetailPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
-              <p className="mt-4 text-gray-600">{t('pokemon.loading')}</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-blue-600"></div>
+              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('pokemon.loading')}</p>
             </div>
           </div>
         </div>
@@ -65,13 +65,13 @@ export default function PokemonDetailPage() {
   if (error || !pokemon) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-6xl mx-auto">
             {/* Pokemon Not Found Error */}
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-8 text-center">
               <div className="mb-6">
                 <svg
-                  className="mx-auto h-24 w-24 text-gray-400"
+                  className="mx-auto h-24 w-24 text-gray-400 dark:text-gray-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -84,16 +84,16 @@ export default function PokemonDetailPage() {
                   />
                 </svg>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">
                 {t('pokemon.detail.notFound.title')}
               </h2>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 dark:text-dark-text-secondary mb-8">
                 {t('pokemon.detail.notFound.description')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={() => router.back()}
-                  className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 dark:border-dark-border text-base font-medium rounded-md text-gray-700 dark:text-dark-text-primary bg-white dark:bg-dark-bg-tertiary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   {t('error.notFound.goBack')}
                 </button>
@@ -113,12 +113,12 @@ export default function PokemonDetailPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
           <button
             onClick={() => router.back()}
-            className="mb-4 flex items-center gap-2 text-blue-600 hover:text-blue-800"
+            className="mb-4 flex items-center gap-2 text-blue-600 dark:text-primary-400 hover:text-blue-800 dark:hover:text-primary-300"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -127,18 +127,18 @@ export default function PokemonDetailPage() {
           </button>
 
           {/* Header Card with Stats */}
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-6 mb-6">
             {/* Form Tabs (if alternative forms exist) */}
             {pokemon.details?.forms && pokemon.details.forms.length > 0 && (
-              <div className="mb-6 border-b border-gray-200">
+              <div className="mb-6 border-b border-gray-200 dark:border-dark-border">
                 <div className="flex flex-wrap gap-2 -mb-px">
                   {/* Base Form Tab */}
                   <button
                     onClick={() => setSelectedFormIndex(-1)}
                     className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
                       selectedFormIndex === -1
-                        ? 'border-blue-600 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-blue-600 text-blue-600 dark:text-primary-400'
+                        : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
                     }`}
                   >
                     {pokemon.name}
@@ -150,8 +150,8 @@ export default function PokemonDetailPage() {
                       onClick={() => setSelectedFormIndex(idx)}
                       className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
                         selectedFormIndex === idx
-                          ? 'border-blue-600 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'border-blue-600 text-blue-600 dark:text-primary-400'
+                          : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
                       }`}
                     >
                       {form.formName}
@@ -170,16 +170,16 @@ export default function PokemonDetailPage() {
 
           {/* Moves (if available) */}
           {pokemon.details?.movesByGeneration && pokemon.details.movesByGeneration.length > 0 && (
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('pokemon.detail.moves')}</h2>
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('pokemon.detail.moves')}</h2>
               <MovesDisplay movesByGeneration={pokemon.details.movesByGeneration} t={t} />
             </div>
           )}
 
           {/* Evolution Chain */}
           {pokemon.details?.evolutionChain && (
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('pokemon.detail.evolutionChain')}</h2>
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('pokemon.detail.evolutionChain')}</h2>
               <div className="overflow-x-auto">
                 <EvolutionChainDisplay evolutionChain={pokemon.details.evolutionChain} />
               </div>
@@ -251,13 +251,13 @@ function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDispla
           {/* Basic Info */}
           <div className="flex-1">
             <div className="mb-4">
-              <span className="text-xl text-gray-500">#{pokemon.nationalNumber}</span>
-              <h1 className="text-3xl font-bold text-gray-900">{displayData.name}</h1>
+              <span className="text-xl text-gray-500 dark:text-dark-text-tertiary">#{pokemon.nationalNumber}</span>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">{displayData.name}</h1>
             </div>
 
             {/* Types */}
             <div className="mb-4">
-              <span className="text-sm font-semibold text-gray-600 mr-2">{t('pokemon.type')}:</span>
+              <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.type')}:</span>
               <div className="inline-flex gap-2">
                 {displayData.types.map((type, idx) => (
                   <TypeIcon key={idx} type={type} size="md" />
@@ -267,14 +267,14 @@ function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDispla
 
             {/* Abilities */}
             <div className="mb-4">
-              <span className="text-sm font-semibold text-gray-600 mr-2">{t('pokemon.abilities')}:</span>
-              <span className="text-gray-900">
+              <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.abilities')}:</span>
+              <span className="text-gray-900 dark:text-dark-text-primary">
                 {displayData.abilities.map((ability, idx) => (
                   <span key={idx}>
                     {idx > 0 && ', '}
                     <Link
                       href={`/data/abilities/${ability?.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="text-primary-600 hover:text-primary-700 hover:underline"
+                      className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                     >
                       {ability}
                     </Link>
@@ -288,20 +288,20 @@ function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDispla
               <>
                 {pokemon.details.species && (
                   <div className="mb-2">
-                    <span className="text-sm font-semibold text-gray-600 mr-2">{t('pokemon.detail.species')}:</span>
-                    <span className="text-gray-900">{pokemon.details.species}</span>
+                    <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.detail.species')}:</span>
+                    <span className="text-gray-900 dark:text-dark-text-primary">{pokemon.details.species}</span>
                   </div>
                 )}
                 {pokemon.details.height && (
                   <div className="mb-2">
-                    <span className="text-sm font-semibold text-gray-600 mr-2">{t('pokemon.detail.height')}:</span>
-                    <span className="text-gray-900">{pokemon.details.height}</span>
+                    <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.detail.height')}:</span>
+                    <span className="text-gray-900 dark:text-dark-text-primary">{pokemon.details.height}</span>
                   </div>
                 )}
                 {pokemon.details.weight && (
                   <div className="mb-2">
-                    <span className="text-sm font-semibold text-gray-600 mr-2">{t('pokemon.detail.weight')}:</span>
-                    <span className="text-gray-900">{pokemon.details.weight}</span>
+                    <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.detail.weight')}:</span>
+                    <span className="text-gray-900 dark:text-dark-text-primary">{pokemon.details.weight}</span>
                   </div>
                 )}
               </>
@@ -312,7 +312,7 @@ function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDispla
 
       {/* Right Column: Base Stats */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('pokemon.detail.baseStats')}</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('pokemon.detail.baseStats')}</h2>
         <div className="space-y-3">
           {[
             { label: t('pokemon.stats.hp'), stat: displayData.stats.hp },
@@ -323,21 +323,21 @@ function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDispla
             { label: t('pokemon.stats.speed'), stat: displayData.stats.speed },
           ].map((item, idx) => (
             <div key={idx} className="flex items-center gap-3">
-              <div className="w-20 text-sm font-semibold text-gray-600">{item.label}</div>
-              <div className="w-12 text-right font-bold text-gray-900">{item.stat.base}</div>
-              <div className="flex-1 bg-gray-200 rounded-full h-3">
+              <div className="w-20 text-sm font-semibold text-gray-600 dark:text-dark-text-secondary">{item.label}</div>
+              <div className="w-12 text-right font-bold text-gray-900 dark:text-dark-text-primary">{item.stat.base}</div>
+              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                 <div
                   className="bg-blue-600 h-3 rounded-full transition-all"
                   style={{ width: `${Math.min(((item.stat.base || 0) / 255) * 100, 100)}%` }}
                 ></div>
               </div>
-              <div className="w-14 text-xs text-gray-500">Max: {item.stat.max}</div>
+              <div className="w-14 text-xs text-gray-500 dark:text-dark-text-tertiary">Max: {item.stat.max}</div>
             </div>
           ))}
-          <div className="pt-3 border-t border-gray-200">
+          <div className="pt-3 border-t border-gray-200 dark:border-dark-border">
             <div className="flex items-center gap-3">
-              <div className="w-20 text-sm font-bold text-gray-700">{t('pokemon.stats.total')}</div>
-              <div className="flex-1 text-right font-bold text-blue-600 text-xl">{displayData.stats.total}</div>
+              <div className="w-20 text-sm font-bold text-gray-700 dark:text-dark-text-secondary">{t('pokemon.stats.total')}</div>
+              <div className="flex-1 text-right font-bold text-blue-600 dark:text-primary-400 text-xl">{displayData.stats.total}</div>
             </div>
           </div>
         </div>
@@ -406,17 +406,17 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
   }, [selectedGameVersionIndex]);
 
   if (!generationsWithMoves || generationsWithMoves.length === 0) {
-    return <p className="text-gray-500">{t('pokemon.detail.noMoves')}</p>;
+    return <p className="text-gray-500 dark:text-dark-text-secondary">{t('pokemon.detail.noMoves')}</p>;
   }
 
   if (!selectedGeneration || !selectedGeneration.gameVersions || selectedGeneration.gameVersions.length === 0) {
-    return <p className="text-gray-500">{t('pokemon.detail.noMoves')}</p>;
+    return <p className="text-gray-500 dark:text-dark-text-secondary">{t('pokemon.detail.noMoves')}</p>;
   }
 
   const selectedGameVersion = selectedGeneration.gameVersions[selectedGameVersionIndex];
 
   if (!selectedGameVersion) {
-    return <p className="text-gray-500">{t('pokemon.detail.noMoves')}</p>;
+    return <p className="text-gray-500 dark:text-dark-text-secondary">{t('pokemon.detail.noMoves')}</p>;
   }
 
   const movesByMethod = selectedGameVersion.movesByMethod;
@@ -494,18 +494,18 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
   return (
     <div>
       {/* Generation and Game Version Selectors */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4">
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Generation Selector */}
           <div>
-            <label htmlFor="generation-select" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="generation-select" className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
               {t('pokemon.detail.selectGeneration')}
             </label>
             <select
               id="generation-select"
               value={selectedGenerationIndex}
               onChange={(e) => setSelectedGenerationIndex(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-bg-primary text-gray-900 dark:text-dark-text-primary"
             >
               {generationsWithMoves.map((gen, index) => (
                 <option key={index} value={index}>
@@ -517,14 +517,14 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
 
           {/* Game Version Selector */}
           <div>
-            <label htmlFor="game-version-select" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="game-version-select" className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
               {t('pokemon.detail.selectGameVersion')}
             </label>
             <select
               id="game-version-select"
               value={selectedGameVersionIndex}
               onChange={(e) => setSelectedGameVersionIndex(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-bg-primary text-gray-900 dark:text-dark-text-primary"
             >
               {selectedGeneration.gameVersions.map((gv: any, index: number) => (
                 <option key={index} value={index}>
@@ -537,10 +537,10 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
 
         {/* Type Filter Buttons */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
             {t('pokemon.detail.filterByType') || 'Filter by Type'}
             {selectedTypeFilters.length > 0 && (
-              <span className="ml-2 text-xs text-gray-500">
+              <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
                 ({selectedTypeFilters.length} selected)
               </span>
             )}
@@ -550,8 +550,8 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
               onClick={() => setSelectedTypeFilters([])}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedTypeFilters.length === 0
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                  : 'bg-gray-200 dark:bg-dark-bg-primary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
               }`}
             >
               {t('pokemon.detail.allTypes') || 'All Types'}
@@ -574,10 +574,10 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
 
         {/* Category Filter Buttons */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
             {t('moves.filterByCategory') || 'Filter by Category'}
             {selectedCategoryFilters.length > 0 && (
-              <span className="ml-2 text-xs text-gray-500">
+              <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
                 ({selectedCategoryFilters.length} selected)
               </span>
             )}
@@ -587,8 +587,8 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
               onClick={() => setSelectedCategoryFilters([])}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCategoryFilters.length === 0
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                  : 'bg-gray-200 dark:bg-dark-bg-primary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
               }`}
             >
               {t('moves.all') || 'All'}
@@ -600,7 +600,7 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   selectedCategoryFilters.includes(category)
                     ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-gray-200 dark:bg-dark-bg-primary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
                 }`}
               >
                 <MoveCategoryIcon
@@ -617,27 +617,27 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
       {/* Level Up Moves */}
       {filteredMovesByMethod.moves && filteredMovesByMethod.moves.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">{t('pokemon.detail.levelUpMoves')}</h3>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-dark-text-primary mb-3">{t('pokemon.detail.levelUpMoves')}</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+              <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.level')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.move')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.type')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.category')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.power')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.accuracy')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.level')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.move')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.type')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.category')}</th>
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.power')}</th>
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.accuracy')}</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                 {filteredMovesByMethod.moves.map((move: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 text-sm font-semibold text-gray-900">{move.level}</td>
+                  <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
+                    <td className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-dark-text-primary">{move.level}</td>
                     <td className="px-4 py-2 text-sm">
                       <Link
                         href={`/data/moves/${moveNameToIdentifier(move.name)}`}
-                        className="text-primary-600 hover:text-primary-700 hover:underline"
+                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                       >
                         {move.name}
                       </Link>
@@ -648,8 +648,8 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
                     <td className="px-4 py-2 text-sm">
                       <MoveCategoryIcon category={move.category as 'physical' | 'special' | 'status'} size={24} />
                     </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900">{move.power}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900">{move.accuracy}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.power}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.accuracy}</td>
                   </tr>
                 ))}
               </tbody>
@@ -661,27 +661,27 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
       {/* TM Moves */}
       {filteredMovesByMethod.tmMoves && filteredMovesByMethod.tmMoves.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">{t('pokemon.detail.tmMoves')}</h3>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-dark-text-primary mb-3">{t('pokemon.detail.tmMoves')}</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+              <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">TM</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.move')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.type')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.category')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.power')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.accuracy')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">TM</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.move')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.type')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.category')}</th>
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.power')}</th>
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.accuracy')}</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                 {filteredMovesByMethod.tmMoves.map((move: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 text-sm font-semibold text-gray-900">{move.tm}</td>
+                  <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
+                    <td className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-dark-text-primary">{move.tm}</td>
                     <td className="px-4 py-2 text-sm">
                       <Link
                         href={`/data/moves/${moveNameToIdentifier(move.name)}`}
-                        className="text-primary-600 hover:text-primary-700 hover:underline"
+                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                       >
                         {move.name}
                       </Link>
@@ -692,8 +692,8 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
                     <td className="px-4 py-2 text-sm">
                       <MoveCategoryIcon category={move.category as 'physical' | 'special' | 'status'} size={24} />
                     </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900">{move.power}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900">{move.accuracy}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.power}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.accuracy}</td>
                   </tr>
                 ))}
               </tbody>
@@ -705,25 +705,25 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
       {/* Egg Moves */}
       {filteredMovesByMethod.eggMoves && filteredMovesByMethod.eggMoves.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">{t('pokemon.detail.eggMoves')}</h3>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-dark-text-primary mb-3">{t('pokemon.detail.eggMoves')}</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+              <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.move')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.type')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.category')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.power')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{t('pokemon.detail.accuracy')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.move')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.type')}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.category')}</th>
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.power')}</th>
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.accuracy')}</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                 {filteredMovesByMethod.eggMoves.map((move: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-gray-50">
+                  <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
                     <td className="px-4 py-2 text-sm">
                       <Link
                         href={`/data/moves/${moveNameToIdentifier(move.name)}`}
-                        className="text-primary-600 hover:text-primary-700 hover:underline"
+                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                       >
                         {move.name}
                       </Link>
@@ -734,8 +734,8 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
                     <td className="px-4 py-2 text-sm">
                       <MoveCategoryIcon category={move.category as 'physical' | 'special' | 'status'} size={24} />
                     </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900">{move.power}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900">{move.accuracy}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.power}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.accuracy}</td>
                   </tr>
                 ))}
               </tbody>
@@ -779,14 +779,14 @@ function EvolutionChainDisplay({ evolutionChain }: EvolutionChainProps) {
       <div key={`${node.nationalNumber}-${depth}`} className="flex items-center gap-4">
         {/* Pokemon Card */}
         <div
-          className="flex flex-col items-center min-w-[180px] p-4 border-2 border-gray-200 rounded-lg bg-gray-50 cursor-pointer hover:border-blue-500 hover:shadow-lg transition-all"
+          className="flex flex-col items-center min-w-[180px] p-4 border-2 border-gray-200 dark:border-dark-border rounded-lg bg-gray-50 dark:bg-dark-bg-tertiary cursor-pointer hover:border-blue-500 dark:hover:border-primary-400 hover:shadow-lg transition-all"
           onClick={() => handlePokemonClick(node.nationalNumber)}
         >
-          <div className="text-sm text-gray-500 mb-1">#{node.nationalNumber}</div>
+          <div className="text-sm text-gray-500 dark:text-dark-text-tertiary mb-1">#{node.nationalNumber}</div>
           {node.imageUrl && (
             <img src={node.imageUrl} alt={node.name} className="w-24 h-24 object-contain mb-2" />
           )}
-          <div className="font-bold text-center mb-2">{node.name}</div>
+          <div className="font-bold text-center mb-2 dark:text-dark-text-primary">{node.name}</div>
           <div className="flex gap-1">
             {node.types.map((type, idx) => (
               <TypeIcon key={idx} type={type} size="xs" />
@@ -801,10 +801,10 @@ function EvolutionChainDisplay({ evolutionChain }: EvolutionChainProps) {
               <div key={idx} className="flex items-center gap-4">
                 {/* Arrow with condition */}
                 <div className="flex flex-col items-center min-w-[120px]">
-                  <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-12 h-12 text-blue-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                  <div className="text-xs text-center text-gray-600 mt-1 max-w-[120px]">
+                  <div className="text-xs text-center text-gray-600 dark:text-dark-text-secondary mt-1 max-w-[120px]">
                     {evolution.condition}
                   </div>
                 </div>

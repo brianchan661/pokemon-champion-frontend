@@ -234,19 +234,19 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg ${className}`}>
+    <div className={`bg-white dark:bg-dark-bg-primary rounded-lg shadow-lg ${className}`}>
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 dark:border-dark-border">
         <div className="flex items-center gap-4">
           {pokemon.imageUrl && (
             <img src={pokemon.imageUrl} alt={pokemon.name} className="w-20 h-20 object-contain" />
           )}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">
               {pokemon.name}
             </h2>
             <div className="flex items-center gap-2">
-              <p className="text-sm text-gray-600">#{pokemon.nationalNumber}</p>
+              <p className="text-sm text-gray-600 dark:text-dark-text-secondary">#{pokemon.nationalNumber}</p>
               <div className="flex gap-1">
                 {pokemon.types.map((type) => (
                   <TypeIcon key={type} type={type} size="xs" />
@@ -258,7 +258,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-dark-border">
         <nav className="flex">
           {[
             { id: 'basic', label: t('teamBuilder.basic', 'Basic') },
@@ -271,7 +271,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? 'border-primary-600 text-primary-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-dark-text-secondary dark:hover:text-dark-text-primary'
               }`}
             >
               {tab.label}
@@ -286,7 +286,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
           <div className="space-y-6">
             {/* Level */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.level', 'Level')} ({level})
               </label>
               <input
@@ -301,13 +301,13 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
             {/* Ability */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.ability', 'Ability')}
               </label>
               <select
                 value={abilityIdentifier}
                 onChange={(e) => setAbilityIdentifier(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
               >
                 {abilities.map((ability) => (
                   <option key={ability.identifier} value={ability.identifier}>
@@ -319,13 +319,13 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
             {/* Tera Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.teraType', 'Tera Type')}
               </label>
               <select
                 value={teraType || ''}
                 onChange={(e) => setTeraType(e.target.value || undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
               >
                 <option value="">{t('teamBuilder.none', 'None')}</option>
                 {teraTypes.map((type) => (
@@ -338,13 +338,13 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
             {/* Held Item */}
             <div className="relative" ref={itemSelectorRef}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.heldItem', 'Held Item')}
               </label>
               <button
                 type="button"
                 onClick={() => setShowItemSelector(!showItemSelector)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-left flex items-center justify-between"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-left flex items-center justify-between dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
               >
                 <div className="flex items-center gap-2">
                   {itemId && items.find(i => i.id === itemId)?.spriteUrl && (
@@ -356,21 +356,21 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                   )}
                   <span>{itemId ? items.find(i => i.id === itemId)?.name : t('teamBuilder.none', 'None')}</span>
                 </div>
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-400 dark:text-dark-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {showItemSelector && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-80 overflow-hidden flex flex-col">
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-dark-bg-secondary border border-gray-300 dark:border-dark-border rounded-lg shadow-lg max-h-80 overflow-hidden flex flex-col">
                   {/* Search Input */}
-                  <div className="p-2 border-b border-gray-200 sticky top-0 bg-white">
+                  <div className="p-2 border-b border-gray-200 dark:border-dark-border sticky top-0 bg-white dark:bg-dark-bg-secondary">
                     <input
                       type="text"
                       placeholder={t('teamBuilder.searchItems', 'Search items...')}
                       value={itemSearchQuery}
                       onChange={(e) => setItemSearchQuery(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
                       autoFocus
                     />
                   </div>
@@ -384,12 +384,12 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                         setShowItemSelector(false);
                         setItemSearchQuery('');
                       }}
-                      className="w-full px-3 py-2 text-left hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary flex items-center gap-2 border-b border-gray-100 dark:border-dark-border"
                     >
-                      <span className="text-gray-500">{t('teamBuilder.none', 'None')}</span>
+                      <span className="text-gray-500 dark:text-dark-text-secondary">{t('teamBuilder.none', 'None')}</span>
                     </button>
                     {filteredItems.length === 0 ? (
-                      <div className="px-3 py-4 text-center text-sm text-gray-500">
+                      <div className="px-3 py-4 text-center text-sm text-gray-500 dark:text-dark-text-secondary">
                         {t('teamBuilder.noItemsFound', 'No items found')}
                       </div>
                     ) : (
@@ -402,8 +402,8 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                             setShowItemSelector(false);
                             setItemSearchQuery('');
                           }}
-                          className={`w-full px-3 py-2 text-left hover:bg-gray-100 flex items-center gap-2 ${
-                            itemId === item.id ? 'bg-primary-50' : ''
+                          className={`w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary flex items-center gap-2 ${
+                            itemId === item.id ? 'bg-primary-50 dark:bg-dark-bg-tertiary' : ''
                           }`}
                         >
                           {item.spriteUrl && (
@@ -414,9 +414,9 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                             />
                           )}
                           <div className="flex-1 min-w-0">
-                            <span className="text-sm font-medium block">{item.name}</span>
+                            <span className="text-sm font-medium block dark:text-dark-text-primary">{item.name}</span>
                             {item.category && (
-                              <span className="text-xs text-gray-500">{item.category}</span>
+                              <span className="text-xs text-gray-500 dark:text-dark-text-tertiary">{item.category}</span>
                             )}
                           </div>
                         </button>
@@ -433,13 +433,13 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
           <div className="space-y-6">
             {/* Nature */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.nature', 'Nature')}
               </label>
               <select
                 value={natureId}
                 onChange={(e) => setNatureId(parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
               >
                 {natures.map((nature) => (
                   <option key={nature.id} value={nature.id}>
@@ -456,13 +456,13 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
             {/* IVs (Collapsible) */}
             <details>
-              <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-2">
+              <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">
                 {t('teamBuilder.ivs', 'IVs')} (Advanced)
               </summary>
               <div className="grid grid-cols-2 gap-3 mt-3">
                 {(Object.keys(ivs) as Array<keyof StatSpread>).map((stat) => (
                   <div key={stat}>
-                    <label className="block text-sm text-gray-600 mb-1">
+                    <label className="block text-sm text-gray-600 dark:text-dark-text-secondary mb-1">
                       {stat.toUpperCase()}
                     </label>
                     <input
@@ -471,7 +471,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                       max="31"
                       value={ivs[stat]}
                       onChange={(e) => setIvs({ ...ivs, [stat]: parseInt(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
                     />
                   </div>
                 ))}
@@ -521,10 +521,10 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       </div>
 
       {/* Footer */}
-      <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+      <div className="p-6 border-t border-gray-200 dark:border-dark-border flex gap-3 justify-end">
         <button
           onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors dark:border-dark-border dark:text-dark-text-primary dark:hover:bg-dark-bg-tertiary"
         >
           {t('common.cancel', 'Cancel')}
         </button>

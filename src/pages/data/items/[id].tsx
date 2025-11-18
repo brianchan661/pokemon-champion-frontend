@@ -40,11 +40,11 @@ export default function ItemDetailPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"></div>
-              <p className="mt-4 text-gray-600">{t('items.detail.loading')}</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-primary-600 dark:border-t-primary-400"></div>
+              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('items.detail.loading')}</p>
             </div>
           </div>
         </div>
@@ -55,9 +55,9 @@ export default function ItemDetailPage() {
   if (error || !item) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300">
               {t('items.detail.error')}
             </div>
           </div>
@@ -68,12 +68,12 @@ export default function ItemDetailPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Back Link */}
           <Link
             href="/data/items"
-            className="inline-flex items-center text-primary-600 hover:text-primary-700"
+            className="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
           >
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -82,7 +82,7 @@ export default function ItemDetailPage() {
           </Link>
 
           {/* Item Details Card */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
             <div className="px-6 py-6">
               <div className="flex items-start gap-6 mb-6">
                 {/* Item Sprite */}
@@ -101,7 +101,7 @@ export default function ItemDetailPage() {
 
                 {/* Item Info */}
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{item.name}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">{item.name}</h1>
 
                   {/* Category Badge */}
                   <div className="mb-4">
@@ -112,20 +112,20 @@ export default function ItemDetailPage() {
 
                   {/* Description */}
                   {item.description && (
-                    <p className="text-gray-700 leading-relaxed">{item.description}</p>
+                    <p className="text-gray-700 dark:text-dark-text-primary leading-relaxed">{item.description}</p>
                   )}
                 </div>
               </div>
 
               {/* Additional Info Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-gray-200 dark:border-dark-border">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('items.detail.identifier')}</dt>
-                  <dd className="mt-1 text-sm text-gray-900 font-mono">{item.identifier}</dd>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-dark-text-tertiary">{t('items.detail.identifier')}</dt>
+                  <dd className="mt-1 text-sm text-gray-900 dark:text-dark-text-primary font-mono">{item.identifier}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('items.detail.category')}</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
+                  <dt className="text-sm font-medium text-gray-500 dark:text-dark-text-tertiary">{t('items.detail.category')}</dt>
+                  <dd className="mt-1 text-sm text-gray-900 dark:text-dark-text-primary">
                     {t(`items.categories.${item.category}`, { defaultValue: item.category })}
                   </dd>
                 </div>

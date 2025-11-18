@@ -17,10 +17,10 @@ export default function TeamEditPage() {
   }, [id, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg-primary">
       <div className="text-center">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
-        <p className="text-gray-600">{t('common.loading')}</p>
+        <p className="text-gray-600 dark:text-dark-text-secondary">{t('common.loading')}</p>
       </div>
     </div>
   );

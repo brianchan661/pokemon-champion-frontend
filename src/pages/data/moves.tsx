@@ -116,13 +116,13 @@ export default function MovesPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('moves.title')}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">{t('moves.title')}</h1>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-dark-text-secondary">
                 {t('moves.description')}
               </p>
               {totalCount > 0 && (
@@ -144,7 +144,7 @@ export default function MovesPage() {
                 placeholder={t('moves.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
               />
               {(searchQuery || typeFilters.length > 0 || categoryFilters.length > 0) && (
                 <button
@@ -153,7 +153,7 @@ export default function MovesPage() {
                     setTypeFilters([]);
                     setCategoryFilters([]);
                   }}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium whitespace-nowrap"
+                  className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-dark-bg-secondary transition-colors text-sm font-medium whitespace-nowrap"
                 >
                   {t('moves.clearFilters')}
                 </button>
@@ -162,10 +162,10 @@ export default function MovesPage() {
 
             {/* Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
                 {t('moves.filterByType')}
                 {typeFilters.length > 0 && (
-                  <span className="ml-2 text-xs text-gray-500">
+                  <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
                     ({typeFilters.length} selected)
                   </span>
                 )}
@@ -175,8 +175,8 @@ export default function MovesPage() {
                   onClick={() => setTypeFilters([])}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     typeFilters.length === 0
-                      ? 'bg-gray-800 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                   }`}
                 >
                   {t('moves.all')}
@@ -199,10 +199,10 @@ export default function MovesPage() {
 
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
                 {t('moves.filterByCategory')}
                 {categoryFilters.length > 0 && (
-                  <span className="ml-2 text-xs text-gray-500">
+                  <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
                     ({categoryFilters.length} selected)
                   </span>
                 )}
@@ -212,8 +212,8 @@ export default function MovesPage() {
                   onClick={() => setCategoryFilters([])}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     categoryFilters.length === 0
-                      ? 'bg-gray-800 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                   }`}
                 >
                   {t('moves.all')}
@@ -225,7 +225,7 @@ export default function MovesPage() {
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       categoryFilters.includes(category)
                         ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                     }`}
                   >
                     <MoveCategoryIcon
@@ -243,50 +243,50 @@ export default function MovesPage() {
           {/* Loading State */}
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"></div>
-              <p className="mt-4 text-gray-600">{t('moves.loading')}</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-primary-600 dark:border-t-primary-400"></div>
+              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('moves.loading')}</p>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300">
               {t('moves.error')}
             </div>
           ) : filteredMoves.length > 0 ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50 sticky top-0">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+                  <thead className="bg-gray-50 dark:bg-dark-bg-tertiary sticky top-0">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.name')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.type')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.category')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.power')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.accuracy')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.pp')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.description')}
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                     {filteredMoves.map((move) => (
-                      <tr key={move.id} className="hover:bg-gray-50">
+                      <tr key={move.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Link
                               href={`/data/moves/${move.identifier}`}
-                              className="text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline"
+                              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                             >
                               {move.name}
                             </Link>
@@ -301,16 +301,16 @@ export default function MovesPage() {
                             size={20}
                           />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.power ?? '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.accuracy ?? '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.pp ?? '-'}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-700">
+                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.description || '-'}
                         </td>
                       </tr>
@@ -321,7 +321,7 @@ export default function MovesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600">{t('moves.noResults')}</p>
+              <p className="text-gray-600 dark:text-dark-text-secondary">{t('moves.noResults')}</p>
             </div>
           )}
         </div>

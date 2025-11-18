@@ -25,9 +25,9 @@ export const LoadingSpinner = ({
 
   return (
     <div className={`flex justify-center items-center py-12 ${className}`}>
-      <div className={`animate-spin rounded-full border-b-2 border-primary-600 ${sizeClasses[size]}`} />
+      <div className={`animate-spin rounded-full border-b-2 border-primary-600 dark:border-primary-400 ${sizeClasses[size]}`} />
       {displayMessage && (
-        <span className="ml-3 text-gray-600">{displayMessage}</span>
+        <span className="ml-3 text-gray-600 dark:text-dark-text-secondary">{displayMessage}</span>
       )}
     </div>
   );

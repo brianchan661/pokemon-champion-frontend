@@ -58,15 +58,15 @@ export default function AbilitiesPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">
               {t('abilities.title', 'Abilities')}
             </h1>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-dark-text-secondary">
                 {t('abilities.description', 'Browse all Pokemon abilities with their descriptions')}
               </p>
               {totalCount > 0 && (
@@ -86,12 +86,12 @@ export default function AbilitiesPage() {
               placeholder={t('abilities.searchPlaceholder', 'Search abilities...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="flex-1 max-w-md px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium whitespace-nowrap"
+                className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-dark-bg-secondary transition-colors text-sm font-medium whitespace-nowrap"
               >
                 {t('abilities.clearSearch', 'Clear')}
               </button>
@@ -101,16 +101,16 @@ export default function AbilitiesPage() {
           {/* Loading State */}
           {isLoading ? (
             <div className="text-center py-12" role="status" aria-live="polite">
-              <div 
-                className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"
+              <div
+                className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-primary-600 dark:border-t-primary-400"
                 aria-hidden="true"
               ></div>
-              <p className="mt-4 text-gray-600">{t('abilities.loading', 'Loading abilities...')}</p>
+              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('abilities.loading', 'Loading abilities...')}</p>
               <span className="sr-only">Loading abilities data</span>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-700 mb-3">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <p className="text-red-700 dark:text-red-300 mb-3">
                 {t('abilities.error', 'Error loading abilities. Please try again.')}
               </p>
               <button
@@ -121,30 +121,30 @@ export default function AbilitiesPage() {
               </button>
             </div>
           ) : abilities && abilities.length > 0 ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+                  <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('abilities.table.name', 'Name')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('abilities.table.pokemonCount', '# Pokemon')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('abilities.table.description', 'Description')}
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                     {abilities.map((ability) => (
-                      <tr key={ability.id} className="hover:bg-gray-50">
+                      <tr key={ability.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Link
                               href={`/data/abilities/${ability.identifier}`}
-                              className="text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline"
+                              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
                             >
                               {ability.name}
                             </Link>
@@ -156,12 +156,12 @@ export default function AbilitiesPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-700">
+                          <div className="text-sm text-gray-700 dark:text-dark-text-primary">
                             {ability.pokemonCount ?? 0}
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm text-gray-700">
+                          <div className="text-sm text-gray-700 dark:text-dark-text-primary">
                             {ability.description || '-'}
                           </div>
                         </td>
@@ -173,7 +173,7 @@ export default function AbilitiesPage() {
             </div>
           ) : abilities && abilities.length === 0 && !isLoading ? (
             <div className="text-center py-12">
-              <p className="text-gray-600">{t('abilities.noResults', 'No abilities found.')}</p>
+              <p className="text-gray-600 dark:text-dark-text-secondary">{t('abilities.noResults', 'No abilities found.')}</p>
             </div>
           ) : null}
         </div>

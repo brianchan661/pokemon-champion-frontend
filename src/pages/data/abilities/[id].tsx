@@ -56,12 +56,12 @@ export default function AbilityDetailPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
           <Link
             href="/data/abilities"
-            className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-6"
+            className="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 mb-6"
           >
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -72,23 +72,23 @@ export default function AbilityDetailPage() {
           {/* Loading State */}
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600"></div>
-              <p className="mt-4 text-gray-600">Loading ability...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-primary-600 dark:border-t-primary-400"></div>
+              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">Loading ability...</p>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300">
               Error loading ability details. Please try again.
             </div>
           ) : ability ? (
             <div>
               {/* Header */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+              <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border p-6 mb-6">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">
                       {ability.name}
                     </h1>
-                    <p className="text-sm text-gray-500 font-mono mb-2">
+                    <p className="text-sm text-gray-500 dark:text-dark-text-tertiary font-mono mb-2">
                       {ability.identifier}
                     </p>
                   </div>
@@ -108,64 +108,64 @@ export default function AbilityDetailPage() {
 
                 {/* Short Effect (Flavor Text) */}
                 {ability.description && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <h2 className="text-sm font-semibold text-gray-700 mb-1">Short Effect</h2>
-                    <p className="text-gray-900">{ability.description}</p>
+                  <div className="mt-4 p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg">
+                    <h2 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Short Effect</h2>
+                    <p className="text-gray-900 dark:text-dark-text-primary">{ability.description}</p>
                   </div>
                 )}
 
                 {/* Detailed Effect */}
                 {ability.effect && (
                   <div className="mt-4">
-                    <h2 className="text-sm font-semibold text-gray-700 mb-2">Detailed Effect</h2>
-                    <p className="text-gray-900 leading-relaxed">{ability.effect}</p>
+                    <h2 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">Detailed Effect</h2>
+                    <p className="text-gray-900 dark:text-dark-text-primary leading-relaxed">{ability.effect}</p>
                   </div>
                 )}
               </div>
 
               {/* Pokemon with this Ability */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-900">
+              <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-dark-border">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">
                     Pokemon with {ability.name} ({ability.pokemon.length})
                   </h2>
                 </div>
 
                 {ability.pokemon.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+                      <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                             #
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                             Pokemon
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                             Type
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                             Ability 1
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                             Ability 2
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                             Hidden Ability
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                         {ability.pokemon.map((pokemon) => (
-                          <tr key={pokemon.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <tr key={pokemon.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-dark-text-tertiary">
                               #{pokemon.nationalNumber}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <Link
                                 href={`/pokemon/${pokemon.nationalNumber}`}
-                                className="flex items-center hover:text-primary-600"
+                                className="flex items-center hover:text-primary-600 dark:hover:text-primary-400"
                               >
                                 {pokemon.imageUrl && (
                                   <img
@@ -174,7 +174,7 @@ export default function AbilityDetailPage() {
                                     className="w-12 h-12 mr-3"
                                   />
                                 )}
-                                <span className="text-sm font-medium text-gray-900">
+                                <span className="text-sm font-medium text-gray-900 dark:text-dark-text-primary">
                                   {pokemon.name}
                                 </span>
                               </Link>
@@ -193,14 +193,14 @@ export default function AbilityDetailPage() {
                                   href={`/data/abilities/${pokemon.ability1.toLowerCase().replace(/\s+/g, '-')}`}
                                   className={`text-sm ${
                                     pokemon.abilitySlot === 1
-                                      ? 'font-bold text-primary-600 underline'
-                                      : 'text-primary-600 hover:text-primary-700 hover:underline'
+                                      ? 'font-bold text-primary-600 dark:text-primary-400 underline'
+                                      : 'text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline'
                                   }`}
                                 >
                                   {pokemon.ability1}
                                 </Link>
                               ) : (
-                                <span className="text-sm text-gray-400">-</span>
+                                <span className="text-sm text-gray-400 dark:text-dark-text-tertiary">-</span>
                               )}
                             </td>
                             {/* Ability 2 */}
@@ -210,14 +210,14 @@ export default function AbilityDetailPage() {
                                   href={`/data/abilities/${pokemon.ability2.toLowerCase().replace(/\s+/g, '-')}`}
                                   className={`text-sm ${
                                     pokemon.abilitySlot === 2
-                                      ? 'font-bold text-primary-600 underline'
-                                      : 'text-primary-600 hover:text-primary-700 hover:underline'
+                                      ? 'font-bold text-primary-600 dark:text-primary-400 underline'
+                                      : 'text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline'
                                   }`}
                                 >
                                   {pokemon.ability2}
                                 </Link>
                               ) : (
-                                <span className="text-sm text-gray-400">-</span>
+                                <span className="text-sm text-gray-400 dark:text-dark-text-tertiary">-</span>
                               )}
                             </td>
                             {/* Hidden Ability */}
@@ -227,14 +227,14 @@ export default function AbilityDetailPage() {
                                   href={`/data/abilities/${pokemon.abilityHidden.toLowerCase().replace(/\s+/g, '-')}`}
                                   className={`text-sm ${
                                     pokemon.abilitySlot === 3
-                                      ? 'font-bold text-primary-600 underline'
-                                      : 'text-primary-600 hover:text-primary-700 hover:underline'
+                                      ? 'font-bold text-primary-600 dark:text-primary-400 underline'
+                                      : 'text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline'
                                   }`}
                                 >
                                   {pokemon.abilityHidden}
                                 </Link>
                               ) : (
-                                <span className="text-sm text-gray-400">-</span>
+                                <span className="text-sm text-gray-400 dark:text-dark-text-tertiary">-</span>
                               )}
                             </td>
                           </tr>
@@ -243,7 +243,7 @@ export default function AbilityDetailPage() {
                     </table>
                   </div>
                 ) : (
-                  <div className="px-6 py-12 text-center text-gray-500">
+                  <div className="px-6 py-12 text-center text-gray-500 dark:text-dark-text-secondary">
                     No Pokemon found with this ability.
                   </div>
                 )}

@@ -78,10 +78,10 @@ export default function TeamsListPage() {
       </Head>
       
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">
               {t('teams.title')}
             </h1>
             <div className="flex gap-3">
@@ -95,16 +95,16 @@ export default function TeamsListPage() {
           </div>
 
           {/* Sort Controls */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6" role="region" aria-label="Sort options">
+          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-4 mb-6" role="region" aria-label="Sort options">
             <div className="flex items-center gap-4">
-              <span id="sort-label" className="text-sm font-medium text-gray-700">{t('teams.sortBy')}:</span>
+              <span id="sort-label" className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">{t('teams.sortBy')}:</span>
               <div className="flex gap-2" role="group" aria-labelledby="sort-label">
                 <button
                   onClick={() => handleSortChange('created_at')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     sortBy === 'created_at'
                       ? 'bg-primary-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
                   }`}
                   aria-pressed={sortBy === 'created_at'}
                   aria-label={`Sort by ${sortOrder === 'desc' && sortBy === 'created_at' ? 'newest' : 'oldest'} teams`}
@@ -118,7 +118,7 @@ export default function TeamsListPage() {
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     sortBy === 'likes'
                       ? 'bg-primary-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
                   }`}
                   aria-pressed={sortBy === 'likes'}
                   aria-label="Sort by most liked teams"
@@ -137,8 +137,8 @@ export default function TeamsListPage() {
           ) : (
             <>
               {teams.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                  <p className="text-gray-500">{t('teams.noResults')}</p>
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 text-center">
+                  <p className="text-gray-500 dark:text-dark-text-secondary">{t('teams.noResults')}</p>
                 </div>
               ) : (
                 <>

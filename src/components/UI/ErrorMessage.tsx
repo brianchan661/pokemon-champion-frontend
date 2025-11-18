@@ -21,41 +21,41 @@ export function ErrorMessage({ error, onRetry, context }: ErrorMessageProps) {
                          errorMessage.toLowerCase().includes('fetch');
   
   return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+    <div className="bg-red-50 border border-red-200 rounded-lg p-6 dark:bg-red-900/30 dark:border-red-800">
       <div className="flex items-start gap-3">
-        <svg 
-          className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" 
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5 dark:text-red-300"
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        
+
         <div className="flex-1">
-          <h3 className="text-red-800 font-semibold mb-1">
+          <h3 className="text-red-800 font-semibold mb-1 dark:text-red-300">
             {context ? t('errors.contextTitle', { context }) : t('errors.title')}
           </h3>
-          
-          <p className="text-red-700 text-sm mb-3">
+
+          <p className="text-red-700 text-sm mb-3 dark:text-red-300">
             {errorMessage}
           </p>
-          
+
           {isNetworkError && (
-            <p className="text-red-600 text-sm mb-3">
+            <p className="text-red-600 text-sm mb-3 dark:text-red-300">
               {t('errors.networkSuggestion')}
             </p>
           )}
-          
+
           {onRetry && (
             <button
               onClick={onRetry}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium dark:bg-red-700 dark:hover:bg-red-800"
             >
               <svg 
                 className="w-4 h-4" 

@@ -41,13 +41,13 @@ export default function NewsDetailPage({ article, error }: NewsDetailPageProps) 
         <Head>
           <title>{t('news.articleNotFound', 'Article Not Found')} | Pokemon Champion</title>
         </Head>
-        <div className="min-h-screen bg-gray-100 py-8">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8">
           <div className="container mx-auto px-4">
-            <div className="bg-white rounded-lg shadow-md p-12 text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-md p-12 text-center">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">
                 {t('news.articleNotFound', 'Article Not Found')}
               </h1>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-dark-text-secondary mb-6">
                 {error || t('news.articleNotFoundDesc', 'The article you are looking for does not exist or has been removed.')}
               </p>
               <Link
@@ -82,17 +82,17 @@ export default function NewsDetailPage({ article, error }: NewsDetailPageProps) 
         )}
       </Head>
 
-      <div className="min-h-screen bg-gray-100 py-8">
+      <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8">
         <div className="container mx-auto px-4">
           <Link
             href="/news"
-            className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-6"
+            className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 mb-6"
           >
             <ArrowLeft size={20} />
             {t('news.backToNews', 'Back to News')}
           </Link>
 
-          <article className="bg-white rounded-lg shadow-md overflow-hidden">
+          <article className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-md overflow-hidden">
             {/* Featured Image */}
             {article.featuredImage && (
               <div className="w-full h-96 relative">
@@ -110,7 +110,7 @@ export default function NewsDetailPage({ article, error }: NewsDetailPageProps) 
               <div className="flex flex-wrap gap-2 mb-4">
                 {article.tags.map(tag => (
                   <Link key={tag} href={`/news?tag=${tag}`}>
-                    <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium hover:bg-primary-200 cursor-pointer">
+                    <span className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-200 rounded-full text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 cursor-pointer">
                       {tag}
                     </span>
                   </Link>
@@ -118,21 +118,21 @@ export default function NewsDetailPage({ article, error }: NewsDetailPageProps) 
               </div>
 
               {/* Title */}
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">
                 {translation.title}
               </h1>
 
               {/* Translation Notice */}
               {!hasRequestedTranslation && i18n.language === 'ja' && (
-                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6">
+                <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 dark:border-amber-600 p-4 mb-6">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                      <svg className="h-5 w-5 text-amber-400 dark:text-amber-500" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <p className="text-sm text-amber-700">
+                      <p className="text-sm text-amber-700 dark:text-amber-200">
                         {t('news.translationNotAvailable', 'Japanese translation is not available yet. Showing English version. Translation will be available soon.')}
                       </p>
                     </div>
@@ -141,7 +141,7 @@ export default function NewsDetailPage({ article, error }: NewsDetailPageProps) 
               )}
 
               {/* Meta Info */}
-              <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-6 pb-6 border-b border-gray-200">
+              <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-dark-text-secondary mb-6 pb-6 border-b border-gray-200 dark:border-dark-border">
                 <div className="flex items-center gap-2">
                   <User size={20} />
                   <span>{article.author.username}</span>
@@ -157,7 +157,7 @@ export default function NewsDetailPage({ article, error }: NewsDetailPageProps) 
               </div>
 
               {/* Content */}
-              <div className="prose prose-lg max-w-none">
+              <div className="prose prose-lg max-w-none dark:prose-invert">
                 <ArticleContent content={translation.content} />
               </div>
             </div>

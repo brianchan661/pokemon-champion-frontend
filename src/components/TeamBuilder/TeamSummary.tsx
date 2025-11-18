@@ -37,18 +37,18 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
     : 0;
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm ${className}`}>
+    <div className={`bg-white dark:bg-dark-bg-primary rounded-lg shadow-sm ${className}`}>
       <div className="p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">
           {t('teamBuilder.teamSummary', 'Team Summary')}
         </h3>
 
         {/* Team Name & Description */}
         {teamName && (
           <div className="mb-4">
-            <h4 className="font-semibold text-gray-900">{teamName}</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-dark-text-primary">{teamName}</h4>
             {teamDescription && (
-              <div className="text-sm text-gray-600 mt-1">
+              <div className="text-sm text-gray-600 dark:text-dark-text-secondary mt-1">
                 <StrategyDisplay strategy={teamDescription} />
               </div>
             )}
@@ -57,21 +57,21 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
 
         {/* Team Stats */}
         <div className="space-y-3 mb-6">
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <span className="text-sm text-gray-600">{t('teamBuilder.teamSize', 'Team Size')}</span>
-            <span className="font-semibold text-gray-900">{teamSize} / 6</span>
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-bg-secondary rounded-lg">
+            <span className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('teamBuilder.teamSize', 'Team Size')}</span>
+            <span className="font-semibold text-gray-900 dark:text-dark-text-primary">{teamSize} / 6</span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <span className="text-sm text-gray-600">{t('teamBuilder.avgLevel', 'Average Level')}</span>
-            <span className="font-semibold text-gray-900">Lv. {avgLevel}</span>
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-bg-secondary rounded-lg">
+            <span className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('teamBuilder.avgLevel', 'Average Level')}</span>
+            <span className="font-semibold text-gray-900 dark:text-dark-text-primary">Lv. {avgLevel}</span>
           </div>
         </div>
 
         {/* Type Distribution */}
         {Object.keys(typeCounts).length > 0 && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-dark-text-primary mb-3">
               {t('teamBuilder.typeDistribution', 'Type Distribution')}
             </h4>
             <div className="space-y-2">
@@ -79,14 +79,14 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
                 .sort(([, a], [, b]) => b - a)
                 .map(([type, count]) => (
                   <div key={type} className="flex items-center gap-2">
-                    <span className="text-sm text-gray-700 w-20">{type}</span>
-                    <div className="flex-1 h-6 bg-gray-200 rounded-full overflow-hidden">
+                    <span className="text-sm text-gray-700 dark:text-dark-text-secondary w-20">{type}</span>
+                    <div className="flex-1 h-6 bg-gray-200 dark:bg-dark-bg-secondary rounded-full overflow-hidden">
                       <div
                         className="h-full bg-primary-500"
                         style={{ width: `${(count / teamSize) * 100}%` }}
                       />
                     </div>
-                    <span className="text-sm font-medium text-gray-900 w-8 text-right">
+                    <span className="text-sm font-medium text-gray-900 dark:text-dark-text-primary w-8 text-right">
                       {count}
                     </span>
                   </div>
@@ -98,7 +98,7 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
         {/* Team Members List */}
         {teamSize > 0 && (
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-dark-text-primary mb-3">
               {t('teamBuilder.members', 'Members')}
             </h4>
             <div className="space-y-2">
@@ -107,7 +107,7 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
                 return (
                   <div
                     key={index}
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-dark-bg-secondary rounded-lg"
                   >
                     {pokemon.pokemonData.imageUrl && (
                       <img
@@ -117,10 +117,10 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
                       />
                     )}
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 dark:text-dark-text-primary">
                         {pokemon.pokemonData.name}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-dark-text-secondary">
                         <span>Lv. {pokemon.level}</span>
                         <span>•</span>
                         <div className="flex gap-1">
@@ -141,7 +141,7 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
         {teamSize === 0 && (
           <div className="text-center py-8">
             <svg
-              className="mx-auto w-12 h-12 text-gray-400 mb-3"
+              className="mx-auto w-12 h-12 text-gray-400 dark:text-dark-text-tertiary mb-3"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -153,10 +153,10 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 dark:text-dark-text-secondary text-sm">
               {t('teamBuilder.noTeamMembers', 'No team members yet')}
             </p>
-            <p className="text-gray-400 text-xs mt-1">
+            <p className="text-gray-400 dark:text-dark-text-tertiary text-xs mt-1">
               {t('teamBuilder.addPokemonToStart', 'Add Pokemon to get started')}
             </p>
           </div>

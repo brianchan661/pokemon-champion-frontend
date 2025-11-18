@@ -330,7 +330,7 @@ export default function TeamBuilderPage() {
   if (authLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary flex items-center justify-center">
           <LoadingSpinner />
         </div>
       </Layout>
@@ -355,15 +355,15 @@ export default function TeamBuilderPage() {
       </Head>
 
       <Layout>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">
                   {teamId ? t('teams.editTeam', 'Edit Team') : t('teamBuilder.title', 'Team Builder')}
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-gray-600 dark:text-dark-text-secondary mt-1">
                   {t('teamBuilder.subtitle', 'Build your competitive Pokemon team')}
                 </p>
               </div>
@@ -374,28 +374,28 @@ export default function TeamBuilderPage() {
 
             {/* Messages */}
             {error && (
-              <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+              <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">
                 {error}
               </div>
             )}
 
             {successMessage && (
-              <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 text-green-700">
+              <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-700 dark:text-green-400">
                 {successMessage}
               </div>
             )}
 
             {/* Step Indicator */}
             <div className="mb-6 flex items-center justify-center gap-4">
-              <div className={`flex items-center gap-2 ${step === 1 ? 'text-primary-600' : 'text-gray-400'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 1 ? 'bg-primary-600 text-white' : 'bg-gray-200'}`}>
+              <div className={`flex items-center gap-2 ${step === 1 ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-dark-text-tertiary'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-secondary'}`}>
                   1
                 </div>
                 <span className="text-sm font-medium">{t('teamBuilder.step1', 'Pokemon Selection')}</span>
               </div>
-              <div className="w-12 h-0.5 bg-gray-300" />
-              <div className={`flex items-center gap-2 ${step === 2 ? 'text-primary-600' : 'text-gray-400'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 2 ? 'bg-primary-600 text-white' : 'bg-gray-200'}`}>
+              <div className="w-12 h-0.5 bg-gray-300 dark:bg-dark-border" />
+              <div className={`flex items-center gap-2 ${step === 2 ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-dark-text-tertiary'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 2 ? 'bg-primary-600 text-white' : 'bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-secondary'}`}>
                   2
                 </div>
                 <span className="text-sm font-medium">{t('teamBuilder.step2', 'Team Details')}</span>
@@ -419,7 +419,7 @@ export default function TeamBuilderPage() {
                     <button
                       onClick={handleNextStep}
                       disabled={teamPokemonCount === 0}
-                      className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                      className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                     >
                       {t('common.next', 'Next')}
                     </button>
@@ -446,14 +446,14 @@ export default function TeamBuilderPage() {
             {step === 2 && (
               <div className="max-w-3xl mx-auto space-y-6">
                 {/* Team Info */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-6">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">
                     {t('teamBuilder.teamInfo', 'Team Information')}
                   </h2>
 
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="teamName" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="teamName" className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                         {t('teamBuilder.teamName', 'Team Name')} *
                       </label>
                       <input
@@ -461,14 +461,14 @@ export default function TeamBuilderPage() {
                         id="teamName"
                         value={teamName}
                         onChange={(e) => setTeamName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary"
                         placeholder={t('teamBuilder.teamNamePlaceholder', 'Enter team name...')}
                         maxLength={100}
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="teamDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="teamDescription" className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                         {t('teamBuilder.description', 'Description')} *
                       </label>
                       <MentionTextarea
@@ -486,9 +486,9 @@ export default function TeamBuilderPage() {
                           type="checkbox"
                           checked={isPublic}
                           onChange={(e) => setIsPublic(e.target.checked)}
-                          className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                          className="w-5 h-5 text-primary-600 border-gray-300 dark:border-dark-border rounded focus:ring-primary-500"
                         />
-                        <span className="ml-3 text-sm text-gray-700">
+                        <span className="ml-3 text-sm text-gray-700 dark:text-dark-text-secondary">
                           {t('teamBuilder.makePublic', 'Make this team public')}
                         </span>
                       </label>
@@ -500,14 +500,14 @@ export default function TeamBuilderPage() {
                 <div className="flex gap-4">
                   <button
                     onClick={handleBackStep}
-                    className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                    className="px-6 py-3 bg-gray-100 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary rounded-lg hover:bg-gray-200 dark:hover:bg-dark-bg-tertiary dark:hover:text-dark-text-primary transition-colors font-medium"
                   >
                     {t('common.back', 'Back')}
                   </button>
                   <button
                     onClick={handleSaveTeam}
                     disabled={isSaving}
-                    className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                    className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                   >
                     {isSaving
                       ? t('common.saving', 'Saving...')
@@ -531,9 +531,9 @@ export default function TeamBuilderPage() {
         {/* Pokemon Selector Modal */}
         {showPokemonSelector && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+              <div className="p-4 border-b border-gray-200 dark:border-dark-border flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">
                   {t('teamBuilder.selectPokemon', 'Select Pokemon')}
                 </h2>
                 <button
@@ -541,7 +541,7 @@ export default function TeamBuilderPage() {
                     setShowPokemonSelector(false);
                     setActiveSlot(undefined);
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 dark:text-dark-text-tertiary hover:text-gray-600 dark:hover:text-dark-text-primary"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -561,7 +561,7 @@ export default function TeamBuilderPage() {
         {/* Pokemon Configurator Modal */}
         {configuringPokemon && activeSlot !== undefined && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
               <PokemonConfigurator
                 pokemonNationalNumber={configuringPokemon.nationalNumber}
                 existingConfig={team[activeSlot]?.pokemon}

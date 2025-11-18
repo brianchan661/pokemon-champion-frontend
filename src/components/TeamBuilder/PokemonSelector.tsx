@@ -85,9 +85,9 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm ${className}`}>
+    <div className={`bg-white dark:bg-dark-bg-primary rounded-lg shadow-sm ${className}`}>
       {/* Search and Filters */}
-      <div className="p-4 border-b border-gray-200 space-y-3">
+      <div className="p-4 border-b border-gray-200 dark:border-dark-border space-y-3">
         {/* Search Input */}
         <div className="relative">
           <input
@@ -95,10 +95,10 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
             placeholder={t('teamBuilder.searchPokemon', 'Search Pokemon...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
           />
           <svg
-            className="absolute left-3 top-2.5 w-5 h-5 text-gray-400"
+            className="absolute left-3 top-2.5 w-5 h-5 text-gray-400 dark:text-dark-text-tertiary"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -114,7 +114,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
             className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${
               typeFilter === ''
                 ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
             }`}
           >
             {t('teamBuilder.allTypes', 'All')}
@@ -126,7 +126,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
               className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${
                 typeFilter === type
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
               }`}
             >
               {type}
@@ -136,11 +136,11 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
 
         {/* Sort Options */}
         <div className="flex gap-2">
-          <label className="text-sm text-gray-600">{t('teamBuilder.sortBy', 'Sort by')}:</label>
+          <label className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('teamBuilder.sortBy', 'Sort by')}:</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="text-sm border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+            className="text-sm border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500 dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
           >
             <option value="national_number">{t('teamBuilder.pokedexNumber', 'Pokedex #')}</option>
             <option value="name">{t('teamBuilder.name', 'Name')}</option>
@@ -152,7 +152,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
       {/* Pokemon Grid */}
       <div className="p-4 max-h-[600px] overflow-y-auto">
         {filteredPokemon.length === 0 ? (
-          <p className="text-center text-gray-500 py-8">
+          <p className="text-center text-gray-500 dark:text-dark-text-secondary py-8">
             {t('teamBuilder.noPokemonFound', 'No Pokemon found')}
           </p>
         ) : (
@@ -167,8 +167,8 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
                   disabled={isSelected}
                   className={`relative p-3 rounded-lg border-2 transition-all ${
                     isSelected
-                      ? 'border-gray-300 bg-gray-50 opacity-50 cursor-not-allowed'
-                      : 'border-transparent hover:border-primary-500 hover:shadow-md'
+                      ? 'border-gray-300 bg-gray-50 opacity-50 cursor-not-allowed dark:border-dark-border dark:bg-dark-bg-secondary'
+                      : 'border-transparent hover:border-primary-500 hover:shadow-md dark:hover:bg-dark-bg-tertiary'
                   }`}
                 >
                   {/* Pokemon Image */}
@@ -181,7 +181,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-100 rounded flex items-center justify-center text-gray-400">
+                      <div className="w-full h-full bg-gray-100 dark:bg-dark-bg-tertiary rounded flex items-center justify-center text-gray-400 dark:text-dark-text-tertiary">
                         ?
                       </div>
                     )}
@@ -189,8 +189,8 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
 
                   {/* Pokemon Info */}
                   <div className="text-center">
-                    <p className="text-xs text-gray-500">#{p.nationalNumber}</p>
-                    <p className="font-medium text-sm text-gray-900">{p.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-dark-text-tertiary">#{p.nationalNumber}</p>
+                    <p className="font-medium text-sm text-gray-900 dark:text-dark-text-primary">{p.name}</p>
 
                     {/* Types */}
                     <div className="flex gap-1 justify-center mt-1">

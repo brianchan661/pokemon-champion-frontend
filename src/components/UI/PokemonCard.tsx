@@ -142,18 +142,18 @@ export function PokemonCard({
 
         {/* Moves */}
         <div>
-          <p className="text-xs font-semibold text-gray-700 mb-1">Moves:</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Moves:</p>
           <div className="space-y-1">
             {pokemon?.movesData?.map((move, index) => {
               const MoveContent = () => (
                 <>
                   {move.type && <TypeIcon type={move.type} size="xs" />}
-                  <span className="font-medium flex-1">{move.name || '-'}</span>
-                  <div className="flex items-center gap-1 text-gray-500">
+                  <span className="font-medium flex-1 dark:text-dark-text-primary">{move.name || '-'}</span>
+                  <div className="flex items-center gap-1 text-gray-500 dark:text-dark-text-tertiary">
                     <span className="min-w-[2rem] text-right">{move.power || '-'}</span>
-                    <span className="text-gray-400">/</span>
+                    <span className="text-gray-400 dark:text-gray-500">/</span>
                     <span className="min-w-[2rem] text-right">{move.accuracy ? `${move.accuracy}%` : '-'}</span>
-                    <span className="text-gray-400">/</span>
+                    <span className="text-gray-400 dark:text-gray-500">/</span>
                     <span className="min-w-[1.5rem] text-right">{move.pp ? `${move.pp}PP` : '-'}</span>
                   </div>
                 </>
@@ -163,14 +163,14 @@ export function PokemonCard({
                 <Link
                   key={index}
                   href={`/data/moves/${move.identifier}`}
-                  className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors"
                 >
                   <MoveContent />
                 </Link>
               ) : (
                 <div
                   key={index}
-                  className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded"
+                  className="flex items-center gap-2 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded"
                 >
                   <MoveContent />
                 </div>
@@ -178,8 +178,8 @@ export function PokemonCard({
             })}
             {/* Show empty slots */}
             {pokemon?.movesData && pokemon.movesData.length < 4 && Array.from({ length: 4 - pokemon.movesData.length }).map((_, index) => (
-              <div key={`empty-${index}`} className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded">
-                <span className="text-gray-400 flex-1">-</span>
+              <div key={`empty-${index}`} className="flex items-center gap-2 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded">
+                <span className="text-gray-400 dark:text-gray-600 flex-1">-</span>
               </div>
             ))}
           </div>
@@ -187,9 +187,9 @@ export function PokemonCard({
 
         {/* Tera Type */}
         {pokemon?.teraType && (
-          <div className="mt-3 pt-3 border-t border-gray-200">
-            <span className="text-xs font-semibold text-gray-700">Tera Type:</span>
-            <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-dark-border">
+            <span className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary">Tera Type:</span>
+            <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">
               {pokemon.teraType}
             </span>
           </div>
@@ -235,7 +235,7 @@ export function PokemonCard({
           </div>
         )}
         <div className="flex-1 min-w-0 flex flex-col justify-center">
-          <h3 className="font-bold text-sm text-gray-900 truncate text-left">
+          <h3 className="font-bold text-sm text-gray-900 dark:text-dark-text-primary truncate text-left">
             {pokemon?.pokemonData?.name || 'Unknown'}
           </h3>
           {pokemon?.pokemonData?.types && pokemon.pokemonData.types.length > 0 && (
@@ -249,7 +249,7 @@ export function PokemonCard({
       </div>
 
       {/* Item Sprite */}
-      <div className="flex items-center justify-center mb-2 py-1 bg-white rounded h-8">
+      <div className="flex items-center justify-center mb-2 py-1 bg-white dark:bg-dark-bg-primary rounded h-8">
         {pokemon?.itemData?.spriteUrl && (
           <img
             src={pokemon.itemData.spriteUrl}
@@ -267,17 +267,17 @@ export function PokemonCard({
           return (
             <div
               key={index}
-              className="flex items-center gap-1.5 text-xs bg-white px-2 py-1 rounded"
+              className="flex items-center gap-1.5 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded"
             >
               {move && move.type && move.name ? (
                 <>
                   <TypeIcon type={move.type} size="xs" />
-                  <span className="font-medium truncate flex-1 text-gray-800">
+                  <span className="font-medium truncate flex-1 text-gray-800 dark:text-dark-text-primary">
                     {move.name}
                   </span>
                 </>
               ) : (
-                <span className="text-gray-400 flex-1">-</span>
+                <span className="text-gray-400 dark:text-gray-600 flex-1">-</span>
               )}
             </div>
           );

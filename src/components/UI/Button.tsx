@@ -25,10 +25,10 @@ interface ButtonAsLinkProps extends BaseButtonProps {
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-primary-600 text-white hover:bg-primary-700 disabled:bg-primary-300',
-  secondary: 'bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:bg-gray-100',
-  danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300',
-  ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 disabled:text-gray-400',
+  primary: 'bg-primary-600 text-white hover:bg-primary-700 disabled:bg-primary-300 dark:bg-primary-500 dark:hover:bg-primary-600 dark:disabled:bg-primary-800',
+  secondary: 'bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:bg-gray-100 dark:bg-dark-bg-secondary dark:text-dark-text-primary dark:hover:bg-dark-bg-tertiary dark:disabled:bg-dark-bg-primary',
+  danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300 dark:bg-red-700 dark:hover:bg-red-800 dark:disabled:bg-red-900',
+  ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 disabled:text-gray-400 dark:text-dark-text-primary dark:hover:bg-dark-bg-tertiary dark:disabled:text-dark-text-tertiary',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

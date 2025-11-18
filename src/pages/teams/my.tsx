@@ -68,7 +68,7 @@ export default function MyTeamsPage() {
   if (authLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
         </div>
       </Layout>
@@ -85,23 +85,23 @@ export default function MyTeamsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">
                   {t('teams.myTeams')}
                 </h1>
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 dark:text-dark-text-secondary mt-2">
                   {t('teams.teamCount', { count: teamCount, limit: teamLimit })}
                 </p>
               </div>
               <div className="flex gap-3">
                 <Link
                   href="/teams"
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                  className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
                 >
                   {t('teams.browseTeams')}
                 </Link>
@@ -121,7 +121,7 @@ export default function MyTeamsPage() {
             </div>
 
             {teamCount >= teamLimit && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-yellow-800 dark:text-yellow-200">
                 <p className="font-medium">{t('teams.limitReachedMessage')}</p>
                 <p className="text-sm mt-1">{t('teams.deleteToCreate')}</p>
               </div>
@@ -132,19 +132,19 @@ export default function MyTeamsPage() {
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-              <span className="ml-3 text-gray-600">{t('teams.loading')}</span>
+              <span className="ml-3 text-gray-600 dark:text-dark-text-secondary">{t('teams.loading')}</span>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-200">
               {t('teams.error')}
             </div>
           ) : (
             <>
               {teams.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-12 text-center">
                   <div className="max-w-md mx-auto">
                     <svg
-                      className="w-16 h-16 mx-auto text-gray-400 mb-4"
+                      className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -156,10 +156,10 @@ export default function MyTeamsPage() {
                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                       />
                     </svg>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-dark-text-primary mb-2">
                       {t('teams.noTeamsYet')}
                     </h3>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-gray-600 dark:text-dark-text-secondary mb-6">
                       {t('teams.createFirstTeam')}
                     </p>
                     <Link
@@ -175,27 +175,27 @@ export default function MyTeamsPage() {
                   {teams.map((team) => (
                     <div
                       key={team.id}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                      className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
                     >
                       <div className="p-6">
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <h2 className="text-2xl font-bold text-gray-900">
+                              <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">
                                 {team.name}
                               </h2>
                               <span
                                 className={`px-3 py-1 rounded-full text-xs font-medium ${
                                   team.isPublic
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-gray-100 text-gray-800'
+                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
+                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
                                 }`}
                               >
                                 {team.isPublic ? t('teams.public') : t('teams.private')}
                               </span>
                             </div>
                             <div className="text-sm">
-                              <span className="font-medium text-gray-900">{t('teams.strategy')}:</span>
+                              <span className="font-medium text-gray-900 dark:text-dark-text-primary">{t('teams.strategy')}:</span>
                               <StrategyDisplay strategy={team.strategy} className="mt-1" />
                             </div>
                           </div>
@@ -207,11 +207,11 @@ export default function MyTeamsPage() {
                             {team.pokemon.map((p, index) => (
                               <div
                                 key={index}
-                                className="bg-gray-50 rounded-lg p-4 border border-gray-200 relative"
+                                className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-4 border border-gray-200 dark:border-dark-border relative"
                               >
                                 {/* Ability - Top Right */}
                                 <div className="absolute top-4 right-4">
-                                  <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+                                  <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium">
                                     {p.abilityData?.name || p.abilityIdentifier}
                                   </span>
                                 </div>
@@ -226,10 +226,10 @@ export default function MyTeamsPage() {
                                     />
                                   )}
                                   <div className="flex-1">
-                                    <h3 className="font-bold text-lg text-gray-900">
+                                    <h3 className="font-bold text-lg text-gray-900 dark:text-dark-text-primary">
                                       {p.pokemonData?.name || `Pokemon #${p.pokemonId}`}
                                     </h3>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
                                       Lv. {p.level} • {p.natureData?.name || p.natureId}
                                     </p>
                                     {p.pokemonData?.types && (
@@ -245,7 +245,7 @@ export default function MyTeamsPage() {
                                 {/* Item */}
                                 {p.itemData && (
                                   <div className="mb-2">
-                                    <p className="text-xs font-semibold text-gray-700 mb-1">Item:</p>
+                                    <p className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Item:</p>
                                     <div className="flex items-center gap-2">
                                       {p.itemData.spriteUrl && (
                                         <img
@@ -254,31 +254,31 @@ export default function MyTeamsPage() {
                                           className="w-6 h-6 object-contain"
                                         />
                                       )}
-                                      <span className="text-xs text-gray-700">{p.itemData.name}</span>
+                                      <span className="text-xs text-gray-700 dark:text-dark-text-secondary">{p.itemData.name}</span>
                                     </div>
                                   </div>
                                 )}
 
                                 {/* Moves */}
                                 <div>
-                                  <p className="text-xs font-semibold text-gray-700 mb-1">Moves:</p>
+                                  <p className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Moves:</p>
                                   <div className="space-y-1">
                                     {p.movesData?.map((move: any) => (
                                       <div
                                         key={move.id}
-                                        className="flex items-center gap-2 text-xs bg-white px-2 py-1 rounded"
+                                        className="flex items-center gap-2 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded"
                                       >
                                         <TypeIcon type={move.type} size="xs" />
-                                        <span className="font-medium flex-1">{move.name}</span>
-                                        <div className="flex items-center gap-1 text-gray-500">
+                                        <span className="font-medium flex-1 dark:text-dark-text-primary">{move.name}</span>
+                                        <div className="flex items-center gap-1 text-gray-500 dark:text-dark-text-tertiary">
                                           <span className="min-w-[2rem] text-right">
                                             {move.power || '-'}
                                           </span>
-                                          <span className="text-gray-400">/</span>
+                                          <span className="text-gray-400 dark:text-gray-500">/</span>
                                           <span className="min-w-[2rem] text-right">
                                             {move.accuracy ? `${move.accuracy}%` : '-'}
                                           </span>
-                                          <span className="text-gray-400">/</span>
+                                          <span className="text-gray-400 dark:text-gray-500">/</span>
                                           <span className="min-w-[1.5rem] text-right">
                                             {move.pp ? `${move.pp}PP` : '-'}
                                           </span>
@@ -290,9 +290,9 @@ export default function MyTeamsPage() {
 
                                 {/* Tera Type */}
                                 {p.teraType && (
-                                  <div className="mt-3 pt-3 border-t border-gray-200">
-                                    <span className="text-xs font-semibold text-gray-700">Tera Type:</span>
-                                    <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">
+                                  <div className="mt-3 pt-3 border-t border-gray-200 dark:border-dark-border">
+                                    <span className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary">Tera Type:</span>
+                                    <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">
                                       {p.teraType}
                                     </span>
                                   </div>
@@ -303,7 +303,7 @@ export default function MyTeamsPage() {
                         </div>
 
                         {/* Stats */}
-                        <div className="flex items-center gap-6 text-sm text-gray-600 mb-4 pb-4 border-b border-gray-200">
+                        <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-dark-text-secondary mb-4 pb-4 border-b border-gray-200 dark:border-dark-border">
                           <span className="flex items-center gap-1">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
@@ -338,14 +338,14 @@ export default function MyTeamsPage() {
                           </Link>
                           <Link
                             href={`/teams/${team.id}/edit`}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
                           >
                             {t('teams.edit')}
                           </Link>
                           <button
                             onClick={() => handleToggleVisibility(team)}
                             disabled={toggleVisibilityMutation.isPending}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium disabled:opacity-50"
+                            className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50"
                             title={
                               team.isPublic
                                 ? t('teams.makePrivate')
@@ -399,7 +399,7 @@ export default function MyTeamsPage() {
                               </button>
                               <button
                                 onClick={() => setDeleteConfirm(null)}
-                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                                className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
                               >
                                 {t('teams.cancel')}
                               </button>
@@ -407,7 +407,7 @@ export default function MyTeamsPage() {
                           ) : (
                             <button
                               onClick={() => setDeleteConfirm(team.id)}
-                              className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-medium"
+                              className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-200 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors font-medium"
                             >
                               {t('teams.delete')}
                             </button>
