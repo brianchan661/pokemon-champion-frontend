@@ -47,17 +47,17 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
           return (
             <div
               key={index}
-              className={`relative rounded-lg border-2 transition-all ${isActive
-                  ? 'border-primary-500 ring-2 ring-primary-200'
-                  : isEmpty
-                    ? 'border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-400 dark:hover:border-primary-400'
-                    : 'border-gray-200 dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-400'
+              className={`relative rounded-lg border-2 transition-all h-full ${isActive
+                ? 'border-primary-500 ring-2 ring-primary-200'
+                : isEmpty
+                  ? 'border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-400 dark:hover:border-primary-400'
+                  : 'border-gray-200 dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-400'
                 }`}
             >
               {isEmpty ? (
                 <button
                   onClick={() => onSlotClick(index)}
-                  className="w-full p-8 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  className="w-full h-full p-8 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
                   <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -69,7 +69,7 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
               ) : (
                 <button
                   onClick={() => onSlotClick(index)}
-                  className="w-full p-4 bg-gray-50 dark:bg-dark-bg-tertiary flex flex-col relative text-left"
+                  className="w-full h-full p-4 bg-gray-50 dark:bg-dark-bg-tertiary flex flex-col relative text-left"
                 >
                   <PokemonCard
                     pokemon={pokemon}

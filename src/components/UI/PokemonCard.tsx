@@ -60,7 +60,7 @@ export function PokemonCard({
 }: PokemonCardProps) {
   if (variant === 'detailed') {
     return (
-      <div className={className}>
+      <div className={`${className} h-full flex flex-col`}>
         {/* Ability - Top Right */}
         {(pokemon?.abilityData?.name || pokemon?.abilityIdentifier) && (
           <div className="absolute top-4 right-4">
@@ -79,7 +79,7 @@ export function PokemonCard({
               className="w-16 h-16 object-contain"
             />
           )}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex-1">
             {enableLinks && (pokemon?.pokemonData?.nationalNumber || pokemon?.pokemonId) ? (
               <Link
                 href={`/pokemon/${pokemon.pokemonData?.nationalNumber || pokemon.pokemonId}`}
