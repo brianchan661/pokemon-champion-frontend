@@ -24,11 +24,34 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '' }: TeamC
     >
       <div className="p-6 relative">
         {/* Author - Top Right */}
+        {/* Author - Top Right */}
         {showAuthor && (
-          <div className="absolute top-6 right-6">
-            <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
-              {t('teams.by')} <span className="font-medium dark:text-dark-text-primary">{team.authorUsername || 'Unknown'}</span>
-            </p>
+          <div className="absolute top-6 right-6 flex items-center gap-2">
+            {team.authorAvatarUrl ? (
+              <img
+                src={team.authorAvatarUrl}
+                alt={team.authorUsername || 'Author'}
+                className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-dark-border"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-dark-bg-tertiary flex items-center justify-center border border-gray-200 dark:border-dark-border">
+                <span className="text-xs font-bold text-gray-500 dark:text-dark-text-secondary">
+                  {(team.authorUsername || '?').charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+            <div className="text-right">
+              <p className="text-sm font-medium text-gray-900 dark:text-dark-text-primary leading-none">
+                {team.authorUsername || 'Unknown'}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-dark-text-secondary mt-1">
+                {new Date(team.createdAt).toLocaleDateString(undefined, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </p>
+            </div>
           </div>
         )}
 

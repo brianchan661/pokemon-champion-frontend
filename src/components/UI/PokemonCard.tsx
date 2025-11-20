@@ -64,7 +64,7 @@ export function PokemonCard({
         {/* Ability - Top Right */}
         {(pokemon?.abilityData?.name || pokemon?.abilityIdentifier) && (
           <div className="absolute top-4 right-4">
-            <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+            <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium">
               {pokemon.abilityData?.name || pokemon.abilityIdentifier}
             </span>
           </div>
@@ -83,16 +83,16 @@ export function PokemonCard({
             {enableLinks && (pokemon?.pokemonData?.nationalNumber || pokemon?.pokemonId) ? (
               <Link
                 href={`/pokemon/${pokemon.pokemonData?.nationalNumber || pokemon.pokemonId}`}
-                className="font-bold text-lg text-gray-900 hover:text-primary-600 transition-colors"
+                className="font-bold text-lg text-gray-900 dark:text-dark-text-primary hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
               >
                 {pokemon?.pokemonData?.name || 'Unknown'}
               </Link>
             ) : (
-              <h3 className="font-bold text-lg text-gray-900">
+              <h3 className="font-bold text-lg text-gray-900 dark:text-dark-text-primary">
                 {pokemon?.pokemonData?.name || 'Unknown'}
               </h3>
             )}
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
               Lv. {pokemon?.level || 50} • {pokemon?.natureData?.name || pokemon?.natureId || 'Unknown'}
             </p>
             {pokemon?.pokemonData?.types && pokemon.pokemonData.types.length > 0 && (
@@ -107,7 +107,7 @@ export function PokemonCard({
 
         {/* Item */}
         <div className="mb-2">
-          <p className="text-xs font-semibold text-gray-700 mb-1">Item:</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Item:</p>
           {pokemon?.itemData ? (
             enableLinks && pokemon.itemData.identifier ? (
               <Link
@@ -121,7 +121,7 @@ export function PokemonCard({
                     className="w-6 h-6 object-contain"
                   />
                 )}
-                <span className="text-xs text-gray-700">{pokemon.itemData.name}</span>
+                <span className="text-xs text-gray-700 dark:text-dark-text-secondary">{pokemon.itemData.name}</span>
               </Link>
             ) : (
               <div className="flex items-center gap-2">
@@ -132,7 +132,7 @@ export function PokemonCard({
                     className="w-6 h-6 object-contain"
                   />
                 )}
-                <span className="text-xs text-gray-700">{pokemon.itemData.name}</span>
+                <span className="text-xs text-gray-700 dark:text-dark-text-secondary">{pokemon.itemData.name}</span>
               </div>
             )
           ) : (
