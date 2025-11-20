@@ -79,7 +79,7 @@ export function PokemonCard({
               className="w-16 h-16 object-contain"
             />
           )}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {enableLinks && (pokemon?.pokemonData?.nationalNumber || pokemon?.pokemonId) ? (
               <Link
                 href={`/pokemon/${pokemon.pokemonData?.nationalNumber || pokemon.pokemonId}`}
@@ -92,7 +92,7 @@ export function PokemonCard({
                 {pokemon?.pokemonData?.name || 'Unknown'}
               </h3>
             )}
-            <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
+            <p className="text-sm text-gray-600 dark:text-dark-text-secondary whitespace-nowrap">
               Lv. {pokemon?.level || 50} • {pokemon?.natureData?.name || pokemon?.natureId || 'Unknown'}
             </p>
             {pokemon?.pokemonData?.types && pokemon.pokemonData.types.length > 0 && (
