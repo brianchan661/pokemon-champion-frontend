@@ -112,7 +112,7 @@ export function PokemonCard({
             enableLinks && pokemon.itemData.identifier ? (
               <Link
                 href={`/data/items/${pokemon.itemData.identifier}`}
-                className="flex items-center gap-2 hover:text-primary-600 transition-colors w-fit"
+                className="flex items-center gap-2 hover:text-primary-600 transition-colors w-fit min-h-[24px]"
               >
                 {pokemon.itemData.spriteUrl && (
                   <img
@@ -124,7 +124,7 @@ export function PokemonCard({
                 <span className="text-xs text-gray-700 dark:text-dark-text-secondary">{pokemon.itemData.name}</span>
               </Link>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-h-[24px]">
                 {pokemon.itemData.spriteUrl && (
                   <img
                     src={pokemon.itemData.spriteUrl}
@@ -136,7 +136,9 @@ export function PokemonCard({
               </div>
             )
           ) : (
-            <span className="text-xs text-gray-400">None</span>
+            <div className="min-h-[24px] flex items-center">
+              <span className="text-xs text-gray-400">None</span>
+            </div>
           )}
         </div>
 
