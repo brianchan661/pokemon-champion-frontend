@@ -341,27 +341,25 @@ export function MentionTextarea({
   return (
     <div className="relative">
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-dark-border">
         <nav className="flex gap-4">
           <button
             type="button"
             onClick={() => setActiveTab('write')}
-            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === 'write'
+            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'write'
                 ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
-            }`}
+                : 'border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+              }`}
           >
             {t('strategy.write', 'Write')}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('preview')}
-            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === 'preview'
+            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'preview'
                 ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
-            }`}
+                : 'border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+              }`}
           >
             {t('strategy.preview', 'Preview')}
           </button>
@@ -380,7 +378,7 @@ export function MentionTextarea({
               placeholder={placeholder}
               rows={rows}
               maxLength={maxLength}
-              className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${className}`}
+              className={`w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary ${className}`}
             />
 
             {showAutocomplete && (
@@ -394,7 +392,7 @@ export function MentionTextarea({
             )}
           </>
         ) : (
-          <div className="min-h-[200px] px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+          <div className="min-h-[200px] px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-gray-50 dark:bg-dark-bg-tertiary">
             <StrategyDisplay strategy={value} />
           </div>
         )}

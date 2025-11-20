@@ -29,14 +29,14 @@ export function StrategyDisplay({ strategy, className = '' }: StrategyDisplayPro
 
   if (segments.length === 0) {
     return (
-      <p className={`text-gray-500 italic ${className}`}>
+      <p className={`text-gray-500 dark:text-dark-text-tertiary italic ${className}`}>
         No strategy provided
       </p>
     );
   }
 
   return (
-    <div className={`text-gray-700 whitespace-pre-wrap ${className}`}>
+    <div className={`text-gray-700 dark:text-dark-text-primary whitespace-pre-wrap ${className}`}>
       {segments.map((segment, index) => {
         if (segment.type === 'text') {
           return <span key={index}>{segment.content as string}</span>;

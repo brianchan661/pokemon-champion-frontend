@@ -33,8 +33,8 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
   const slots: TeamSlot[] = Array(6).fill(null).map((_, index) => team[index] || {});
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm p-4 ${className}`}>
-      <h3 className="text-lg font-bold text-gray-900 mb-4">
+    <div className={`bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-4 ${className}`}>
+      <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">
         {t('teamBuilder.yourTeam', 'Your Team')} ({team.filter(s => s.pokemon).length}/6)
       </h3>
 
@@ -47,18 +47,17 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
           return (
             <div
               key={index}
-              className={`relative rounded-lg border-2 transition-all ${
-                isActive
+              className={`relative rounded-lg border-2 transition-all ${isActive
                   ? 'border-primary-500 ring-2 ring-primary-200'
                   : isEmpty
-                  ? 'border-dashed border-gray-300 hover:border-primary-400'
-                  : 'border-gray-200 hover:border-primary-400'
-              }`}
+                    ? 'border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-400 dark:hover:border-primary-400'
+                    : 'border-gray-200 dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-400'
+                }`}
             >
               {isEmpty ? (
                 <button
                   onClick={() => onSlotClick(index)}
-                  className="w-full p-8 flex flex-col items-center justify-center text-gray-400 hover:text-primary-600 transition-colors"
+                  className="w-full p-8 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
                   <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -70,7 +69,7 @@ export function TeamSlots({ team, onSlotClick, onRemovePokemon, activeSlot, clas
               ) : (
                 <button
                   onClick={() => onSlotClick(index)}
-                  className="w-full p-4 bg-gray-50 flex flex-col relative text-left"
+                  className="w-full p-4 bg-gray-50 dark:bg-dark-bg-tertiary flex flex-col relative text-left"
                 >
                   <PokemonCard
                     pokemon={pokemon}

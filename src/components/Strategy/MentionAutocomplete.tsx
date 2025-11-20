@@ -96,10 +96,10 @@ export function MentionAutocomplete({
   if (loading) {
     return (
       <div
-        className="absolute bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50"
+        className="absolute bg-white dark:bg-dark-bg-secondary border border-gray-300 dark:border-dark-border rounded-lg shadow-lg p-4 z-50"
         style={{ top: position.top, left: position.left }}
       >
-        <div className="flex items-center gap-2 text-gray-500">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-dark-text-secondary">
           <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path
@@ -117,75 +117,70 @@ export function MentionAutocomplete({
   if (options.length === 0) {
     return (
       <div
-        className="absolute bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50"
+        className="absolute bg-white dark:bg-dark-bg-secondary border border-gray-300 dark:border-dark-border rounded-lg shadow-lg p-4 z-50"
         style={{ top: position.top, left: position.left }}
       >
-        <p className="text-sm text-gray-500">No results found</p>
+        <p className="text-sm text-gray-500 dark:text-dark-text-secondary">No results found</p>
       </div>
     );
   }
 
   return (
     <div
-      className="absolute bg-white border border-gray-300 rounded-lg shadow-lg z-50 w-[550px] overflow-hidden"
+      className="absolute bg-white dark:bg-dark-bg-secondary border border-gray-300 dark:border-dark-border rounded-lg shadow-lg z-50 w-[550px] overflow-hidden"
       style={{ top: position.top, left: position.left }}
     >
       {/* Tabs */}
-      <div className="grid grid-cols-5 border-b border-gray-200 bg-gray-50">
+      <div className="grid grid-cols-5 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg-tertiary">
         <button
           onClick={() => setActiveTab('all')}
-          className={`px-2 py-2 text-xs font-medium ${
-            activeTab === 'all'
-              ? 'text-primary-600 border-b-2 border-primary-600 bg-white'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`px-2 py-2 text-xs font-medium ${activeTab === 'all'
+              ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 bg-white dark:bg-dark-bg-secondary'
+              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            }`}
         >
           All ({options.length})
         </button>
         <button
           onClick={() => setActiveTab('pokemon')}
-          className={`px-2 py-2 text-xs font-medium ${
-            activeTab === 'pokemon'
-              ? 'text-blue-600 border-b-2 border-blue-600 bg-white'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`px-2 py-2 text-xs font-medium ${activeTab === 'pokemon'
+              ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-dark-bg-secondary'
+              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            }`}
         >
           Pokemon ({counts.pokemon})
         </button>
         <button
           onClick={() => setActiveTab('move')}
-          className={`px-2 py-2 text-xs font-medium ${
-            activeTab === 'move'
-              ? 'text-orange-600 border-b-2 border-orange-600 bg-white'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`px-2 py-2 text-xs font-medium ${activeTab === 'move'
+              ? 'text-orange-600 dark:text-orange-400 border-b-2 border-orange-600 dark:border-orange-400 bg-white dark:bg-dark-bg-secondary'
+              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            }`}
         >
           Moves ({counts.move})
         </button>
         <button
           onClick={() => setActiveTab('item')}
-          className={`px-2 py-2 text-xs font-medium ${
-            activeTab === 'item'
-              ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`px-2 py-2 text-xs font-medium ${activeTab === 'item'
+              ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-white dark:bg-dark-bg-secondary'
+              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            }`}
         >
           Items ({counts.item})
         </button>
         <button
           onClick={() => setActiveTab('ability')}
-          className={`px-2 py-2 text-xs font-medium ${
-            activeTab === 'ability'
-              ? 'text-green-600 border-b-2 border-green-600 bg-white'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`px-2 py-2 text-xs font-medium ${activeTab === 'ability'
+              ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400 bg-white dark:bg-dark-bg-secondary'
+              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            }`}
         >
           Abilities ({counts.ability})
         </button>
       </div>
 
       {/* Filter Input */}
-      <div className="p-2 bg-white border-b border-gray-200">
+      <div className="p-2 bg-white dark:bg-dark-bg-secondary border-b border-gray-200 dark:border-dark-border">
         <input
           type="text"
           value={filterText}
@@ -195,14 +190,14 @@ export function MentionAutocomplete({
               ? 'Filter by name or number...'
               : `Filter ${activeTab === 'all' ? 'all' : TYPE_LABELS[activeTab as MentionType]}...`
           }
-          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-dark-border rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary"
         />
       </div>
 
       {/* Options List */}
       <div className="max-h-80 overflow-y-auto">
         {filteredOptions.length === 0 ? (
-          <div className="p-4 text-sm text-gray-500 text-center">
+          <div className="p-4 text-sm text-gray-500 dark:text-dark-text-tertiary text-center">
             No {activeTab === 'all' ? 'results' : TYPE_LABELS[activeTab as MentionType]} found
           </div>
         ) : (
@@ -211,9 +206,8 @@ export function MentionAutocomplete({
               key={`${option.type}-${option.id}`}
               ref={index === selectedIndex ? selectedRef : null}
               onClick={() => onSelect(option)}
-              className={`w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors ${
-                index === selectedIndex ? 'bg-primary-50' : ''
-              }`}
+              className={`w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors ${index === selectedIndex ? 'bg-primary-50 dark:bg-primary-900/20' : ''
+                }`}
             >
               {/* Icon/Sprite */}
               <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center">
@@ -232,9 +226,9 @@ export function MentionAutocomplete({
 
               {/* Name and Info */}
               <div className="flex-1 text-left">
-                <div className="text-sm font-medium text-gray-900">{option.name}</div>
+                <div className="text-sm font-medium text-gray-900 dark:text-dark-text-primary">{option.name}</div>
                 {option.meta && (
-                  <div className="text-xs text-gray-500">{option.meta}</div>
+                  <div className="text-xs text-gray-500 dark:text-dark-text-tertiary">{option.meta}</div>
                 )}
               </div>
 
