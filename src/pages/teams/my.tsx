@@ -8,7 +8,7 @@ import { useTranslation } from 'next-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { teamService } from '@/services/teamService';
 import { StrategyDisplay } from '@/components/Strategy/StrategyDisplay';
-import { TypeIcon } from '@/components/UI/TypeIcon';
+import { PokemonCard } from '@/components/UI/PokemonCard';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -185,11 +185,10 @@ export default function MyTeamsPage() {
                                 {team.name}
                               </h2>
                               <span
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  team.isPublic
-                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-                                }`}
+                                className={`px-3 py-1 rounded-full text-xs font-medium ${team.isPublic
+                                  ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
+                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                                  }`}
                               >
                                 {team.isPublic ? t('teams.public') : t('teams.private')}
                               </span>
@@ -205,99 +204,13 @@ export default function MyTeamsPage() {
                         <div className="mb-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {team.pokemon.map((p, index) => (
-                              <div
+                              <PokemonCard
                                 key={index}
+                                pokemon={p}
+                                variant="detailed"
+                                enableLinks={true}
                                 className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-4 border border-gray-200 dark:border-dark-border relative"
-                              >
-                                {/* Ability - Top Right */}
-                                <div className="absolute top-4 right-4">
-                                  <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium">
-                                    {p.abilityData?.name || p.abilityIdentifier}
-                                  </span>
-                                </div>
-
-                                {/* Pokemon Header */}
-                                <div className="flex items-center gap-3 mb-3 pr-24">
-                                  {p.pokemonData?.imageUrl && (
-                                    <img
-                                      src={p.pokemonData.imageUrl}
-                                      alt={p.pokemonData.name}
-                                      className="w-16 h-16 object-contain"
-                                    />
-                                  )}
-                                  <div className="flex-1">
-                                    <h3 className="font-bold text-lg text-gray-900 dark:text-dark-text-primary">
-                                      {p.pokemonData?.name || `Pokemon #${p.pokemonId}`}
-                                    </h3>
-                                    <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
-                                      Lv. {p.level} • {p.natureData?.name || p.natureId}
-                                    </p>
-                                    {p.pokemonData?.types && (
-                                      <div className="flex gap-1 mt-1">
-                                        {p.pokemonData.types.map((type: string) => (
-                                          <TypeIcon key={type} type={type} size="sm" />
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* Item */}
-                                {p.itemData && (
-                                  <div className="mb-2">
-                                    <p className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Item:</p>
-                                    <div className="flex items-center gap-2">
-                                      {p.itemData.spriteUrl && (
-                                        <img
-                                          src={p.itemData.spriteUrl}
-                                          alt={p.itemData.name}
-                                          className="w-6 h-6 object-contain"
-                                        />
-                                      )}
-                                      <span className="text-xs text-gray-700 dark:text-dark-text-secondary">{p.itemData.name}</span>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Moves */}
-                                <div>
-                                  <p className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Moves:</p>
-                                  <div className="space-y-1">
-                                    {p.movesData?.map((move: any) => (
-                                      <div
-                                        key={move.id}
-                                        className="flex items-center gap-2 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded"
-                                      >
-                                        <TypeIcon type={move.type} size="xs" />
-                                        <span className="font-medium flex-1 dark:text-dark-text-primary">{move.name}</span>
-                                        <div className="flex items-center gap-1 text-gray-500 dark:text-dark-text-tertiary">
-                                          <span className="min-w-[2rem] text-right">
-                                            {move.power || '-'}
-                                          </span>
-                                          <span className="text-gray-400 dark:text-gray-500">/</span>
-                                          <span className="min-w-[2rem] text-right">
-                                            {move.accuracy ? `${move.accuracy}%` : '-'}
-                                          </span>
-                                          <span className="text-gray-400 dark:text-gray-500">/</span>
-                                          <span className="min-w-[1.5rem] text-right">
-                                            {move.pp ? `${move.pp}PP` : '-'}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                {/* Tera Type */}
-                                {p.teraType && (
-                                  <div className="mt-3 pt-3 border-t border-gray-200 dark:border-dark-border">
-                                    <span className="text-xs font-semibold text-gray-700 dark:text-dark-text-secondary">Tera Type:</span>
-                                    <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">
-                                      {p.teraType}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
+                              />
                             ))}
                           </div>
                         </div>
