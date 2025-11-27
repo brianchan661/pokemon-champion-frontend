@@ -147,13 +147,13 @@ export default function TeamDetailPage() {
       </Head>
 
       <Layout>
-        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
-          <div className="max-w-5xl mx-auto">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8 pb-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Back Button */}
             <div className="mb-6">
               <Link
                 href="/teams"
-                className="inline-flex items-center text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary"
+                className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -162,90 +162,92 @@ export default function TeamDetailPage() {
               </Link>
             </div>
 
-            {/* Team Name and Pokemon Combined */}
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 mb-6 relative">
-              {/* Author - Top Right */}
-              <div className="absolute top-8 right-8 text-right">
-                <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
-                  {t('teams.by')} <span className="font-medium dark:text-dark-text-primary">{team.authorUsername || 'Unknown'}</span>
-                </p>
-                {isOwner && (
-                  <Link
-                    href={`/teams/${team.id}/edit`}
-                    className="inline-block mt-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
-                  >
-                    {t('teams.edit')}
-                  </Link>
-                )}
-              </div>
+            {/* Pokemon Grid - Now at the top */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {team.pokemon.map((p, index) => (
+                <PokemonCard
+                  key={index}
+                  pokemon={p}
+                  variant="detailed"
+                  enableLinks={true}
+                  className="h-full"
+                />
+              ))}
+            </div>
 
-              {/* Team Name */}
-              <div className="mb-6 pr-48">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-4xl font-bold text-gray-900 dark:text-dark-text-primary">{team.name}</h1>
-                  {!team.isPublic && (
-                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-sm font-medium">
-                      {t('teams.private')}
-                    </span>
+            {/* Team Info & Strategy Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 md:p-8 mb-8">
+              <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8 border-b border-gray-100 dark:border-gray-700 pb-8">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                      {team.name}
+                    </h1>
+                    <div className="flex gap-2">
+                      {team.isPublic ? (
+                        <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs font-medium border border-blue-200 dark:border-blue-800">
+                          Public
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-medium border border-gray-200 dark:border-gray-600">
+                          {t('teams.private')}
+                        </span>
+                      )}
+                      {/* Placeholder for Format tag if available in the future */}
+                      <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-medium border border-gray-200 dark:border-gray-600">
+                        OU
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="flex items-center gap-1">
+                      {t('teams.by')} <span className="font-semibold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer">{team.authorUsername || 'Unknown'}</span>
+                    </p>
+                    <span>•</span>
+                    <p>{new Date(team.createdAt).toLocaleDateString()}</p>
+                    {isOwner && (
+                      <>
+                        <span>•</span>
+                        <Link
+                          href={`/teams/${team.id}/edit`}
+                          className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                        >
+                          {t('teams.edit')}
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 shrink-0">
+                  {team.isPublic && (
+                    <button
+                      onClick={handleLike}
+                      disabled={likeMutation.isPending}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2 text-sm ${hasLiked
+                          ? 'bg-primary-600 text-white hover:bg-primary-700'
+                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
+                        }`}
+                    >
+                      <svg className="w-4 h-4" fill={hasLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      {hasLiked ? 'Liked' : 'Like'} ({team.likes})
+                    </button>
                   )}
                 </div>
               </div>
 
-              {/* Pokemon Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {team.pokemon.map((p, index) => (
-                  <PokemonCard
-                    key={index}
-                    pokemon={p}
-                    variant="detailed"
-                    enableLinks={true}
-                    className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-4 border border-gray-200 dark:border-dark-border relative"
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Strategy and Stats */}
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 mb-6">
-              {/* Stats */}
-              <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-dark-text-secondary mb-6 pb-6 border-b border-gray-200 dark:border-dark-border">
-                {team.isPublic && (
-                  <>
-                    <button
-                      onClick={handleLike}
-                      disabled={likeMutation.isPending}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                        hasLiked
-                          ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-200'
-                          : 'bg-gray-100 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
-                      }`}
-                    >
-                      <svg className="w-5 h-5" fill={hasLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 20 20">
-                        <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                      </svg>
-                      {team.likes} {t('teams.likes')}
-                    </button>
-                  </>
-                )}
-                <span className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {new Date(team.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-
-              {/* Strategy */}
               <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary mb-3">{t('teams.strategy')}</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('teams.strategy')}</h2>
                 <StrategyDisplay strategy={team.strategy} />
               </div>
             </div>
 
             {/* Comments Section (Only for public teams) */}
             {team.isPublic && (
-              <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 md:p-8">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                   Comments ({comments.length})
                 </h2>
 
@@ -253,7 +255,7 @@ export default function TeamDetailPage() {
                 {isAuthenticated ? (
                   <form onSubmit={handleComment} className="mb-8">
                     {replyTo && (
-                      <div className="mb-2 text-sm text-gray-600 dark:text-dark-text-secondary">
+                      <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
                         Replying to comment{' '}
                         <button
                           type="button"
@@ -268,12 +270,12 @@ export default function TeamDetailPage() {
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       placeholder="Share your thoughts..."
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       rows={3}
                       maxLength={1000}
                     />
                     <div className="mt-2 flex justify-between items-center">
-                      <span className="text-sm text-gray-500 dark:text-dark-text-tertiary">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {commentText.length}/1000
                       </span>
                       <button
@@ -286,8 +288,8 @@ export default function TeamDetailPage() {
                     </div>
                   </form>
                 ) : (
-                  <div className="mb-8 text-center py-6 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg">
-                    <p className="text-gray-600 dark:text-dark-text-secondary mb-4">
+                  <div className="mb-8 text-center py-6 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
                       Please log in to leave a comment
                     </p>
                     <Button href={`/auth?redirect=/teams/${id}`} variant="primary">
@@ -299,26 +301,26 @@ export default function TeamDetailPage() {
                 {/* Comments List */}
                 <div className="space-y-4">
                   {comments.length === 0 ? (
-                    <p className="text-gray-500 dark:text-dark-text-secondary text-center py-8">
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">
                       No comments yet. Be the first to comment!
                     </p>
                   ) : (
                     comments.map((comment) => (
                       <div
                         key={comment.id}
-                        className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-4"
+                        className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <span className="font-medium text-gray-900 dark:text-dark-text-primary">
+                            <span className="font-medium text-gray-900 dark:text-white">
                               {comment.authorUsername || 'Unknown'}
                             </span>
-                            <span className="text-sm text-gray-500 dark:text-dark-text-tertiary ml-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                               {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
-                        <p className="text-gray-700 dark:text-dark-text-secondary whitespace-pre-wrap">
+                        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                           {comment.content}
                         </p>
                       </div>

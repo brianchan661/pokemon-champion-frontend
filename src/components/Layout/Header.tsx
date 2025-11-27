@@ -66,7 +66,7 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className="bg-white dark:bg-dark-bg-secondary shadow-sm border-b border-gray-200 dark:border-dark-border">
+    <header className="bg-white dark:bg-dark-bg-secondary shadow-sm border-b border-gray-200 dark:border-dark-border relative z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -250,7 +250,7 @@ export const Header = () => {
           {/* Right side */}
           <div className="flex items-center space-x-1 md:space-x-2 lg:space-x-4 flex-shrink-0">
             <LanguageSelector />
-            
+
             <ThemeToggle />
 
             {/* Buy Me a Coffee Button - Compact icon on medium, full on xl */}
@@ -323,7 +323,7 @@ export const Header = () => {
                 </span>
                 <ThemeToggle />
               </div>
-              
+
               {navigation.map((item) => {
                 const hasDropdown = 'dropdown' in item && item.dropdown;
 
