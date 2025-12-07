@@ -20,12 +20,14 @@ export default function TiersPage() {
       </Head>
 
       <Layout>
-        <Section ariaLabel="Tier List Section">
-          <ComingSoon
-            title={t('nav.tiers', 'Tier List')}
-            description={t('tiers.comingSoon', 'Comprehensive Pokemon tier lists and rankings are coming soon. Stay tuned for competitive meta analysis!')}
-          />
-        </Section>
+        <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-12">
+          <Section ariaLabel="Tier List Section">
+            <ComingSoon
+              title={t('nav.tiers', 'Tier List')}
+              description={t('tiers.comingSoon', 'Comprehensive Pokemon tier lists and rankings are coming soon. Stay tuned for competitive meta analysis!')}
+            />
+          </Section>
+        </div>
       </Layout>
     </>
   );
