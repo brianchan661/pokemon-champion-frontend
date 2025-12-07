@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { MentionOption, MentionType } from '@/hooks/useMentions';
+import { TypeIcon } from '@/components/UI/TypeIcon';
+import { MoveCategoryIcon, MoveCategory } from '@/components/UI/MoveCategoryIcon';
 
 interface MentionAutocompleteProps {
   options: MentionOption[];
@@ -135,8 +137,8 @@ export function MentionAutocomplete({
         <button
           onClick={() => setActiveTab('all')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'all'
-              ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 bg-white dark:bg-dark-bg-secondary'
-              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 bg-white dark:bg-dark-bg-secondary'
+            : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
             }`}
         >
           All ({options.length})
@@ -144,8 +146,8 @@ export function MentionAutocomplete({
         <button
           onClick={() => setActiveTab('pokemon')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'pokemon'
-              ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-dark-bg-secondary'
-              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-dark-bg-secondary'
+            : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
             }`}
         >
           Pokemon ({counts.pokemon})
@@ -153,8 +155,8 @@ export function MentionAutocomplete({
         <button
           onClick={() => setActiveTab('move')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'move'
-              ? 'text-orange-600 dark:text-orange-400 border-b-2 border-orange-600 dark:border-orange-400 bg-white dark:bg-dark-bg-secondary'
-              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            ? 'text-orange-600 dark:text-orange-400 border-b-2 border-orange-600 dark:border-orange-400 bg-white dark:bg-dark-bg-secondary'
+            : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
             }`}
         >
           Moves ({counts.move})
@@ -162,8 +164,8 @@ export function MentionAutocomplete({
         <button
           onClick={() => setActiveTab('item')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'item'
-              ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-white dark:bg-dark-bg-secondary'
-              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-white dark:bg-dark-bg-secondary'
+            : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
             }`}
         >
           Items ({counts.item})
@@ -171,8 +173,8 @@ export function MentionAutocomplete({
         <button
           onClick={() => setActiveTab('ability')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'ability'
-              ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400 bg-white dark:bg-dark-bg-secondary'
-              : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400 bg-white dark:bg-dark-bg-secondary'
+            : 'text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
             }`}
         >
           Abilities ({counts.ability})
@@ -210,8 +212,15 @@ export function MentionAutocomplete({
                 }`}
             >
               {/* Icon/Sprite */}
-              <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center">
-                {option.sprite ? (
+              <div className={`${option.type === 'move' && option.moveType ? 'w-auto min-w-[2rem] mr-1' : 'w-8'} h-8 flex-shrink-0 flex items-center justify-center`}>
+                {option.type === 'move' && option.moveType ? (
+                  <div className="flex items-center justify-center gap-1">
+                    <TypeIcon type={option.moveType} size="sm" showLabel={false} />
+                    {option.moveCategory && (
+                      <MoveCategoryIcon category={option.moveCategory as MoveCategory} size={16} showLabel={false} />
+                    )}
+                  </div>
+                ) : option.sprite ? (
                   <img
                     src={option.sprite}
                     alt={option.name}

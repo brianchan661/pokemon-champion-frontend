@@ -1,20 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout/Layout';
 import { UnifiedAuthForm } from '@/components/Auth/UnifiedAuthForm';
-import { UserProfile } from '@/components/Auth/UserProfile';
 import { useAuth } from '@/contexts/AuthContext';
+
 
 export default function AuthPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
   const [authError, setAuthError] = useState<string>('');
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Redirect to return URL or home
+      const returnUrl = (router.query.returnUrl as string) ||
+        sessionStorage.getItem('returnUrl') ||
+        '/';
+
+      // Clear session storage if it was used
+      if (sessionStorage.getItem('returnUrl')) {
+        sessionStorage.removeItem('returnUrl');
+      }
+
+      router.push(returnUrl);
+    }
+  }, [isAuthenticated, router]);
+
   const handleAuthSuccess = () => {
-    // Clear any errors - user will be redirected after email verification
+    // Auth context update will trigger the useEffect redirect
     setAuthError('');
   };
 
@@ -22,7 +38,8 @@ export default function AuthPage() {
     setAuthError(error);
   };
 
-  if (isLoading) {
+  // Show loading state while checking auth or redirecting
+  if (isLoading || isAuthenticated) {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
@@ -42,14 +59,10 @@ export default function AuthPage() {
       <Layout>
         <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md mx-auto">
-            {isAuthenticated ? (
-              <UserProfile />
-            ) : (
-              <UnifiedAuthForm
-                onSuccess={handleAuthSuccess}
-                onError={handleAuthError}
-              />
-            )}
+            <UnifiedAuthForm
+              onSuccess={handleAuthSuccess}
+              onError={handleAuthError}
+            />
           </div>
         </div>
       </Layout>

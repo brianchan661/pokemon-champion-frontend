@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { LanguageSelector } from './LanguageSelector';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,10 +27,20 @@ const NAVIGATION_ITEMS = [
 
 export const Header = () => {
   const { t } = useTranslation('common');
+  const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
+
+  // Helper to get login URL with return path
+  const getLoginUrl = () => {
+    // Don't include returnUrl if already on auth page, or if path is just '/'
+    if (router.pathname.startsWith('/auth') || router.asPath === '/') {
+      return '/auth';
+    }
+    return `/auth?returnUrl=${encodeURIComponent(router.asPath)}`;
+  };
 
   // Memoize navigation items to prevent recreation on each render
   const navigation = useMemo(() =>
@@ -288,7 +299,7 @@ export const Header = () => {
                   </button>
                 </div>
               ) : (
-                <Link href="/auth" className="btn-secondary text-xs lg:text-sm whitespace-nowrap px-2 py-1 lg:px-3 lg:py-2">
+                <Link href={getLoginUrl()} className="btn-secondary text-xs lg:text-sm whitespace-nowrap px-2 py-1 lg:px-3 lg:py-2">
                   Sign In
                 </Link>
               )}
@@ -403,7 +414,7 @@ export const Header = () => {
                     </button>
                   </>
                 ) : (
-                  <Link href="/auth" className="btn-secondary text-sm mx-3" onClick={closeMenu}>
+                  <Link href={getLoginUrl()} className="btn-secondary text-sm mx-3" onClick={closeMenu}>
                     Sign In
                   </Link>
                 )}

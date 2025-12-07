@@ -10,6 +10,8 @@ export interface MentionToken {
   name: string;
   sprite?: string;
   nationalNumber?: string; // For Pokemon URLs
+  moveType?: string;
+  moveCategory?: string;
 }
 
 export interface StrategySegment {
@@ -230,6 +232,8 @@ export function MentionTextarea({
         name: option.name,
         sprite: option.sprite,
         nationalNumber: option.nationalNumber, // For Pokemon URLs
+        moveType: option.moveType,
+        moveCategory: option.moveCategory,
       };
 
       // Parse existing segments and merge with new mention
@@ -347,8 +351,8 @@ export function MentionTextarea({
             type="button"
             onClick={() => setActiveTab('write')}
             className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'write'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+              ? 'border-primary-600 text-primary-600'
+              : 'border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
               }`}
           >
             {t('strategy.write', 'Write')}
@@ -357,8 +361,8 @@ export function MentionTextarea({
             type="button"
             onClick={() => setActiveTab('preview')}
             className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'preview'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+              ? 'border-primary-600 text-primary-600'
+              : 'border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
               }`}
           >
             {t('strategy.preview', 'Preview')}

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { MentionToken } from './MentionTextarea';
+import { TypeIcon } from '@/components/UI/TypeIcon';
+import { MoveCategoryIcon, MoveCategory } from '@/components/UI/MoveCategoryIcon';
 
 interface MentionChipProps {
   mention: MentionToken;
@@ -60,19 +62,25 @@ export function MentionChip({ mention, className = '' }: MentionChipProps) {
       href={getUrl()}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${style.bg} ${style.text} ${style.border} ${style.hover} transition-colors cursor-pointer ${className}`}
+      className={`inline-flex items-center gap-1 px-2 h-6 rounded-full border ${style.bg} ${style.text} ${style.border} ${style.hover} transition-colors cursor-pointer align-middle ${className}`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
-      style={{ verticalAlign: 'baseline' }}
     >
-      {mention.sprite && (
+      {mention.type === 'move' && mention.moveType ? (
+        <div className="flex items-center gap-1 mr-1">
+          <TypeIcon type={mention.moveType} size="xs" showLabel={false} />
+          {mention.moveCategory && (
+            <MoveCategoryIcon category={mention.moveCategory as MoveCategory} size={16} showLabel={false} />
+          )}
+        </div>
+      ) : mention.sprite && (
         <img
           src={mention.sprite}
           alt={mention.name}
           className="w-4 h-4 object-contain flex-shrink-0"
         />
       )}
-      <span className="text-sm font-medium leading-none">{mention.name}</span>
+      <span className="text-sm font-medium leading-none mt-[1px]">{mention.name}</span>
 
       {/* Tooltip */}
       {showTooltip && (

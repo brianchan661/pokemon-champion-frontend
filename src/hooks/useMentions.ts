@@ -13,6 +13,8 @@ export interface MentionOption {
   sprite?: string;
   meta?: string; // Additional info (e.g., type, category)
   nationalNumber?: string; // For Pokemon national dex number
+  moveType?: string;
+  moveCategory?: string;
 }
 
 interface UseMentionsResult {
@@ -66,6 +68,8 @@ export function useMentions(): UseMentionsResult {
               id: m.id,
               name: m.name,
               meta: `${m.type} | ${m.category}`,
+              moveType: m.type,
+              moveCategory: m.category,
             });
           });
         }
