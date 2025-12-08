@@ -35,7 +35,7 @@ export function MoveCategoryIcon({
         style={{ width: 'auto', height: 'auto' }}
       />
       {showLabel && (
-        <span className="text-xs font-medium">{label}</span>
+        <span className="text-xs font-medium text-gray-900 dark:text-dark-text-primary">{label}</span>
       )}
     </div>
   );

@@ -33,7 +33,7 @@ export function TypeIcon({ type, size = 'md', className = '', showLabel = false 
           e.currentTarget.style.display = 'none';
         }}
       />
-      {showLabel && <span className="text-sm font-medium">{typeLabel}</span>}
+      {showLabel && <span className="text-sm font-medium text-gray-900 dark:text-dark-text-primary">{typeLabel}</span>}
     </span>
   );
 }
