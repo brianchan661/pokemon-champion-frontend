@@ -135,9 +135,10 @@
     "description": "The ultimate Pokemon battle experience with comprehensive data, team building tools, and competitive insights.",
     "hero": {
       "title": "Pokemon Champion",
-      "subtitle": "Master the art of Pokemon battles with our comprehensive database, team builder, and competitive insights.",
       "explorePokemon": "Explore Pokemon",
-      "buildTeam": "Build Team"
+      "buildTeam": "Build Team",
+      "browsePokemon": "Browse Pokemon",
+      "viewTiers": "View Tier List"
     },
     "mainFeatures": {
       "title": "Core Features",

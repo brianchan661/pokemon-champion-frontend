@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { Layout } from '@/components/Layout/Layout';
 import { Section } from '@/components/Layout/Section';
+import { HeroSection } from '@/components/Home/HeroSection';
 import { FeatureCard } from '@/components/Home/FeatureCard';
+import { SidebarTeamsWidget } from '@/components/Home/SidebarTeamsWidget';
 import { NewsListItem } from '@/components/Home/NewsListItem';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AdContainer } from '@/components/Ads';
@@ -86,10 +88,13 @@ export default function HomePage({ newsArticles }: HomePageProps) {
         {/* Hidden h1 for SEO and accessibility */}
         <h1 className="sr-only">{translationValues.title}</h1>
 
+        {/* Hero Section */}
+        <HeroSection />
+
         {/* Main Features Section */}
         <Section className="pt-8 pb-8 bg-white dark:bg-dark-bg-primary" ariaLabel="Main features">
           <ErrorBoundary>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 container mx-auto px-4">
               {FEATURES.map((feature) => (
                 <FeatureCard
                   key={feature.href}
@@ -110,7 +115,7 @@ export default function HomePage({ newsArticles }: HomePageProps) {
               {/* Game News Section */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-8">
-                  新着情報
+                  {t('home.latestNews', 'Latest News')}
                 </h2>
                 <ErrorBoundary>
                   <div className="bg-white dark:bg-dark-bg-secondary rounded-lg border border-gray-200 dark:border-dark-border overflow-hidden">
@@ -151,12 +156,12 @@ export default function HomePage({ newsArticles }: HomePageProps) {
               </div>
             </div>
 
-            {/* Right Sidebar with Ads - pokecabook.com style */}
-            {!isPremium && (
-              <div className="w-full lg:w-96 xl:w-80 flex-shrink-0">
-                <div className="sticky top-4">
-                  <div className="space-y-8">
-                    {/* Top Sidebar Ad - Rectangle */}
+            {/* Right Sidebar - Always visible, clean layout */}
+            <div className="w-full lg:w-96 xl:w-80 flex-shrink-0">
+              <div className="sticky top-4">
+                <div className="space-y-8">
+                  {/* Top Sidebar Ad - Only for non-premium */}
+                  {!isPremium && (
                     <ErrorBoundary>
                       <div className="adsense-sidebar-container">
                         <AdContainer
@@ -165,18 +170,15 @@ export default function HomePage({ newsArticles }: HomePageProps) {
                         />
                       </div>
                     </ErrorBoundary>
+                  )}
 
-                    {/* Middle Sidebar Ad - Square */}
-                    <ErrorBoundary>
-                      <div className="adsense-sidebar-container">
-                        <AdContainer
-                          placement="sidebar-middle"
-                          className="w-full adsense-placeholder"
-                        />
-                      </div>
-                    </ErrorBoundary>
+                  {/* Trending Teams Widget - Useful content for everyone */}
+                  <ErrorBoundary>
+                    <SidebarTeamsWidget />
+                  </ErrorBoundary>
 
-                    {/* Bottom Sidebar Ad - Rectangle */}
+                  {/* Bottom Sidebar Ad - Only for non-premium */}
+                  {!isPremium && (
                     <ErrorBoundary>
                       <div className="adsense-sidebar-container">
                         <AdContainer
@@ -185,14 +187,14 @@ export default function HomePage({ newsArticles }: HomePageProps) {
                         />
                       </div>
                     </ErrorBoundary>
-                  </div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </Section>
 
-        {/* Bottom Banner Ad */}
+        {/* Bottom Banner Ad - Outside sidebar */}
         {!isPremium && (
           <Section className="pt-0 pb-8 bg-white dark:bg-dark-bg-primary" ariaLabel="Advertisement">
             <ErrorBoundary>
