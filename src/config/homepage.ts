@@ -47,17 +47,17 @@ const validateConfiguration = () => {
 export const FEATURES = [
   {
     href: '/pokemon',
-    backgroundImage: '/images/features/pokemon-database.svg',
+    backgroundImage: '/images/features/pokemon-database.png',
     translationKey: 'database',
   },
   {
     href: '/teams',
-    backgroundImage: '/images/features/team-builder.svg',
+    backgroundImage: '/images/features/team-builder.png',
     translationKey: 'teamBuilder',
   },
   {
     href: '/tiers',
-    backgroundImage: '/images/features/tier-lists.svg',
+    backgroundImage: '/images/features/tier-lists.png',
     translationKey: 'tiers',
   },
 ] as const satisfies readonly Feature[];
