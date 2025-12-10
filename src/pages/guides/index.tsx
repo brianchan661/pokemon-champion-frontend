@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Layout } from '@/components/Layout/Layout';
 import { Section } from '@/components/Layout/Section';
 import { TypeIcon } from '@/components/UI/TypeIcon'; // Using generic icon for now or we can use specific one
+import { Leaf } from 'lucide-react';
 
 export default function GuidesPage() {
     const { t } = useTranslation('common');
@@ -49,6 +50,35 @@ export default function GuidesPage() {
                                         <p className="text-gray-600 dark:text-gray-400">
                                             {t('guides.tools.typeChartDesc', 'Analyze single and dual-type weaknesses and resistances with our comprehensive interactive chart.')}
                                         </p>
+                                    </div>
+                                </div>
+                            </Link>
+
+                            {/* Nature Guide Card */}
+                            <Link
+                                href="/guides/nature"
+                                className="group relative overflow-hidden rounded-2xl bg-white dark:bg-dark-surface p-6 shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 border border-gray-100 dark:border-gray-800"
+                            >
+                                <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-green-500/10 blur-xl transition-all group-hover:bg-green-500/20" />
+
+                                <div className="relative z-10">
+                                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                                        <Leaf className="h-6 w-6" />
+                                    </div>
+
+                                    <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                                        {t('guides.nature.title', 'Nature Guide')}
+                                    </h3>
+
+                                    <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                                        {t('guides.nature.desc', 'Learn about Pokemon natures, their stat modifiers, and find the perfect nature for your Pokemon.')}
+                                    </p>
+
+                                    <div className="flex items-center text-sm font-medium text-green-600 dark:text-green-400">
+                                        {t('common.readMore', 'Read Guide')}
+                                        <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
                                     </div>
                                 </div>
                             </Link>

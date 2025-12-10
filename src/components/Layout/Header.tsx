@@ -26,7 +26,8 @@ const NAVIGATION_ITEMS = [
     key: 'guides',
     href: '/guides',
     dropdown: [
-      { key: 'typeChart', href: '/guides/type-chart' }
+      { key: 'typeChart', href: '/guides/type-chart' },
+      { key: 'nature', href: '/guides/nature' }
     ]
   },
 ] as const;

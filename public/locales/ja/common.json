@@ -20,7 +20,8 @@
     "more": "その他",
     "openMenu": "メニューを開く",
     "closeMenu": "メニューを閉じる",
-    "typeChart": "タイプ相性表"
+    "typeChart": "タイプ相性表",
+    "nature": "性格"
   },
   "auth": {
     "login": "ログイン",
@@ -479,7 +480,41 @@
       "none": "なし",
       "metaDescription": "インタラクティブな複合タイプ相性表でポケモンの弱点と耐性を計算します。",
       "atkDef": "攻 \\ 防"
+    },
+    "nature": {
+      "title": "性格",
+      "desc": "ポケモンの性格について学び、ステータス補正を確認して、育成に最適な性格を見つけましょう。",
+      "increase": "上昇 (+10%)",
+      "decrease": "下降 (-10%)",
+      "matrix": "性格早見表"
     }
+  },
+  "natures": {
+    "hardy": "がんばりや",
+    "lonely": "さみしがり",
+    "adamant": "いじっぱり",
+    "naughty": "やんちゃ",
+    "brave": "ゆうかん",
+    "bold": "ずぶとい",
+    "docile": "すなお",
+    "impish": "わんぱく",
+    "lax": "のうてんき",
+    "relaxed": "のんき",
+    "modest": "ひかえめ",
+    "mild": "おっとり",
+    "bashful": "てれや",
+    "rash": "うっかりや",
+    "quiet": "れいせい",
+    "calm": "おだやか",
+    "gentle": "おとなしい",
+    "careful": "しんちょう",
+    "quirky": "きまぐれ",
+    "sassy": "なまいき",
+    "timid": "おくびょう",
+    "hasty": "せっかち",
+    "jolly": "ようき",
+    "naive": "むじゃき",
+    "serious": "まじめ"
   },
   "strategy": {
     "write": "書く",
