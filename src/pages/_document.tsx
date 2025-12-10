@@ -32,8 +32,8 @@ export default function Document() {
         />
         <meta name="description" content="Pokemon Champion - The ultimate Pokemon battle experience" />
         <meta name="keywords" content="pokemon, battle, champion, pvp, strategy" />
-        <link rel="icon" href="/favicon.ico" />
-        
+        <link rel="icon" href="/favicon.png" type="image/png" />
+
         {/* AdSense Script */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <script
