@@ -22,7 +22,13 @@ const NAVIGATION_ITEMS = [
     ]
   },
   { key: 'tiers', href: '/tiers' },
-  { key: 'guides', href: '/guides' },
+  {
+    key: 'guides',
+    href: '/guides',
+    dropdown: [
+      { key: 'typeChart', href: '/guides/type-chart' }
+    ]
+  },
 ] as const;
 
 export const Header = () => {

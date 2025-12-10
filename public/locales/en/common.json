@@ -19,7 +19,8 @@
     "news": "News",
     "more": "More",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "typeChart": "Type Chart"
   },
   "auth": {
     "login": "Login",
@@ -466,7 +467,20 @@
     "comingSoon": "Comprehensive Pokemon tier lists and rankings are coming soon. Stay tuned for competitive meta analysis!"
   },
   "guides": {
-    "comingSoon": "In-depth battle guides, strategies, and tutorials are coming soon. Learn from the best!"
+    "comingSoon": "In-depth battle guides, strategies, and tutorials are coming soon. Learn from the best!",
+    "moreComing": "More Guides Coming Soon",
+    "stayTuned": "Stay tuned for team building strategies and meta analysis.",
+    "tools": {
+      "typeChartDesc": "Analyze single and dual-type weaknesses and resistances with our comprehensive interactive chart."
+    },
+    "typeChart": {
+      "title": "Type Effectiveness Calculator",
+      "description": "Select a secondary type to see dual-type weaknesses.",
+      "secondaryType": "Secondary Defense Type:",
+      "none": "None",
+      "metaDescription": "Calculate Pokemon type weaknesses and resistances with our interactive dual-type chart.",
+      "atkDef": "Atk \\ Def"
+    }
   },
   "strategy": {
     "write": "Write",
