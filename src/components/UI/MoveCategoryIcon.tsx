@@ -21,7 +21,7 @@ export function MoveCategoryIcon({
   showLabel = false
 }: MoveCategoryIconProps) {
   const { t } = useTranslation('common');
-  const iconPath = `/images/moves/${category}.png`;
+  const iconPath = `/images/moves/${category.toLowerCase()}.png`;
   const label = t(`moves.categories.${category}`, { defaultValue: category });
 
   return (
