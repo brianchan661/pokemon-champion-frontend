@@ -4,10 +4,13 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { SetPasswordForm } from '@/components/Auth/SetPasswordForm';
 import { getApiBaseUrl } from '@/config/api';
+import { authService } from '@/services/authService';
+import { useAuth } from '@/contexts/AuthContext';
 
 const VerifyEmail = () => {
   const router = useRouter();
   const { t } = useTranslation('common');
+  const { refreshProfile } = useAuth();
   const { token } = router.query;
   const [status, setStatus] = useState<'loading' | 'new-user' | 'existing-user' | 'error'>('loading');
   const [message, setMessage] = useState('');
@@ -43,8 +46,9 @@ const VerifyEmail = () => {
             const loginData = await loginResponse.json();
 
             if (loginData.success && loginData.data.token) {
-              // Store the token
-              localStorage.setItem('token', loginData.data.token);
+              // Store the token and update auth state
+              authService.setToken(loginData.data.token);
+              await refreshProfile();
 
               // Redirect to last accessed page or home
               const returnUrl = sessionStorage.getItem('returnUrl') || '/';
@@ -54,24 +58,24 @@ const VerifyEmail = () => {
                 router.push(returnUrl);
               }, 2000);
             }
+          } else {
+            setStatus('error');
+            setMessage(data.error || t('auth.invalidToken'));
           }
-        } else {
+        } catch (error: any) {
+          console.error('Verify token error:', error);
           setStatus('error');
-          setMessage(data.error || t('auth.invalidToken'));
+          setMessage(t('auth.genericError'));
         }
-      } catch (error: any) {
-        console.error('Verify token error:', error);
-        setStatus('error');
-        setMessage(t('auth.genericError'));
-      }
-    };
+      };
 
-    verifyToken();
-  }, [token, router]);
+      verifyToken();
+    }, [token, router]);
 
-  const handleRegistrationSuccess = (authToken: string) => {
-    // Store the token
-    localStorage.setItem('token', authToken);
+  const handleRegistrationSuccess = async (authToken: string) => {
+    // Store the token and update auth state
+    authService.setToken(authToken);
+    await refreshProfile();
 
     // Redirect to profile page for new users
     router.push('/profile');
