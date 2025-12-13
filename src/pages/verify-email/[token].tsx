@@ -58,19 +58,20 @@ const VerifyEmail = () => {
                 router.push(returnUrl);
               }, 2000);
             }
-          } else {
-            setStatus('error');
-            setMessage(data.error || t('auth.invalidToken'));
           }
-        } catch (error: any) {
-          console.error('Verify token error:', error);
+        } else {
           setStatus('error');
-          setMessage(t('auth.genericError'));
+          setMessage(data.error || t('auth.invalidToken'));
         }
-      };
+      } catch (error: any) {
+        console.error('Verify token error:', error);
+        setStatus('error');
+        setMessage(t('auth.genericError'));
+      }
+    };
 
-      verifyToken();
-    }, [token, router]);
+    verifyToken();
+  }, [token, router]);
 
   const handleRegistrationSuccess = async (authToken: string) => {
     // Store the token and update auth state
