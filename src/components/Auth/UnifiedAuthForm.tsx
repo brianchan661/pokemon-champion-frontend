@@ -53,8 +53,12 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
 
   const handlePasswordLogin = async () => {
     try {
-      await login({ email, password });
-      onSuccess?.();
+      const result = await login({ email, password });
+      if (result.success) {
+        onSuccess?.();
+      } else {
+        onError?.(result.error || 'Login failed');
+      }
     } catch (error: any) {
       onError?.(error.message || 'Login failed');
     }
