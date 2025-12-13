@@ -35,22 +35,22 @@ export const SetPasswordForm: React.FC<SetPasswordFormProps> = ({
 
   const validateForm = (): boolean => {
     if (!formData.username || !formData.password || !formData.confirmPassword) {
-      setLocalError('Please fill in all fields');
+      setLocalError(t('auth.fillAllFields'));
       return false;
     }
 
     if (formData.username.length < 2) {
-      setLocalError('Username must be at least 2 characters long');
+      setLocalError(t('auth.usernameLengthError'));
       return false;
     }
 
     if (formData.password.length < 8) {
-      setLocalError('Password must be at least 8 characters long');
+      setLocalError(t('auth.passwordLengthError'));
       return false;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setLocalError('Passwords do not match');
+      setLocalError(t('auth.passwordMatchError'));
       return false;
     }
 
@@ -60,7 +60,7 @@ export const SetPasswordForm: React.FC<SetPasswordFormProps> = ({
     const hasNumber = /[0-9]/.test(formData.password);
 
     if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-      setLocalError('Password must contain at least one uppercase letter, one lowercase letter, and one number');
+      setLocalError(t('auth.passwordComplexityError'));
       return false;
     }
 
@@ -94,13 +94,13 @@ export const SetPasswordForm: React.FC<SetPasswordFormProps> = ({
       if (data.success && data.data.token) {
         onSuccess(data.data.token);
       } else {
-        const errorMsg = data.error || 'Failed to complete registration';
+        const errorMsg = data.error || t('auth.registrationFailed');
         setLocalError(errorMsg);
         onError?.(errorMsg);
       }
     } catch (error) {
       console.error('Complete registration error:', error);
-      const errorMsg = 'An error occurred. Please try again.';
+      const errorMsg = t('auth.genericError');
       setLocalError(errorMsg);
       onError?.(errorMsg);
     } finally {

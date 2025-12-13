@@ -56,12 +56,12 @@ const VerifyEmail = () => {
           }
         } else {
           setStatus('error');
-          setMessage(data.error || 'Invalid or expired link');
+          setMessage(data.error || t('auth.invalidToken'));
         }
       } catch (error: any) {
         console.error('Verify token error:', error);
         setStatus('error');
-        setMessage('An error occurred. Please try again.');
+        setMessage(t('auth.genericError'));
       }
     };
 
