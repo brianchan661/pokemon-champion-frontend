@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { SetPasswordForm } from '@/components/Auth/SetPasswordForm';
 import { getApiBaseUrl } from '@/config/api';
 
@@ -201,3 +202,11 @@ const VerifyEmail = () => {
 };
 
 export default VerifyEmail;
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
+};
