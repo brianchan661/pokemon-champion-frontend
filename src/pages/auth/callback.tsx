@@ -47,9 +47,10 @@ const OAuthCallback = () => {
         localStorage.removeItem('authToken');
 
         // Use authService to set the NEW token
-        authService.setToken(token as string);
+        const tokenString = Array.isArray(token) ? token[0] : token;
+        authService.setToken(tokenString);
 
-        console.log('Processed OAuth Token:', token.substring(0, 10) + '...');
+        console.log('Processed OAuth Token:', tokenString.substring(0, 10) + '...');
 
         // Refresh user profile to update auth context
         await refreshProfile();
