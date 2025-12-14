@@ -107,8 +107,9 @@ export default function ProfilePage() {
     queryKey: ['profile'],
     queryFn: async () => {
       const token = localStorage.getItem('authToken');
+      // Add timestamp to prevent browser caching
       const response = await axios.get<{ success: boolean; data: ProfileData }>(
-        `${API_URL}/auth/profile`,
+        `${API_URL}/auth/profile?_t=${Date.now()}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data.data;
@@ -703,8 +704,8 @@ export default function ProfilePage() {
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-slide-up">
           <div
             className={`rounded-lg shadow-lg p-4 min-w-[320px] max-w-md ${toast.type === 'success'
-                ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
+              ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+              : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
               }`}
           >
             <div className="flex items-start">
@@ -750,8 +751,8 @@ export default function ProfilePage() {
               <button
                 onClick={() => setToast(null)}
                 className={`ml-4 inline-flex flex-shrink-0 ${toast.type === 'success'
-                    ? 'text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
-                    : 'text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
+                  ? 'text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
+                  : 'text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
                   }`}
               >
                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { authService, User, RegisterData, LoginData } from '@/services/authService';
 
 interface AuthContextType {
@@ -92,15 +93,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const queryClient = useQueryClient();
+
   const logout = () => {
     authService.logout();
     setUser(null);
+    queryClient.removeQueries();
   };
 
   const updateProfile = async (updates: Partial<User>): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await authService.updateProfile(updates);
-      
+
       if (response.success && response.data) {
         setUser(response.data.user);
         return { success: true };

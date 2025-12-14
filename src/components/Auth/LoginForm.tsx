@@ -61,8 +61,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('returnUrl', window.location.pathname);
     }
-    // Redirect to Google OAuth endpoint
-    window.location.href = `${getBackendBaseUrl()}/api/auth/google`;
+    // Redirect to Google OAuth endpoint with timestamp to prevent browser caching
+    window.location.href = `${getBackendBaseUrl()}/api/auth/google?_t=${Date.now()}`;
   };
 
   return (
@@ -77,7 +77,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
             {error}
           </div>
         )}
-        
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email Address
@@ -93,7 +93,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
             required
           />
         </div>
-        
+
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
             Password
@@ -109,7 +109,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
             required
           />
         </div>
-        
+
         <button
           type="submit"
           disabled={isLoading}
@@ -171,7 +171,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
           </button>
         </p>
       </div>
-      
+
       {/* Test Credentials Info */}
       <div className="mt-6 p-4 bg-gray-50 rounded-md">
         <p className="text-xs text-gray-600 mb-2">

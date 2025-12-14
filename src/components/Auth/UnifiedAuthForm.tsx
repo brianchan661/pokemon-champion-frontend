@@ -131,8 +131,8 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('returnUrl', window.location.pathname);
     }
-    // Redirect to Google OAuth endpoint
-    window.location.href = `${getBackendBaseUrl()}/api/auth/google`;
+    // Redirect to Google OAuth endpoint with timestamp to prevent browser caching
+    window.location.href = `${getBackendBaseUrl()}/api/auth/google?_t=${Date.now()}`;
   };
 
   if (emailSent) {

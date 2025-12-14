@@ -68,11 +68,11 @@ class AuthService {
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
       const response = await axios.post(`${API_BASE}/auth/register`, data);
-      
+
       if (response.data.success && response.data.data?.token) {
         this.setToken(response.data.data.token);
       }
-      
+
       return response.data;
     } catch (error: any) {
       return {
@@ -101,10 +101,11 @@ class AuthService {
 
   async getProfile(): Promise<ProfileResponse> {
     try {
-      const response = await axios.get(`${API_BASE}/auth/profile`, {
+      // Add timestamp to prevent browser caching
+      const response = await axios.get(`${API_BASE}/auth/profile?_t=${Date.now()}`, {
         headers: this.getAuthHeaders()
       });
-      
+
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 401) {
@@ -122,7 +123,7 @@ class AuthService {
       const response = await axios.put(`${API_BASE}/auth/profile`, updates, {
         headers: this.getAuthHeaders()
       });
-      
+
       return response.data;
     } catch (error: any) {
       return {

@@ -43,7 +43,13 @@ const OAuthCallback = () => {
         }
 
         // Store token using authService (updates both localStorage and internal state)
+        // Explicitly clear any existing session first to ensure no cross-contamination
+        localStorage.removeItem('authToken');
+
+        // Use authService to set the NEW token
         authService.setToken(token as string);
+
+        console.log('Processed OAuth Token:', token.substring(0, 10) + '...');
 
         // Refresh user profile to update auth context
         await refreshProfile();
