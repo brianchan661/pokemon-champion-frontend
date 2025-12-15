@@ -26,7 +26,7 @@ export default function ItemsPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
-  
+
   // Debounce search query to improve performance
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -80,168 +80,168 @@ export default function ItemsPage() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 bg-gray-50 dark:bg-dark-bg-primary min-h-screen">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">{t('items.title')}</h1>
-            <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-gray-600 dark:text-dark-text-secondary">
-                {t('items.description')}
-              </p>
-              {totalCount > 0 && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
-                  {searchQuery || categoryFilters.length > 0
-                    ? t('items.filteredItems', { count: filteredCount })
-                    : t('items.totalItems', { count: totalCount })}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Filters */}
-          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border p-4 mb-6 space-y-4">
-            {/* Search */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
-                {t('items.search')}
-              </label>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('items.search')}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
-              />
-            </div>
-
-            {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
-                {t('items.filterByCategory')}
-                {categoryFilters.length > 0 && (
-                  <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
-                    ({categoryFilters.length} selected)
+      <div className="bg-gray-50 dark:bg-dark-bg-primary min-h-screen">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">{t('items.title')}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-gray-600 dark:text-dark-text-secondary">
+                  {t('items.description')}
+                </p>
+                {totalCount > 0 && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                    {searchQuery || categoryFilters.length > 0
+                      ? t('items.filteredItems', { count: filteredCount })
+                      : t('items.totalItems', { count: totalCount })}
                   </span>
                 )}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setCategoryFilters([])}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    categoryFilters.length === 0
-                      ? 'bg-gray-800 dark:bg-gray-700 text-white'
-                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
-                  }`}
-                >
-                  {t('items.allCategories')}
-                </button>
-                {ITEM_CATEGORIES.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => toggleCategoryFilter(category)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      categoryFilters.includes(category)
-                        ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
-                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
-                    }`}
-                  >
-                    {t(`items.categories.${category}`, { defaultValue: category })}
-                  </button>
-                ))}
               </div>
             </div>
 
-            {/* Clear Filters */}
-            {(searchQuery || categoryFilters.length > 0) && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setCategoryFilters([]);
-                }}
-                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
-              >
-                {t('items.clearFilters')}
-              </button>
+            {/* Filters */}
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border p-4 mb-6 space-y-4">
+              {/* Search */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
+                  {t('items.search')}
+                </label>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('items.search')}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
+                />
+              </div>
+
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
+                  {t('items.filterByCategory')}
+                  {categoryFilters.length > 0 && (
+                    <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
+                      ({categoryFilters.length} selected)
+                    </span>
+                  )}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setCategoryFilters([])}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilters.length === 0
+                        ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                      }`}
+                  >
+                    {t('items.allCategories')}
+                  </button>
+                  {ITEM_CATEGORIES.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => toggleCategoryFilter(category)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${categoryFilters.includes(category)
+                          ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
+                          : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                        }`}
+                    >
+                      {t(`items.categories.${category}`, { defaultValue: category })}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Clear Filters */}
+              {(searchQuery || categoryFilters.length > 0) && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setCategoryFilters([]);
+                  }}
+                  className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+                >
+                  {t('items.clearFilters')}
+                </button>
+              )}
+            </div>
+
+
+            {/* Loading State */}
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-primary-600 dark:border-t-primary-400"></div>
+                <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('items.loading')}</p>
+              </div>
+            ) : error ? (
+              <ErrorMessage
+                error={error}
+                onRetry={() => refetch()}
+                context={t('items.title')}
+              />
+            ) : filteredItems.length > 0 ? (
+              <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+                    <thead className="bg-gray-50 dark:bg-dark-bg-tertiary sticky top-0">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                          {t('items.table.sprite')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                          {t('items.table.name')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                          {t('items.table.category')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                          {t('items.table.description')}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
+                      {filteredItems.map((item) => (
+                        <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.spriteUrl && (
+                              <Image
+                                src={item.spriteUrl}
+                                alt={item.name}
+                                width={30}
+                                height={30}
+                                style={{ width: 'auto', height: 'auto' }}
+                              />
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <Link
+                                href={`/data/items/${item.identifier}`}
+                                className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
+                              >
+                                {item.name}
+                              </Link>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-dark-bg-tertiary text-gray-800 dark:text-dark-text-primary">
+                              {t(`items.categories.${item.category}`, { defaultValue: item.category })}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-700 dark:text-dark-text-primary">
+                            {item.description || '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-600 dark:text-dark-text-secondary">{t('items.noResults')}</p>
+              </div>
             )}
           </div>
-
-
-          {/* Loading State */}
-          {isLoading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-primary-600 dark:border-t-primary-400"></div>
-              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('items.loading')}</p>
-            </div>
-          ) : error ? (
-            <ErrorMessage
-              error={error}
-              onRetry={() => refetch()}
-              context={t('items.title')}
-            />
-          ) : filteredItems.length > 0 ? (
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
-                  <thead className="bg-gray-50 dark:bg-dark-bg-tertiary sticky top-0">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('items.table.sprite')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('items.table.name')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('items.table.category')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('items.table.description')}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
-                    {filteredItems.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item.spriteUrl && (
-                            <Image
-                              src={item.spriteUrl}
-                              alt={item.name}
-                              width={30}
-                              height={30}
-                              style={{ width: 'auto', height: 'auto' }}
-                            />
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <Link
-                              href={`/data/items/${item.identifier}`}
-                              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
-                            >
-                              {item.name}
-                            </Link>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-dark-bg-tertiary text-gray-800 dark:text-dark-text-primary">
-                            {t(`items.categories.${item.category}`, { defaultValue: item.category })}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-dark-text-primary">
-                          {item.description || '-'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-dark-text-secondary">{t('items.noResults')}</p>
-            </div>
-          )}
         </div>
       </div>
     </Layout>
