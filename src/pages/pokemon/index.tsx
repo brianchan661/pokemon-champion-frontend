@@ -64,7 +64,7 @@ export default function PokemonListPage() {
         return response.data.data;
       }
       // Fallback if backend still returns paginated wrapper (shouldn't if params omitted, but safe check)
-      // @ts-ignore
+      // @ts-expect-error: Handling potential API response variations
       return response.data.data?.data || [];
     },
     staleTime: 1000 * 60 * 60 * 24, // 24 hours
@@ -339,8 +339,6 @@ export default function PokemonListPage() {
           </div>
 
           {/* Main Content Area */}
-          {/* @ts-ignore */}
-          {/* @ts-ignore */}
           <MemoizedPokemonList
             pokemon={sortedPokemon}
             loading={isLoading}
@@ -490,6 +488,8 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
     </div>
   );
 });
+
+MemoizedPokemonList.displayName = 'MemoizedPokemonList';
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   return {
