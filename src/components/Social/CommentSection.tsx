@@ -14,6 +14,7 @@ const API_URL = getApiBaseUrl();
 
 interface ExtendedComment extends SharedComment {
     replies?: ExtendedComment[];
+    authorAvatarUrl?: string;
 }
 
 interface CommentSectionProps {
@@ -52,18 +53,37 @@ const CommentItem: React.FC<{
         <div className={`mt-4 ${indentationClass}`}>
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-2">
-                    <div>
-                        <span className="font-bold text-gray-900 dark:text-white mr-2">
-                            {comment.authorUsername || 'Unknown'}
-                        </span>
-                        {isOwner && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300">
-                                Author
+                    <div className="flex items-center gap-2">
+                        {/* Avatar */}
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600 flex-shrink-0">
+                            {comment.authorAvatarUrl ? (
+                                <img
+                                    src={comment.authorAvatarUrl}
+                                    alt={comment.authorUsername}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-gray-500 dark:text-gray-300">
+                                    {comment.authorUsername?.charAt(0).toUpperCase() || '?'}
+                                </div>
+                            )}
+                        </div>
+
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold text-gray-900 dark:text-white">
+                                    {comment.authorUsername || 'Unknown'}
+                                </span>
+                                {isOwner && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300">
+                                        Author
+                                    </span>
+                                )}
+                            </div>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
-                        )}
-                        <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                            {new Date(comment.createdAt).toLocaleDateString()}
-                        </span>
+                        </div>
                     </div>
                     <div className="flex gap-2">
                         {isAuthenticated && (
