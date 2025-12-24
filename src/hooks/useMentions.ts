@@ -24,14 +24,21 @@ interface UseMentionsResult {
   searchMentions: (query: string) => void;
 }
 
-export function useMentions(): UseMentionsResult {
+interface UseMentionsOptions {
+  enabled?: boolean;
+}
+
+export function useMentions(opts: UseMentionsOptions = {}): UseMentionsResult {
+  const { enabled = true } = opts;
   const [allOptions, setAllOptions] = useState<MentionOption[]>([]);
   const [filteredOptions, setFilteredOptions] = useState<MentionOption[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Load all data on mount
   useEffect(() => {
+    if (!enabled) return;
+
     async function loadAllData() {
       setLoading(true);
       setError(null);
@@ -110,7 +117,7 @@ export function useMentions(): UseMentionsResult {
     }
 
     loadAllData();
-  }, []);
+  }, [enabled]);
 
   // Search/filter function
   const searchMentions = useCallback(

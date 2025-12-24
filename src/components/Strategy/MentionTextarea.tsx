@@ -21,20 +21,24 @@ export interface StrategySegment {
 
 interface MentionTextareaProps {
   value: string; // JSON string or plain text
-  onChange: (value: string) => void; // Returns JSON string
+  onChange?: (value: string) => void; // Returns JSON string details
+  onChangeText?: (text: string) => void; // Returns plain text representation
   placeholder?: string;
   rows?: number;
   maxLength?: number;
   className?: string;
+  lazyLoad?: boolean;
 }
 
 export function MentionTextarea({
   value,
   onChange,
+  onChangeText,
   placeholder,
   rows = 8,
   maxLength = 2000,
   className = '',
+  lazyLoad = false,
 }: MentionTextareaProps) {
   const { t } = useTranslation('common');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -45,7 +49,10 @@ export function MentionTextarea({
   const [mentionStart, setMentionStart] = useState(-1);
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
 
-  const { options, loading, searchMentions } = useMentions();
+  // Lazy loading state
+  const [mentionsEnabled, setMentionsEnabled] = useState(!lazyLoad);
+
+  const { options, loading, searchMentions } = useMentions({ enabled: mentionsEnabled });
 
   // Parse value (could be JSON or plain text)
   const parseValue = useCallback((val: string): StrategySegment[] => {
@@ -101,6 +108,14 @@ export function MentionTextarea({
     const cursorPos = e.target.selectionStart;
 
     setDisplayText(newText);
+    if (onChangeText) {
+      onChangeText(newText);
+    }
+
+    // Enable mentions if user starts typing (if lazy loaded)
+    if (!mentionsEnabled) {
+      setMentionsEnabled(true);
+    }
 
     // Check for @ character to show autocomplete
     const beforeCursor = newText.slice(0, cursorPos);
@@ -145,7 +160,9 @@ export function MentionTextarea({
 
     // Save updated segments
     const jsonValue = JSON.stringify({ segments: updatedSegments });
-    onChange(jsonValue);
+    if (onChange) {
+      onChange(jsonValue);
+    }
   };
 
   // Update segments based on text changes while preserving mentions
@@ -304,10 +321,15 @@ export function MentionTextarea({
       // Update display text
       const newDisplayText = textBefore + `@${option.name}` + textAfter;
       setDisplayText(newDisplayText);
+      if (onChangeText) {
+        onChangeText(newDisplayText);
+      }
 
       // Save as JSON
       const jsonValue = JSON.stringify({ segments: newSegments });
-      onChange(jsonValue);
+      if (onChange) {
+        onChange(jsonValue);
+      }
 
       // Close autocomplete
       setShowAutocomplete(false);
@@ -379,6 +401,7 @@ export function MentionTextarea({
               value={displayText}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
+              onFocus={() => !mentionsEnabled && setMentionsEnabled(true)}
               placeholder={placeholder}
               rows={rows}
               maxLength={maxLength}

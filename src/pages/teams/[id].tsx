@@ -12,6 +12,7 @@ import { LoadingSpinner, ErrorMessage, Button, PokemonCard } from '@/components/
 import { useAuth } from '@/contexts/AuthContext';
 import { teamService } from '@/services/teamService';
 import { StrategyDisplay } from '@/components/Strategy/StrategyDisplay';
+import { CommentSection } from '@/components/Social/CommentSection';
 import { Team, Comment } from '@brianchan661/pokemon-champion-shared';
 import { getApiBaseUrl } from '@/config/api';
 
@@ -23,8 +24,6 @@ export default function TeamDetailPage() {
   const { id } = router.query;
   const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
-  const [commentText, setCommentText] = useState('');
-  const [replyTo, setReplyTo] = useState<string | null>(null);
 
   // Fetch team data
   const { data: teamData, isLoading, error } = useQuery({
@@ -69,23 +68,7 @@ export default function TeamDetailPage() {
     },
   });
 
-  // Comment mutation
-  const commentMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.post(
-        `${API_URL}/teams/${id}/comments`,
-        { content, parentId: replyTo },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teamComments', id] });
-      setCommentText('');
-      setReplyTo(null);
-    },
-  });
+
 
   const handleLike = async () => {
     if (!isAuthenticated) {
@@ -95,15 +78,7 @@ export default function TeamDetailPage() {
     await likeMutation.mutateAsync();
   };
 
-  const handleComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!commentText.trim()) return;
-    if (!isAuthenticated) {
-      router.push(`/auth?redirect=/teams/${id}`);
-      return;
-    }
-    await commentMutation.mutateAsync(commentText.trim());
-  };
+
 
   if (isLoading) {
     return (
@@ -225,8 +200,8 @@ export default function TeamDetailPage() {
                       onClick={handleLike}
                       disabled={likeMutation.isPending}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2 text-sm ${hasLiked
-                          ? 'bg-primary-600 text-white hover:bg-primary-700'
-                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
+                        ? 'bg-primary-600 text-white hover:bg-primary-700'
+                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
                         }`}
                     >
                       <svg className="w-4 h-4" fill={hasLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
@@ -246,88 +221,12 @@ export default function TeamDetailPage() {
 
             {/* Comments Section (Only for public teams) */}
             {team.isPublic && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                  Comments ({comments.length})
-                </h2>
-
-                {/* Comment Form */}
-                {isAuthenticated ? (
-                  <form onSubmit={handleComment} className="mb-8">
-                    {replyTo && (
-                      <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
-                        Replying to comment{' '}
-                        <button
-                          type="button"
-                          onClick={() => setReplyTo(null)}
-                          className="text-primary-600 dark:text-primary-400 hover:underline"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                    <textarea
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      placeholder="Share your thoughts..."
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      rows={3}
-                      maxLength={1000}
-                    />
-                    <div className="mt-2 flex justify-between items-center">
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {commentText.length}/1000
-                      </span>
-                      <button
-                        type="submit"
-                        disabled={!commentText.trim() || commentMutation.isPending}
-                        className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {commentMutation.isPending ? 'Posting...' : 'Post Comment'}
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <div className="mb-8 text-center py-6 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Please log in to leave a comment
-                    </p>
-                    <Button href={`/auth?redirect=/teams/${id}`} variant="primary">
-                      {t('auth.login')}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Comments List */}
-                <div className="space-y-4">
-                  {comments.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                      No comments yet. Be the first to comment!
-                    </p>
-                  ) : (
-                    comments.map((comment) => (
-                      <div
-                        key={comment.id}
-                        className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <span className="font-medium text-gray-900 dark:text-white">
-                              {comment.authorUsername || 'Unknown'}
-                            </span>
-                            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                              {new Date(comment.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                          {comment.content}
-                        </p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+              <CommentSection
+                teamId={team.id}
+                comments={comments}
+                isPublic={team.isPublic}
+                isAuthenticated={isAuthenticated}
+              />
             )}
           </div>
         </div>

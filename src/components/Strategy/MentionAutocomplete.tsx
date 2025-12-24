@@ -135,6 +135,7 @@ export function MentionAutocomplete({
       {/* Tabs */}
       <div className="grid grid-cols-5 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg-tertiary">
         <button
+          type="button"
           onClick={() => setActiveTab('all')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'all'
             ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 bg-white dark:bg-dark-bg-secondary'
@@ -144,6 +145,7 @@ export function MentionAutocomplete({
           All ({options.length})
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('pokemon')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'pokemon'
             ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-dark-bg-secondary'
@@ -153,6 +155,7 @@ export function MentionAutocomplete({
           Pokemon ({counts.pokemon})
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('move')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'move'
             ? 'text-orange-600 dark:text-orange-400 border-b-2 border-orange-600 dark:border-orange-400 bg-white dark:bg-dark-bg-secondary'
@@ -162,6 +165,7 @@ export function MentionAutocomplete({
           Moves ({counts.move})
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('item')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'item'
             ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-white dark:bg-dark-bg-secondary'
@@ -171,6 +175,7 @@ export function MentionAutocomplete({
           Items ({counts.item})
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('ability')}
           className={`px-2 py-2 text-xs font-medium ${activeTab === 'ability'
             ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400 bg-white dark:bg-dark-bg-secondary'
@@ -205,9 +210,14 @@ export function MentionAutocomplete({
         ) : (
           filteredOptions.map((option, index) => (
             <button
+              type="button"
               key={`${option.type}-${option.id}`}
               ref={index === selectedIndex ? selectedRef : null}
-              onClick={() => onSelect(option)}
+              onClick={(e) => {
+                e.preventDefault(); // Extra safety
+                e.stopPropagation(); // Extra safety
+                onSelect(option);
+              }}
               className={`w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors ${index === selectedIndex ? 'bg-primary-50 dark:bg-primary-900/20' : ''
                 }`}
             >
