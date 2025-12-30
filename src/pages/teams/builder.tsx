@@ -12,8 +12,9 @@ import { Pokemon, TeamPokemon } from '@brianchan661/pokemon-champion-shared';
 import { PokemonSelector } from '@/components/TeamBuilder/PokemonSelector';
 import { TeamSlots, TeamSlot } from '@/components/TeamBuilder/TeamSlots';
 import { PokemonConfigurator } from '@/components/TeamBuilder/PokemonConfigurator';
-import { TeamSummary } from '@/components/TeamBuilder/TeamSummary';
+
 import { MentionTextarea } from '@/components/Strategy/MentionTextarea';
+import { TeamTypeAnalysis } from '@/components/TeamBuilder/TeamTypeAnalysis';
 import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import axios from 'axios';
 import { getApiBaseUrl } from '@/config/api';
@@ -404,40 +405,34 @@ export default function TeamBuilderPage() {
 
             {/* Step 1: Pokemon Selection */}
             {step === 1 && (
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div className="lg:col-span-3 space-y-6">
-                  {/* Team Slots */}
-                  <TeamSlots
-                    team={team}
-                    onSlotClick={handleSlotClick}
-                    onRemovePokemon={handleRemovePokemon}
-                    activeSlot={activeSlot}
-                  />
+              <div className="space-y-6">
+                {/* Team Slots */}
+                <TeamSlots
+                  team={team}
+                  onSlotClick={handleSlotClick}
+                  onRemovePokemon={handleRemovePokemon}
+                  activeSlot={activeSlot}
+                />
 
-                  {/* Next Button */}
-                  <div className="flex gap-4">
-                    <button
-                      onClick={handleNextStep}
-                      disabled={teamPokemonCount === 0}
-                      className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                    >
-                      {t('common.next', 'Next')}
-                    </button>
-                    <Button
-                      href="/teams/my"
-                      variant="secondary"
-                      className="px-6 py-3"
-                    >
-                      {t('common.cancel', 'Cancel')}
-                    </Button>
-                  </div>
-                </div>
+                {/* Type Coverage Analysis */}
+                <TeamTypeAnalysis team={team} />
 
-                {/* Right Column - Team Summary */}
-                <div className="lg:col-span-1">
-                  <TeamSummary
-                    team={team}
-                  />
+                {/* Next Button */}
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleNextStep}
+                    disabled={teamPokemonCount === 0}
+                    className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  >
+                    {t('common.next', 'Next')}
+                  </button>
+                  <Button
+                    href="/teams/my"
+                    variant="secondary"
+                    className="px-6 py-3"
+                  >
+                    {t('common.cancel', 'Cancel')}
+                  </Button>
                 </div>
               </div>
             )}
@@ -512,8 +507,8 @@ export default function TeamBuilderPage() {
                     {isSaving
                       ? t('common.saving', 'Saving...')
                       : teamId
-                      ? t('common.update', 'Update Team')
-                      : t('common.save', 'Save Team')}
+                        ? t('common.update', 'Update Team')
+                        : t('common.save', 'Save Team')}
                   </button>
                   <Button
                     href="/teams/my"

@@ -21,6 +21,15 @@ const STAT_LABELS = {
   speed: 'Speed',
 };
 
+const NATURE_STAT_MAP: Record<string, string> = {
+  hp: 'hp',
+  attack: 'attack',
+  defense: 'defense',
+  specialAttack: 'sp_atk',
+  specialDefense: 'sp_def',
+  speed: 'speed',
+};
+
 /**
  * Live stat calculator display
  * Shows final calculated stats with color coding
@@ -40,64 +49,53 @@ export function StatCalculator({ baseStats, ivs, evs, level, nature, className =
   // Calculate final stats
   const finalStats = calculateAllStats(baseStats, ivs, evs, level, natureModifiers);
 
-  // Determine stat color based on range
-  const getStatColor = (stat: keyof StatSpread, value: number): string => {
-    if (stat === 'hp') {
-      if (value >= 400) return 'text-green-600';
-      if (value >= 300) return 'text-blue-600';
-      if (value >= 200) return 'text-yellow-600';
-      return 'text-red-600';
-    } else {
-      if (value >= 200) return 'text-green-600';
-      if (value >= 150) return 'text-blue-600';
-      if (value >= 100) return 'text-yellow-600';
-      return 'text-red-600';
-    }
-  };
+
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <h3 className="text-sm font-medium text-gray-700">
+      <h3 className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
         {t('teamBuilder.finalStats', 'Final Stats')} (Lv. {level})
       </h3>
 
-      <div className="space-y-2">
+      <div className="space-y-1">
         {(Object.keys(STAT_LABELS) as Array<keyof StatSpread>).map((stat) => {
           const finalValue = finalStats[stat];
           const baseValue = baseStats[stat];
           const ev = evs[stat];
           const iv = ivs[stat];
-          const isIncreased = nature?.increasedStat === stat || (stat !== 'hp' && nature?.increasedStat === `sp_${stat}`);
-          const isDecreased = nature?.decreasedStat === stat || (stat !== 'hp' && nature?.decreasedStat === `sp_${stat}`);
+          const natureStat = NATURE_STAT_MAP[stat];
+          const isIncreased = nature?.increasedStat === natureStat;
+          const isDecreased = nature?.decreasedStat === natureStat;
 
           return (
-            <div key={stat} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700 w-20">
+            <div key={stat} className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary rounded transition-colors group">
+              <div className="flex items-center gap-1.5 min-w-[30%]">
+                <span className="text-xs font-medium text-gray-600 dark:text-dark-text-secondary w-14 truncate">
                   {STAT_LABELS[stat]}
                 </span>
-                {isIncreased && (
-                  <span className="text-xs text-green-600" title="Increased by nature">
-                    +
-                  </span>
-                )}
-                {isDecreased && (
-                  <span className="text-xs text-red-600" title="Decreased by nature">
-                    -
-                  </span>
-                )}
+                <div className="flex flex-col w-2 leading-none">
+                  {isIncreased && (
+                    <span className="text-[10px] text-green-600 font-bold" title="Increased by nature">
+                      ▲
+                    </span>
+                  )}
+                  {isDecreased && (
+                    <span className="text-[10px] text-red-600 font-bold" title="Decreased by nature">
+                      ▼
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="text-right text-xs text-gray-500">
-                  <div>Base: {baseValue}</div>
-                  <div className="flex gap-2">
-                    <span>IV: {iv}</span>
-                    <span>EV: {ev}</span>
-                  </div>
+              {/* Compact details for hover/always if space permits */}
+              <div className="flex items-center gap-2 flex-1 justify-end">
+                <div className="text-[10px] text-gray-400 dark:text-dark-text-tertiary hidden group-hover:flex gap-1.5">
+                  <span>B:{baseValue}</span>
+                  <span>I:{iv}</span>
+                  <span>E:{ev}</span>
                 </div>
 
-                <div className={`text-lg font-bold ${getStatColor(stat, finalValue)} min-w-[60px] text-right`}>
+                <div className="text-sm font-bold text-gray-900 dark:text-dark-text-primary min-w-[30px] text-right">
                   {finalValue}
                 </div>
               </div>
@@ -107,9 +105,9 @@ export function StatCalculator({ baseStats, ivs, evs, level, nature, className =
       </div>
 
       {/* Stat Total */}
-      <div className="pt-2 border-t border-gray-200">
-        <div className="flex items-center justify-between p-2 bg-primary-50 rounded-lg">
-          <span className="text-sm font-bold text-gray-900">
+      <div className="pt-2 border-t border-gray-200 dark:border-dark-border">
+        <div className="flex items-center justify-between p-2 bg-primary-50 dark:bg-dark-bg-tertiary rounded-lg">
+          <span className="text-sm font-bold text-gray-900 dark:text-dark-text-primary">
             {t('teamBuilder.statTotal', 'Stat Total')}
           </span>
           <span className="text-lg font-bold text-primary-600">

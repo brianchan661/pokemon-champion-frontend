@@ -45,13 +45,14 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   const [ivs, setIvs] = useState<StatSpread>(existingConfig?.ivs || getDefaultIVs());
   const [evs, setEvs] = useState<StatSpread>(existingConfig?.evs || getDefaultEVs());
   const [teraType, setTeraType] = useState<string | undefined>(existingConfig?.teraType);
+
   const [itemId, setItemId] = useState<number | undefined>(existingConfig?.itemId);
+  const [error, setError] = useState('');
 
   // Extract available move names from Pokemon data
   const [availableMoveNames, setAvailableMoveNames] = useState<string[]>([]);
 
-  // Active tab
-  const [activeTab, setActiveTab] = useState<'basic' | 'stats' | 'moves'>('basic');
+
 
   // Item selector visibility and search
   const [showItemSelector, setShowItemSelector] = useState(false);
@@ -163,15 +164,16 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   // Handle save
   const handleSave = () => {
     if (!pokemon) return;
+    setError('');
 
     const validation = validateEVs(evs);
     if (!validation.valid) {
-      alert(t('teamBuilder.evValidationError', 'Please fix EV errors before saving'));
+      setError(t('teamBuilder.evValidationError', 'Please fix EV errors before saving'));
       return;
     }
 
     if (moves.length === 0) {
-      alert(t('teamBuilder.movesRequired', 'Please select at least one move'));
+      setError(t('teamBuilder.movesRequired', 'Please select at least one move'));
       return;
     }
 
@@ -234,9 +236,9 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   };
 
   return (
-    <div className={`bg-white dark:bg-dark-bg-primary rounded-lg shadow-lg ${className}`}>
+    <div className={`bg-white dark:bg-dark-bg-primary rounded-lg shadow-lg flex flex-col h-[90vh] ${className}`}>
       {/* Header */}
-      <div className="p-6 border-b border-gray-200 dark:border-dark-border">
+      <div className="p-6 border-b border-gray-200 dark:border-dark-border flex-shrink-0">
         <div className="flex items-center gap-4">
           {pokemon.imageUrl && (
             <img src={pokemon.imageUrl} alt={pokemon.name} className="w-20 h-20 object-contain" />
@@ -257,33 +259,15 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-dark-border">
-        <nav className="flex">
-          {[
-            { id: 'basic', label: t('teamBuilder.basic', 'Basic') },
-            { id: 'stats', label: t('teamBuilder.stats', 'Stats') },
-            { id: 'moves', label: t('teamBuilder.moves', 'Moves') },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-primary-600 text-primary-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-dark-text-secondary dark:hover:text-dark-text-primary'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 max-h-[60vh] overflow-y-auto">
-        {activeTab === 'basic' && (
+      {/* Content - 3 Column Grid */}
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Column 1: Basic Info */}
           <div className="space-y-6">
+            <h3 className="text-md font-bold text-gray-900 dark:text-dark-text-primary border-b border-gray-100 dark:border-dark-border pb-2">
+              {t('teamBuilder.basic', 'Basic Info')}
+            </h3>
+
             {/* Level */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
@@ -317,20 +301,21 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               </select>
             </div>
 
-            {/* Tera Type */}
+            {/* Nature (Moved from Stats) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
-                {t('teamBuilder.teraType', 'Tera Type')}
+                {t('teamBuilder.nature', 'Nature')}
               </label>
               <select
-                value={teraType || ''}
-                onChange={(e) => setTeraType(e.target.value || undefined)}
+                value={natureId}
+                onChange={(e) => setNatureId(parseInt(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
               >
-                <option value="">{t('teamBuilder.none', 'None')}</option>
-                {teraTypes.map((type) => (
-                  <option key={type.id} value={type.typeName}>
-                    {type.typeName}
+                {natures.map((nature) => (
+                  <option key={nature.id} value={nature.id}>
+                    {nature.name}
+                    {nature.increasedStat && nature.decreasedStat &&
+                      ` (+${nature.increasedStat}, -${nature.decreasedStat})`}
                   </option>
                 ))}
               </select>
@@ -402,9 +387,8 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                             setShowItemSelector(false);
                             setItemSearchQuery('');
                           }}
-                          className={`w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary flex items-center gap-2 ${
-                            itemId === item.id ? 'bg-primary-50 dark:bg-dark-bg-tertiary' : ''
-                          }`}
+                          className={`w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary flex items-center gap-2 ${itemId === item.id ? 'bg-primary-50 dark:bg-dark-bg-tertiary' : ''
+                            }`}
                         >
                           {item.spriteUrl && (
                             <img
@@ -426,43 +410,45 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                 </div>
               )}
             </div>
-          </div>
-        )}
 
-        {activeTab === 'stats' && (
-          <div className="space-y-6">
-            {/* Nature */}
+            {/* Tera Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
-                {t('teamBuilder.nature', 'Nature')}
+                {t('teamBuilder.teraType', 'Tera Type')}
               </label>
               <select
-                value={natureId}
-                onChange={(e) => setNatureId(parseInt(e.target.value))}
+                value={teraType || ''}
+                onChange={(e) => setTeraType(e.target.value || undefined)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
               >
-                {natures.map((nature) => (
-                  <option key={nature.id} value={nature.id}>
-                    {nature.name}
-                    {nature.increasedStat && nature.decreasedStat &&
-                      ` (+${nature.increasedStat}, -${nature.decreasedStat})`}
+                <option value="">{t('teamBuilder.none', 'None')}</option>
+                {teraTypes.map((type) => (
+                  <option key={type.id} value={type.typeName}>
+                    {type.typeName}
                   </option>
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Column 2: Stats */}
+          <div className="space-y-6">
+            <h3 className="text-md font-bold text-gray-900 dark:text-dark-text-primary border-b border-gray-100 dark:border-dark-border pb-2">
+              {t('teamBuilder.stats', 'Stats')}
+            </h3>
 
             {/* EVs */}
             <EVInputs evs={evs} onChange={setEvs} />
 
             {/* IVs (Collapsible) */}
             <details>
-              <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">
+              <summary className="cursor-pointer text-xs font-medium text-gray-500 dark:text-dark-text-secondary mb-2 hover:text-gray-700 dark:hover:text-dark-text-primary transition-colors">
                 {t('teamBuilder.ivs', 'IVs')} (Advanced)
               </summary>
-              <div className="grid grid-cols-2 gap-3 mt-3">
+              <div className="grid grid-cols-2 gap-2 mt-2 bg-gray-50 dark:bg-dark-bg-tertiary p-3 rounded-lg">
                 {(Object.keys(ivs) as Array<keyof StatSpread>).map((stat) => (
-                  <div key={stat}>
-                    <label className="block text-sm text-gray-600 dark:text-dark-text-secondary mb-1">
+                  <div key={stat} className="flex items-center gap-2">
+                    <label className="text-xs text-gray-500 dark:text-dark-text-secondary w-12 truncate">
                       {stat.toUpperCase()}
                     </label>
                     <input
@@ -471,7 +457,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                       max="31"
                       value={ivs[stat]}
                       onChange={(e) => setIvs({ ...ivs, [stat]: parseInt(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
+                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded dark:bg-dark-bg-primary dark:border-dark-border dark:text-dark-text-primary"
                     />
                   </div>
                 ))}
@@ -487,10 +473,12 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               nature={selectedNature}
             />
           </div>
-        )}
 
-        {activeTab === 'moves' && (
-          <div>
+          {/* Column 3: Moves */}
+          <div className="space-y-6">
+            <h3 className="text-md font-bold text-gray-900 dark:text-dark-text-primary border-b border-gray-100 dark:border-dark-border pb-2">
+              {t('teamBuilder.moves', 'Moves')}
+            </h3>
             <MoveSelector
               selectedMoveIds={moves}
               onMoveSelect={async (moveId) => {
@@ -515,25 +503,35 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                 setSelectedMovesData(selectedMovesData.filter((m) => m.id !== moveId));
               }}
               availableMoveNames={availableMoveNames}
+              initialMoves={selectedMovesData}
             />
           </div>
-        )}
+        </div>
       </div>
 
       {/* Footer */}
-      <div className="p-6 border-t border-gray-200 dark:border-dark-border flex gap-3 justify-end">
-        <button
-          onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors dark:border-dark-border dark:text-dark-text-primary dark:hover:bg-dark-bg-tertiary"
-        >
-          {t('common.cancel', 'Cancel')}
-        </button>
-        <button
-          onClick={handleSave}
-          className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-        >
-          {t('common.save', 'Save')}
-        </button>
+      <div className="p-3 border-t border-gray-200 dark:border-dark-border flex-shrink-0 flex items-center justify-between bg-gray-50 dark:bg-dark-bg-tertiary rounded-b-lg">
+        <div className="flex-1 mr-4">
+          {error && (
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium animate-pulse">
+              {error}
+            </p>
+          )}
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors dark:border-dark-border dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary"
+          >
+            {t('common.cancel', 'Cancel')}
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+          >
+            {t('common.save', 'Save')}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -107,8 +107,8 @@ export function DualTypeChart() {
                                         content = '¼';
                                     } else if (effectiveness === 0) {
                                         bgClass = 'bg-gray-200 dark:bg-gray-700';
-                                        textClass = 'text-gray-700 dark:text-gray-300 font-bold';
-                                        content = '0';
+                                        textClass = 'text-red-700 dark:text-red-400 font-bold';
+                                        content = '✕';
                                     }
 
                                     // Highlighting logic

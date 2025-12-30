@@ -16,14 +16,7 @@ const STAT_LABELS = {
   speed: 'Speed',
 };
 
-// Common EV spreads
-const PRESET_SPREADS = [
-  { name: 'Offensive', evs: { hp: 4, attack: 252, defense: 0, specialAttack: 0, specialDefense: 0, speed: 252 } },
-  { name: 'Special Offensive', evs: { hp: 4, attack: 0, defense: 0, specialAttack: 252, specialDefense: 0, speed: 252 } },
-  { name: 'Bulky Physical', evs: { hp: 252, attack: 252, defense: 4, specialAttack: 0, specialDefense: 0, speed: 0 } },
-  { name: 'Bulky Special', evs: { hp: 252, attack: 0, defense: 0, specialAttack: 252, specialDefense: 4, speed: 0 } },
-  { name: 'Tank', evs: { hp: 252, attack: 0, defense: 252, specialAttack: 0, specialDefense: 4, speed: 0 } },
-];
+
 
 /**
  * EV input component with validation and presets
@@ -46,102 +39,77 @@ export function EVInputs({ evs, onChange, className = '' }: EVInputsProps) {
     });
   };
 
-  // Apply preset spread
-  const applyPreset = (preset: StatSpread) => {
-    onChange(preset);
-  };
 
-  // Reset all EVs
-  const resetEVs = () => {
-    onChange({
-      hp: 0,
-      attack: 0,
-      defense: 0,
-      specialAttack: 0,
-      specialDefense: 0,
-      speed: 0,
-    });
-  };
+
+
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* EV Counter */}
-      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-        <span className="text-sm font-medium text-gray-700">
+      {/* EV and Total Header */}
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
           {t('teamBuilder.evs', 'EVs')}
         </span>
-        <span className={`text-sm font-bold ${remainingEVs < 0 ? 'text-red-600' : 'text-gray-900'}`}>
-          {totalEVs} / 510
-          {remainingEVs > 0 && (
-            <span className="text-gray-500 ml-2">
-              ({remainingEVs} {t('teamBuilder.remaining', 'remaining')})
-            </span>
-          )}
+        <span className={`text-xs font-bold ${remainingEVs < 0 ? 'text-red-600' : 'text-gray-500 dark:text-dark-text-tertiary'}`}>
+          {totalEVs}/510
           {remainingEVs < 0 && (
-            <span className="text-red-600 ml-2">
-              ({Math.abs(remainingEVs)} {t('teamBuilder.over', 'over')})
+            <span className="text-red-600 ml-1">
+              ({remainingEVs})
             </span>
           )}
         </span>
       </div>
 
-      {/* EV Inputs */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Compact EV Inputs - Single Column for side panel */}
+      <div className="space-y-2">
         {(Object.keys(STAT_LABELS) as Array<keyof StatSpread>).map((stat) => (
-          <div key={stat} className="space-y-1">
-            <label htmlFor={`ev-${stat}`} className="block text-sm font-medium text-gray-700">
+          <div key={stat} className="grid grid-cols-12 gap-2 items-center">
+            <label htmlFor={`ev-${stat}`} className="col-span-3 text-xs font-medium text-gray-600 dark:text-dark-text-secondary truncate">
               {STAT_LABELS[stat]}
             </label>
-            <div className="relative">
-              <input
-                id={`ev-${stat}`}
-                type="number"
-                min="0"
-                max="252"
-                step="4"
-                value={evs[stat]}
-                onChange={(e) => handleChange(stat, e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  evs[stat] > 252 ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {/* EV Bar */}
-              <div className="mt-1 h-1 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-all ${
-                    evs[stat] > 252 ? 'bg-red-500' : 'bg-primary-500'
-                  }`}
-                  style={{ width: `${Math.min(100, (evs[stat] / 252) * 100)}%` }}
+            <div className="col-span-9 relative flex gap-1">
+              <div className="relative flex-1">
+                <input
+                  id={`ev-${stat}`}
+                  type="number"
+                  min="0"
+                  max="252"
+                  step="4"
+                  value={evs[stat]}
+                  onChange={(e) => handleChange(stat, e.target.value)}
+                  className={`w-full px-2 py-1 text-sm border rounded hover:border-primary-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary ${evs[stat] > 252 ? 'border-red-500' : 'border-gray-300'
+                    }`}
                 />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-100 dark:bg-dark-bg-primary rounded-full overflow-hidden mx-0.5 mb-px">
+                  <div
+                    className={`h-full transition-all ${evs[stat] > 252 ? 'bg-red-500' : 'bg-primary-500'
+                      }`}
+                    style={{ width: `${Math.min(100, (evs[stat] / 252) * 100)}%` }}
+                  />
+                </div>
               </div>
+              <button
+                type="button"
+                onClick={() => handleChange(stat, '252')}
+                className="px-1.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded transition-colors dark:bg-dark-bg-tertiary dark:text-dark-text-secondary dark:hover:bg-dark-bg-primary"
+                title="Max (252)"
+              >
+                Max
+              </button>
+              <button
+                type="button"
+                onClick={() => handleChange(stat, '0')}
+                className="px-1.5 py-1 text-xs bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 rounded transition-colors dark:bg-red-900/10 dark:text-red-400 dark:border-red-900/30"
+                title="Reset (0)"
+              >
+                X
+              </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Preset Buttons */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-gray-700">
-          {t('teamBuilder.quickPresets', 'Quick Presets')}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {PRESET_SPREADS.map((preset) => (
-            <button
-              key={preset.name}
-              onClick={() => applyPreset(preset.evs)}
-              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
-            >
-              {preset.name}
-            </button>
-          ))}
-          <button
-            onClick={resetEVs}
-            className="px-3 py-1.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
-          >
-            {t('teamBuilder.reset', 'Reset')}
-          </button>
-        </div>
-      </div>
+
 
       {/* Validation Error */}
       {totalEVs > 510 && (
