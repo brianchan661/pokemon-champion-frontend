@@ -41,8 +41,6 @@ export function MoveSelector({ selectedMoveIds, onMoveSelect, onMoveRemove, avai
   async function loadMoves() {
     setLoading(true);
     const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
-
-    // @ts-ignore - lang prop is valid
     const result = await movesService.getMoves({ pageSize: 1500, lang: currentLang }); // Increased page size to get more moves
 
     if (result.success && result.data) {
