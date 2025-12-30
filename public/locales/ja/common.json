@@ -1,7 +1,8 @@
 {
   "common": {
     "loading": "読み込み中...",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "save": "保存"
   },
   "comingSoon": {
     "status": "準備中"
@@ -343,10 +344,54 @@
     "makePrivate": "非公開にする"
   },
   "teamBuilder": {
+    "title": "チームビルダー",
     "searchItems": "道具を検索...",
     "noItemsFound": "道具が見つかりません",
     "description": "説明",
-    "descriptionPlaceholder": "チームの説明を入力してください...（@ を入力するとポケモン、わざ、道具、特性をメンションできます）"
+    "descriptionPlaceholder": "チームの説明を入力してください...（@ を入力するとポケモン、わざ、道具、特性をメンションできます）",
+    "basic": "基本情報",
+    "stats": "ステータス",
+    "moves": "わざ",
+    "level": "レベル",
+    "ability": "特性",
+    "nature": "性格",
+    "heldItem": "持ち物",
+    "teraType": "テラスタイプ",
+    "ivs": "個体値",
+    "evs": "努力値",
+    "evError": "努力値の合計は510を超えることはできません",
+    "max": "最大",
+    "reset": "リセット",
+    "finalStats": "実数値",
+    "statTotal": "合計",
+    "natureIncreased": "性格補正(上昇)",
+    "natureDecreased": "性格補正(下降)",
+    "selectMove": "わざを選択",
+    "searchMoves": "わざを検索...",
+    "noMovesFound": "わざが見つかりません",
+    "physical": "物理",
+    "special": "特殊",
+    "status": "変化",
+    "typeCoverage": "攻撃タイプ相性",
+    "typeCoverageDesc": "チームの技が各タイプに対してどれだけ有効かを確認できます。",
+    "pokemon": "ポケモン",
+    "movesRequired": "少なくとも1つのわざを選択してください",
+    "evValidationError": "保存する前に努力値のエラーを修正してください",
+    "hidden": "隠れ特性",
+    "none": "なし",
+    "advanced": "詳細",
+    "statLabels": {
+      "hp": "HP",
+      "attack": "こうげき",
+      "defense": "ぼうぎょ",
+      "specialAttack": "とくこう",
+      "specialDefense": "とくぼう",
+      "speed": "すばやさ"
+    },
+    "step1": "ポケモン選択",
+    "step2": "チーム詳細",
+    "yourTeam": "あなたのチーム",
+    "addPokemonError": "チームに少なくとも1匹のポケモンを追加してください"
   },
   "moves": {
     "title": "わざ",

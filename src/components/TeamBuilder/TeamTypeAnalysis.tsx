@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { TeamSlot } from '@/components/TeamBuilder/TeamSlots';
 import { TYPES, PokeType, getEffectiveness } from '@/data/typeChart';
@@ -10,6 +11,7 @@ interface TeamTypeAnalysisProps {
 
 export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps) {
     const { t } = useTranslation('common');
+    const [hoveredCell, setHoveredCell] = useState<{ pokemonIndex: number; type: string } | null>(null);
 
     // Filter out empty slots for the table
     const teamMembers = team.filter((slot) => slot.pokemon && slot.pokemon.pokemonData);
@@ -28,7 +30,7 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
             </p>
 
             <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto" onMouseLeave={() => setHoveredCell(null)}>
                     <table className="w-full text-sm text-center border-collapse">
                         <thead>
                             <tr className="bg-gray-50 dark:bg-dark-bg-tertiary border-b border-gray-200 dark:border-dark-border">
@@ -36,7 +38,10 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
                                     {t('teamBuilder.pokemon', 'Pokemon')}
                                 </th>
                                 {TYPES.map((type) => (
-                                    <th key={type} className="p-2 min-w-[40px] border-r border-gray-100 dark:border-dark-border/50 last:border-r-0">
+                                    <th key={type} className={`p-2 min-w-[40px] border-r border-gray-100 dark:border-dark-border/50 last:border-r-0 transition-colors duration-75 ${hoveredCell?.type === type
+                                        ? 'bg-blue-100 dark:bg-blue-900/50 ring-2 ring-inset ring-blue-400 dark:ring-blue-500'
+                                        : ''
+                                        }`}>
                                         <div className="flex flex-col items-center">
                                             <TypeIcon type={type} size="sm" />
                                         </div>
@@ -48,10 +53,14 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
                             {teamMembers.map((slot, index) => {
                                 const pokemon = slot.pokemon!;
                                 const moves = pokemon.movesData || [];
+                                const isHoveredRow = hoveredCell?.pokemonIndex === index;
 
                                 return (
                                     <tr key={`${pokemon.pokemonId}-${index}`} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary/50 transition-colors">
-                                        <td className="p-3 text-left sticky left-0 z-10 bg-white dark:bg-dark-bg-secondary border-r border-gray-200 dark:border-dark-border group-hover:bg-gray-50 dark:group-hover:bg-dark-bg-tertiary/50">
+                                        <td className={`p-3 text-left sticky left-0 z-10 border-r border-gray-200 dark:border-dark-border transition-colors duration-75 ${isHoveredRow
+                                            ? '!bg-blue-100 dark:!bg-blue-900/50 ring-2 ring-inset ring-blue-400 dark:ring-blue-500'
+                                            : 'bg-white dark:bg-dark-bg-secondary group-hover:bg-gray-50 dark:group-hover:bg-dark-bg-tertiary/50'
+                                            }`}>
                                             <div className="flex items-center gap-2">
                                                 {pokemon.pokemonData?.imageUrl && (
                                                     <img
@@ -76,13 +85,8 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
                                                 maxEffectiveness = 0;
                                             } else {
                                                 // Find the move that deals the most damage multiplier
-                                                // Note: actual damage depends on stats, but charts usually just check type matchup multiplier
-
-                                                // We need to iterate all moves and check their type
                                                 moves.forEach(move => {
-                                                    // Skip status moves for coverage calculation usually? 
-                                                    // The user's request "show which type of enemy they are effective to" usually implies attacking moves.
-                                                    // status moves have category 'status'.
+                                                    // Skip status moves for coverage calculation
                                                     if (move.category === 'status') return;
 
                                                     // Normalize type casing (capitalize first letter, rest lowercase)
@@ -105,39 +109,43 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
 
                                             if (maxEffectiveness >= 4) {
                                                 content = '4×';
-                                                cellClass = 'bg-green-100 dark:bg-green-900/30';
-                                                textClass = 'font-bold text-green-700 dark:text-green-400';
+                                                cellClass = 'bg-red-100 dark:bg-red-900/30';
+                                                textClass = 'font-bold text-red-700 dark:text-red-400';
                                             } else if (maxEffectiveness >= 2) {
                                                 content = '2×';
-                                                cellClass = 'bg-green-50 dark:bg-green-900/10';
-                                                textClass = 'font-bold text-green-600 dark:text-green-500';
+                                                cellClass = 'bg-orange-100 dark:bg-orange-900/30';
+                                                textClass = 'font-bold text-orange-700 dark:text-orange-400';
                                             } else if (maxEffectiveness === 0) {
                                                 content = '✕';
-                                                cellClass = 'bg-gray-50 dark:bg-dark-bg-tertiary/50';
-                                                textClass = 'font-bold text-red-500 dark:text-red-400';
-                                            } else {
-                                                // 1x, 0.5x, etc. - usually we only highlight super effective for offensive coverage
-                                                // Showing everything can be cluttered. 
-                                                // But for a full matrix, empty cells for neutral might be cleaner?
-                                                // "show which type of enemy they are effective to" -> Focus on effectiveness.
-                                                // Let's hide neutral/not very effective to reduce noise, or just show numbers lightly.
-                                                // Let's match the user's implicit "effective to" and the reference chart style.
-                                                // Reference chart shows everything.
-                                                // But for "Offensive", usually you care about coverage (Supereffective).
-                                                // Let's show 2x and 4x clearly, maybe dampen the rest.
+                                                cellClass = 'bg-gray-200 dark:bg-gray-700'; // Match DualTypeChart 0x style
+                                                textClass = 'font-bold text-red-700 dark:text-red-400';
+                                            } else if (maxEffectiveness <= 0.5 && maxEffectiveness > 0) {
+                                                content = maxEffectiveness === 0.25 ? '¼' : '½';
+                                                cellClass = 'bg-green-100 dark:bg-green-900/30'; // Match DualTypeChart resistant style
+                                                textClass = 'text-green-700 dark:text-green-400';
+                                            }
 
-                                                if (maxEffectiveness === 1) {
-                                                    content = '';
-                                                } else if (maxEffectiveness < 1 && maxEffectiveness > 0) {
-                                                    // Resisted
-                                                    content = '½';
-                                                    if (maxEffectiveness === 0.25) content = '¼';
-                                                    textClass = 'text-red-400 dark:text-red-300/80 text-[10px]'; // De-emphasize resisted but ensure visible
+                                            // Highlighting logic
+                                            const isHoveredCol = hoveredCell?.type === defType;
+                                            const isHoveredCell = isHoveredRow && isHoveredCol;
+
+                                            if (isHoveredCell) {
+                                                // Strong highlight for the active cell
+                                                cellClass = `ring-2 ring-inset ring-blue-500 z-20 ${cellClass || 'bg-blue-50 dark:bg-gray-700'}`;
+                                            } else if (isHoveredRow || isHoveredCol) {
+                                                // Subtle highlight for the row/col
+                                                cellClass = `${cellClass} brightness-95 dark:brightness-110`;
+                                                if (!cellClass.includes('bg-')) {
+                                                    cellClass += ' bg-gray-50 dark:bg-gray-700/50';
                                                 }
                                             }
 
                                             return (
-                                                <td key={defType} className={`p-1 border-r border-gray-50 dark:border-dark-border/30 last:border-r-0 ${cellClass}`}>
+                                                <td
+                                                    key={defType}
+                                                    className={`p-1 border border-gray-50 dark:border-dark-border/30 ${cellClass} cursor-crosshair transition-colors duration-75`}
+                                                    onMouseEnter={() => setHoveredCell({ pokemonIndex: index, type: defType })}
+                                                >
                                                     <span className={textClass}>{content}</span>
                                                 </td>
                                             );

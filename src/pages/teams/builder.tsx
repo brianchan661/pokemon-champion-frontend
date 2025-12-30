@@ -22,7 +22,7 @@ import { getApiBaseUrl } from '@/config/api';
 const API_URL = getApiBaseUrl();
 
 export default function TeamBuilderPage() {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { teamId, new: isNew } = router.query; // teamId for editing, new for fresh start
@@ -139,8 +139,10 @@ export default function TeamBuilderPage() {
     if (activeSlot === undefined || !configuringPokemon) return;
 
     // Load full Pokemon data
+    const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
     const pokemonResult = await pokemonBuilderService.getPokemonByNationalNumber(
-      configuringPokemon.nationalNumber
+      configuringPokemon.nationalNumber,
+      currentLang
     );
 
     if (pokemonResult.success && pokemonResult.data) {
@@ -195,7 +197,7 @@ export default function TeamBuilderPage() {
   const handleNextStep = () => {
     const teamPokemonCount = team.filter(s => s.pokemon).length;
     if (teamPokemonCount === 0) {
-      setError('Add at least one Pokemon to your team before continuing');
+      setError(t('teamBuilder.addPokemonError', 'Add at least one Pokemon to your team before continuing'));
       return;
     }
     setError('');
@@ -224,7 +226,7 @@ export default function TeamBuilderPage() {
     const teamPokemon = team.filter(s => s.pokemon).map(s => s.pokemon!);
 
     if (teamPokemon.length === 0) {
-      setError('Add at least one Pokemon to your team');
+      setError(t('teamBuilder.addPokemonError', 'Add at least one Pokemon to your team'));
       return;
     }
 
@@ -364,9 +366,6 @@ export default function TeamBuilderPage() {
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">
                   {teamId ? t('teams.editTeam', 'Edit Team') : t('teamBuilder.title', 'Team Builder')}
                 </h1>
-                <p className="text-gray-600 dark:text-dark-text-secondary mt-1">
-                  {t('teamBuilder.subtitle', 'Build your competitive Pokemon team')}
-                </p>
               </div>
               <Button href="/teams/my" variant="secondary">
                 {t('common.back', 'Back')}

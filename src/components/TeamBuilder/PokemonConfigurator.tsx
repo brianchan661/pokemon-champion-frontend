@@ -4,6 +4,7 @@ import { TeamPokemon, PokemonFull, StatSpread } from '@brianchan661/pokemon-cham
 import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import { naturesService, Nature } from '@/services/naturesService';
 import { teraTypesService, TeraType } from '@/services/teraTypesService';
+import { TeraTypeIcon } from '@/components/UI/TeraTypeIcon';
 import { itemsService, Item } from '@/services/itemsService';
 import { movesService } from '@/services/movesService';
 import { getDefaultIVs, getDefaultEVs, validateEVs } from '@/utils/calculateStats';
@@ -26,7 +27,7 @@ interface PokemonConfiguratorProps {
  * Handles all Pokemon customization options
  */
 export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onSave, onCancel, className = '' }: PokemonConfiguratorProps) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
 
   // Pokemon data
   const [pokemon, setPokemon] = useState<PokemonFull | null>(null);
@@ -49,8 +50,8 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   const [itemId, setItemId] = useState<number | undefined>(existingConfig?.itemId);
   const [error, setError] = useState('');
 
-  // Extract available move names from Pokemon data
-  const [availableMoveNames, setAvailableMoveNames] = useState<string[]>([]);
+  // Extract available move identifiers from Pokemon data
+  const [availableMoveIdentifiers, setAvailableMoveIdentifiers] = useState<string[]>([]);
 
 
 
@@ -62,15 +63,19 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   // Load data
   useEffect(() => {
     async function loadData() {
+      // Don't set loading true if we are just switching languages and have data? 
+      // Actually yes, we want to show loading because names will change.
       setLoading(true);
 
+      const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
+
       // Load Pokemon details
-      const pokemonResult = await pokemonBuilderService.getPokemonByNationalNumber(pokemonNationalNumber);
+      const pokemonResult = await pokemonBuilderService.getPokemonByNationalNumber(pokemonNationalNumber, currentLang);
       if (pokemonResult.success && pokemonResult.data) {
         setPokemon(pokemonResult.data);
 
-        // Extract available move names from latest generation only
-        const moveNames = new Set<string>();
+        // Extract available move identifiers from latest generation only
+        const moveIdentifiers = new Set<string>();
         if (pokemonResult.data.details?.movesByGeneration && pokemonResult.data.details.movesByGeneration.length > 0) {
           // Get the first generation (newest/latest generation)
           const latestGen = pokemonResult.data.details.movesByGeneration[0];
@@ -84,18 +89,30 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
             Object.values(methods).forEach((moveList: any) => {
               if (Array.isArray(moveList)) {
                 moveList.forEach((move: any) => {
+                  // The API details usually return English names in 'name' property (e.g. "Thunder Shock")
+                  // But our Move List (from movesService) uses kebab-case identifiers (e.g. "thunder-shock") matched with localized names
+                  // To properly filter moves across all languages, we must normalize the English name to an identifier.
                   if (move.name) {
-                    moveNames.add(move.name);
+                    const identifier = move.name
+                      .toLowerCase()
+                      // Replace apostrophes and special chars (except space)
+                      .replace(/['\u2019]/g, '')
+                      // Replace spaces and remaining non-alphanumeric chars with dashes
+                      .replace(/[\s\W]+/g, '-')
+                      // Remove leading/trailing dashes
+                      .replace(/^-+|-+$/g, '');
+
+                    moveIdentifiers.add(identifier);
                   }
                 });
               }
             });
           }
         }
-        setAvailableMoveNames(Array.from(moveNames));
+        setAvailableMoveIdentifiers(Array.from(moveIdentifiers));
 
         // Load abilities
-        const abilitiesResult = await pokemonBuilderService.getPokemonAbilities(pokemonResult.data.id);
+        const abilitiesResult = await pokemonBuilderService.getPokemonAbilities(pokemonResult.data.id, currentLang);
         if (abilitiesResult.success && abilitiesResult.data) {
           setAbilities(abilitiesResult.data);
           if (!abilityIdentifier && abilitiesResult.data.length > 0) {
@@ -105,7 +122,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       }
 
       // Load natures
-      const naturesResult = await naturesService.getNatures();
+      const naturesResult = await naturesService.getNatures(currentLang);
       if (naturesResult.success && naturesResult.data) {
         setNatures(naturesResult.data);
         if (!natureId && naturesResult.data.length > 0) {
@@ -120,7 +137,8 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       }
 
       // Load Items (all competitive items)
-      const itemsResult = await itemsService.getItems();
+      // itemsService supports lang parameter
+      const itemsResult = await itemsService.getItems({ lang: currentLang });
       if (itemsResult.success && itemsResult.data) {
         setItems(itemsResult.data);
       }
@@ -129,7 +147,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
     }
 
     loadData();
-  }, [pokemonNationalNumber]);
+  }, [pokemonNationalNumber, i18n.language, abilityIdentifier, natureId]);
 
   // Close item selector when clicking outside
   useEffect(() => {
@@ -295,7 +313,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               >
                 {abilities.map((ability) => (
                   <option key={ability.identifier} value={ability.identifier}>
-                    {ability.name} {ability.isHidden && '(Hidden)'}
+                    {ability.name} {ability.isHidden && `(${t('teamBuilder.hidden', 'Hidden')})`}
                   </option>
                 ))}
               </select>
@@ -311,13 +329,28 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                 onChange={(e) => setNatureId(parseInt(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
               >
-                {natures.map((nature) => (
-                  <option key={nature.id} value={nature.id}>
-                    {nature.name}
-                    {nature.increasedStat && nature.decreasedStat &&
-                      ` (+${nature.increasedStat}, -${nature.decreasedStat})`}
-                  </option>
-                ))}
+                {natures.map((nature) => {
+                  const getStatLabel = (statKey: string) => {
+                    // Map API snake_case keys to translation camelCase keys
+                    const keyMap: Record<string, string> = {
+                      'hp': 'hp',
+                      'attack': 'attack',
+                      'defense': 'defense',
+                      'sp_atk': 'specialAttack',
+                      'sp_def': 'specialDefense',
+                      'speed': 'speed'
+                    };
+                    return t(`teamBuilder.statLabels.${keyMap[statKey] || statKey}`, statKey);
+                  };
+
+                  return (
+                    <option key={nature.id} value={nature.id}>
+                      {t(`natures.${nature.identifier}`, nature.name)}
+                      {nature.increasedStat && nature.decreasedStat &&
+                        ` (+${getStatLabel(nature.increasedStat)}, -${getStatLabel(nature.decreasedStat)})`}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
@@ -416,18 +449,31 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.teraType', 'Tera Type')}
               </label>
-              <select
-                value={teraType || ''}
-                onChange={(e) => setTeraType(e.target.value || undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
-              >
-                <option value="">{t('teamBuilder.none', 'None')}</option>
-                {teraTypes.map((type) => (
-                  <option key={type.id} value={type.typeName}>
-                    {type.typeName}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-wrap gap-2">
+                {teraTypes.map((type) => {
+                  const isSelected = teraType === type.typeName;
+                  return (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => setTeraType(isSelected ? undefined : type.typeName)}
+                      className={`relative rounded-lg transition-all ${isSelected
+                        ? 'ring-2 ring-primary-600 dark:ring-primary-400 ring-offset-2 dark:ring-offset-dark-bg-primary transform scale-110 z-10'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-800 opacity-70 hover:opacity-100 hover:scale-105'
+                        }`}
+                      title={t('types.' + type.typeName.toLowerCase(), type.typeName)}
+                    >
+                      <TeraTypeIcon type={type.typeName} />
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 h-5">
+                {teraType
+                  ? t('types.' + teraType.toLowerCase(), teraType)
+                  : t('teamBuilder.none', 'None')
+                }
+              </p>
             </div>
           </div>
 
@@ -443,7 +489,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
             {/* IVs (Collapsible) */}
             <details>
               <summary className="cursor-pointer text-xs font-medium text-gray-500 dark:text-dark-text-secondary mb-2 hover:text-gray-700 dark:hover:text-dark-text-primary transition-colors">
-                {t('teamBuilder.ivs', 'IVs')} (Advanced)
+                {t('teamBuilder.ivs', 'IVs')} ({t('teamBuilder.advanced', 'Advanced')})
               </summary>
               <div className="grid grid-cols-2 gap-2 mt-2 bg-gray-50 dark:bg-dark-bg-tertiary p-3 rounded-lg">
                 {(Object.keys(ivs) as Array<keyof StatSpread>).map((stat) => (
@@ -484,7 +530,8 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               onMoveSelect={async (moveId) => {
                 setMoves([...moves, moveId]);
                 // Fetch and store move data
-                const moveResult = await movesService.getMoveById(moveId);
+                const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
+                const moveResult = await movesService.getMoveById(moveId, currentLang);
                 if (moveResult.success && moveResult.data) {
                   setSelectedMovesData([...selectedMovesData, {
                     id: moveResult.data.id,
@@ -502,7 +549,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
                 setMoves(moves.filter((id) => id !== moveId));
                 setSelectedMovesData(selectedMovesData.filter((m) => m.id !== moveId));
               }}
-              availableMoveNames={availableMoveNames}
+              availableMoveIdentifiers={availableMoveIdentifiers}
               initialMoves={selectedMovesData}
             />
           </div>

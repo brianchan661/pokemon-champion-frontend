@@ -7,14 +7,7 @@ interface EVInputsProps {
   className?: string;
 }
 
-const STAT_LABELS = {
-  hp: 'HP',
-  attack: 'Attack',
-  defense: 'Defense',
-  specialAttack: 'Sp. Atk',
-  specialDefense: 'Sp. Def',
-  speed: 'Speed',
-};
+
 
 
 
@@ -62,10 +55,10 @@ export function EVInputs({ evs, onChange, className = '' }: EVInputsProps) {
 
       {/* Compact EV Inputs - Single Column for side panel */}
       <div className="space-y-2">
-        {(Object.keys(STAT_LABELS) as Array<keyof StatSpread>).map((stat) => (
+        {(['hp', 'attack', 'defense', 'specialAttack', 'specialDefense', 'speed'] as Array<keyof StatSpread>).map((stat) => (
           <div key={stat} className="grid grid-cols-12 gap-2 items-center">
             <label htmlFor={`ev-${stat}`} className="col-span-3 text-xs font-medium text-gray-600 dark:text-dark-text-secondary truncate">
-              {STAT_LABELS[stat]}
+              {t(`teamBuilder.statLabels.${stat}`)}
             </label>
             <div className="col-span-9 relative flex gap-1">
               <div className="relative flex-1">
@@ -92,15 +85,15 @@ export function EVInputs({ evs, onChange, className = '' }: EVInputsProps) {
                 type="button"
                 onClick={() => handleChange(stat, '252')}
                 className="px-1.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded transition-colors dark:bg-dark-bg-tertiary dark:text-dark-text-secondary dark:hover:bg-dark-bg-primary"
-                title="Max (252)"
+                title={`${t('teamBuilder.max', 'Max')} (252)`}
               >
-                Max
+                {t('teamBuilder.max', 'Max')}
               </button>
               <button
                 type="button"
                 onClick={() => handleChange(stat, '0')}
                 className="px-1.5 py-1 text-xs bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 rounded transition-colors dark:bg-red-900/10 dark:text-red-400 dark:border-red-900/30"
-                title="Reset (0)"
+                title={`${t('teamBuilder.reset', 'Reset')} (0)`}
               >
                 X
               </button>

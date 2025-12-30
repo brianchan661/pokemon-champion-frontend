@@ -17,7 +17,7 @@ interface PokemonSelectorProps {
  * Grid view with lazy-loaded images
  */
 export function PokemonSelector({ onSelect, selectedPokemonIds = [], className = '' }: PokemonSelectorProps) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,10 +31,12 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
       setLoading(true);
       setError(null);
 
+      const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
       const result = await pokemonBuilderService.getPokemonList({
         type: typeFilter || undefined,
         sortBy,
         order: 'asc',
+        lang: currentLang,
       });
 
       if (result.success && result.data) {
@@ -47,7 +49,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
     }
 
     fetchPokemon();
-  }, [typeFilter, sortBy]);
+  }, [typeFilter, sortBy, i18n.language]);
 
   // Filter Pokemon by search query
   const filteredPokemon = useMemo(() => {
@@ -111,11 +113,10 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
         <div className="flex gap-2 overflow-x-auto pb-2">
           <button
             onClick={() => setTypeFilter('')}
-            className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${
-              typeFilter === ''
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
-            }`}
+            className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${typeFilter === ''
+              ? 'bg-primary-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
+              }`}
           >
             {t('teamBuilder.allTypes', 'All')}
           </button>
@@ -123,11 +124,10 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
             <button
               key={type}
               onClick={() => setTypeFilter(type)}
-              className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${
-                typeFilter === type
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
-              }`}
+              className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${typeFilter === type
+                ? 'bg-primary-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
+                }`}
             >
               {type}
             </button>
@@ -165,11 +165,10 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
                   key={p.id}
                   onClick={() => handleSelect(p)}
                   disabled={isSelected}
-                  className={`relative p-3 rounded-lg border-2 transition-all ${
-                    isSelected
-                      ? 'border-gray-300 bg-gray-50 opacity-50 cursor-not-allowed dark:border-dark-border dark:bg-dark-bg-secondary'
-                      : 'border-transparent hover:border-primary-500 hover:shadow-md dark:hover:bg-dark-bg-tertiary'
-                  }`}
+                  className={`relative p-3 rounded-lg border-2 transition-all ${isSelected
+                    ? 'border-gray-300 bg-gray-50 opacity-50 cursor-not-allowed dark:border-dark-border dark:bg-dark-bg-secondary'
+                    : 'border-transparent hover:border-primary-500 hover:shadow-md dark:hover:bg-dark-bg-tertiary'
+                    }`}
                 >
                   {/* Pokemon Image */}
                   <div className="aspect-square mb-2 flex items-center justify-center">

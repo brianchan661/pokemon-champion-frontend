@@ -12,14 +12,7 @@ interface StatCalculatorProps {
   className?: string;
 }
 
-const STAT_LABELS = {
-  hp: 'HP',
-  attack: 'Attack',
-  defense: 'Defense',
-  specialAttack: 'Sp. Atk',
-  specialDefense: 'Sp. Def',
-  speed: 'Speed',
-};
+
 
 const NATURE_STAT_MAP: Record<string, string> = {
   hp: 'hp',
@@ -58,7 +51,7 @@ export function StatCalculator({ baseStats, ivs, evs, level, nature, className =
       </h3>
 
       <div className="space-y-1">
-        {(Object.keys(STAT_LABELS) as Array<keyof StatSpread>).map((stat) => {
+        {(['hp', 'attack', 'defense', 'specialAttack', 'specialDefense', 'speed'] as Array<keyof StatSpread>).map((stat) => {
           const finalValue = finalStats[stat];
           const baseValue = baseStats[stat];
           const ev = evs[stat];
@@ -71,16 +64,16 @@ export function StatCalculator({ baseStats, ivs, evs, level, nature, className =
             <div key={stat} className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary rounded transition-colors group">
               <div className="flex items-center gap-1.5 min-w-[30%]">
                 <span className="text-xs font-medium text-gray-600 dark:text-dark-text-secondary w-14 truncate">
-                  {STAT_LABELS[stat]}
+                  {t(`teamBuilder.statLabels.${stat}`)}
                 </span>
                 <div className="flex flex-col w-2 leading-none">
                   {isIncreased && (
-                    <span className="text-[10px] text-green-600 font-bold" title="Increased by nature">
+                    <span className="text-[10px] text-green-600 font-bold" title={t('teamBuilder.natureIncreased', 'Increased by nature')}>
                       ▲
                     </span>
                   )}
                   {isDecreased && (
-                    <span className="text-[10px] text-red-600 font-bold" title="Decreased by nature">
+                    <span className="text-[10px] text-red-600 font-bold" title={t('teamBuilder.natureDecreased', 'Decreased by nature')}>
                       ▼
                     </span>
                   )}

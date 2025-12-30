@@ -8,7 +8,7 @@ interface MoveSelectorProps {
   selectedMoveIds: number[];
   onMoveSelect: (moveId: number) => void;
   onMoveRemove: (moveId: number) => void;
-  availableMoveNames?: string[]; // Optional: restrict to Pokemon's available moves
+  availableMoveIdentifiers?: string[]; // Optional: restrict to Pokemon's available moves (using kebab-case identifiers)
   initialMoves?: Move[];
   className?: string;
 }
@@ -16,8 +16,8 @@ interface MoveSelectorProps {
 /**
  * Searchable move selector with up to 4 moves
  */
-export function MoveSelector({ selectedMoveIds, onMoveSelect, onMoveRemove, availableMoveNames, initialMoves = [], className = '' }: MoveSelectorProps) {
-  const { t } = useTranslation('common');
+export function MoveSelector({ selectedMoveIds, onMoveSelect, onMoveRemove, availableMoveIdentifiers, initialMoves = [], className = '' }: MoveSelectorProps) {
+  const { t, i18n } = useTranslation('common');
   const [allMoves, setAllMoves] = useState<Move[]>(initialMoves);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,16 +26,24 @@ export function MoveSelector({ selectedMoveIds, onMoveSelect, onMoveRemove, avai
   const [categoryFilter, setCategoryFilter] = useState<'' | 'physical' | 'special' | 'status'>('');
   const [isOpen, setIsOpen] = useState(false);
 
+  // Reset loaded state when language changes
+  useEffect(() => {
+    setHasLoaded(false);
+  }, [i18n.language]);
+
   // Lazy load moves when dropdown opens
   useEffect(() => {
     if (isOpen && !hasLoaded) {
       loadMoves();
     }
-  }, [isOpen, hasLoaded]);
+  }, [isOpen, hasLoaded, i18n.language]);
 
   async function loadMoves() {
     setLoading(true);
-    const result = await movesService.getMoves({ pageSize: 1000 });
+    const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
+
+    // @ts-ignore - lang prop is valid
+    const result = await movesService.getMoves({ pageSize: 1500, lang: currentLang }); // Increased page size to get more moves
 
     if (result.success && result.data) {
       setAllMoves(result.data.moves);
@@ -46,12 +54,16 @@ export function MoveSelector({ selectedMoveIds, onMoveSelect, onMoveRemove, avai
 
   // Filter moves based on Pokemon's available moves
   const moves = useMemo(() => {
-    if (!availableMoveNames || availableMoveNames.length === 0) {
+    if (!availableMoveIdentifiers || availableMoveIdentifiers.length === 0) {
       return allMoves; // Show all moves if no restriction
     }
-    // Filter to only show moves the Pokemon can learn
-    return allMoves.filter(move => availableMoveNames.includes(move.name));
-  }, [allMoves, availableMoveNames]);
+    // Filter to only show moves the Pokemon can learn (matching by identifier)
+    return allMoves.filter(move => {
+      // API moves usually have identifier. If not, fallback to name (though name might be localized)
+      // We assume availableMoveIdentifiers are properly slugified (kebab-case)
+      return move.identifier && availableMoveIdentifiers.includes(move.identifier);
+    });
+  }, [allMoves, availableMoveIdentifiers]);
 
   // Filter moves
   const filteredMoves = useMemo(() => {
@@ -117,9 +129,9 @@ export function MoveSelector({ selectedMoveIds, onMoveSelect, onMoveRemove, avai
                       <TypeIcon type={move.type} size="sm" />
                     </div>
                     <div className="flex gap-3 text-xs text-gray-600 dark:text-dark-text-secondary">
-                      {move.power && <span>Power: {move.power}</span>}
-                      {move.accuracy && <span>Acc: {move.accuracy}%</span>}
-                      <span>PP: {move.pp}</span>
+                      {move.power && <span>{t('moves.detail.power', 'Power')}: {move.power}</span>}
+                      {move.accuracy && <span>{t('moves.detail.accuracy', 'Acc')}: {move.accuracy}%</span>}
+                      <span>{t('moves.detail.pp', 'PP')}: {move.pp}</span>
                     </div>
                   </div>
                   <button
@@ -206,9 +218,9 @@ export function MoveSelector({ selectedMoveIds, onMoveSelect, onMoveRemove, avai
                         <TypeIcon type={move.type} size="sm" />
                       </div>
                       <div className="flex gap-3 text-xs text-gray-600 dark:text-dark-text-secondary">
-                        {move.power && <span>Power: {move.power}</span>}
-                        {move.accuracy && <span>Accuracy: {move.accuracy}%</span>}
-                        <span>PP: {move.pp}</span>
+                        {move.power && <span>{t('moves.detail.power', 'Power')}: {move.power}</span>}
+                        {move.accuracy && <span>{t('moves.detail.accuracy', 'Accuracy')}: {move.accuracy}%</span>}
+                        <span>{t('moves.detail.pp', 'PP')}: {move.pp}</span>
                       </div>
                     </button>
                   ))}

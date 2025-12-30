@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
 import { TypeIcon } from './TypeIcon';
 import { TeraTypeIcon } from './TeraTypeIcon';
 import { MoveCategoryIcon, MoveCategory } from './MoveCategoryIcon';
@@ -61,6 +62,8 @@ export function PokemonCard({
   enableLinks = false,
   className = '',
 }: PokemonCardProps) {
+
+  const { t } = useTranslation('common');
 
   // Map types to hex colors for gradients
   const getTypeHex = (t: string) => {
@@ -164,7 +167,7 @@ export function PokemonCard({
                     className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate group-hover/item:text-primary-600 dark:group-hover/item:text-primary-400 group-hover/item:underline"
                     title={pokemon?.itemData?.name}
                   >
-                    {pokemon?.itemData?.name || 'Item'}
+                    {pokemon?.itemData?.name || t('teamBuilder.heldItem', 'Item')}
                   </span>
                 </Link>
               ) : (
@@ -180,7 +183,7 @@ export function PokemonCard({
                     />
                   )}
                   <span className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate" title={pokemon?.itemData?.name}>
-                    {pokemon?.itemData?.name || 'No Item'}
+                    {pokemon?.itemData?.name || t('teamBuilder.none', 'None')}
                   </span>
                 </div>
               )}
@@ -192,11 +195,11 @@ export function PokemonCard({
                   className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate hover:text-primary-600 dark:hover:text-primary-400 hover:underline"
                   title={pokemon?.abilityData?.name}
                 >
-                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || 'Ability'}
+                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || t('teamBuilder.ability', 'Ability')}
                 </Link>
               ) : (
                 <span className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate" title={pokemon?.abilityData?.name}>
-                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || 'No Ability'}
+                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || t('teamBuilder.none', 'None')}
                 </span>
               )}
             </div>
