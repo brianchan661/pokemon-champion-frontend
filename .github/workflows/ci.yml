@@ -54,11 +54,17 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
+      - name: Access AdSense Secret
+        id: secrets
+        run: |
+           echo "ADSENSE_ID=$(gcloud secrets versions access latest --secret="NEXT_PUBLIC_ADSENSE_CLIENT_ID" --project=pokemon-champion-476912)" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: |
           docker build \
             --secret id=github_token,env=GITHUB_TOKEN \
             --build-arg NEXT_PUBLIC_API_URL=https://pokemon-champion-backend-mtphgnxlta-uc.a.run.app \
+            --build-arg NEXT_PUBLIC_ADSENSE_CLIENT_ID=${{ env.ADSENSE_ID }} \
             -t us-central1-docker.pkg.dev/pokemon-champion-476912/pokemon-champion/frontend:latest \
             -t us-central1-docker.pkg.dev/pokemon-champion-476912/pokemon-champion/frontend:${{ github.sha }} \
             .
