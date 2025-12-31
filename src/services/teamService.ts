@@ -22,11 +22,14 @@ class TeamService {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
-  async getMyTeams(): Promise<ApiResponse<MyTeamsResponse>> {
+  async getMyTeams(lang?: string): Promise<ApiResponse<MyTeamsResponse>> {
     try {
       const response = await axios.get<ApiResponse<MyTeamsResponse>>(
         `${API_BASE}/teams/my`,
-        { headers: this.getAuthHeaders() }
+        {
+          headers: this.getAuthHeaders(),
+          params: lang ? { lang } : undefined
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -37,11 +40,14 @@ class TeamService {
     }
   }
 
-  async getTeamById(id: string): Promise<ApiResponse<TeamResponse>> {
+  async getTeamById(id: string, lang?: string): Promise<ApiResponse<TeamResponse>> {
     try {
       const response = await axios.get<ApiResponse<TeamResponse>>(
         `${API_BASE}/teams/${id}`,
-        { headers: this.getAuthHeaders() }
+        {
+          headers: this.getAuthHeaders(),
+          params: lang ? { lang } : undefined
+        }
       );
       return response.data;
     } catch (error: any) {

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import Head from 'next/head';
 import { Layout } from '@/components/Layout/Layout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +25,7 @@ const API_URL = getApiBaseUrl();
 export default function TeamBuilderPage() {
   const { t, i18n } = useTranslation('common');
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { teamId, new: isNew } = router.query; // teamId for editing, new for fresh start
 
@@ -33,7 +35,7 @@ export default function TeamBuilderPage() {
   const [isPublic, setIsPublic] = useState(true);
 
   // Team state
-  const [team, setTeam] = useState<TeamSlot[]>(Array.from({ length: 6 }, () => ({})));
+  const [team, setTeam] = useState<TeamSlot[]>(Array.from({ length: 6 }, () => ({ id: Math.random().toString(36).substring(2, 15) })));
   const [activeSlot, setActiveSlot] = useState<number | undefined>(undefined);
   const [configuringPokemon, setConfiguringPokemon] = useState<Pokemon | null>(null);
 
@@ -84,7 +86,16 @@ export default function TeamBuilderPage() {
             setTeamName(data.teamName || '');
             setTeamDescription(data.teamDescription || '');
             setIsPublic(data.isPublic ?? true);
-            setTeam(data.team || Array.from({ length: 6 }, () => ({})));
+            // Ensure IDs exist for loaded team (migration for old saves)
+            const loadedTeam = (data.team || Array.from({ length: 6 }, () => ({}))).map((slot: any) => ({
+              ...slot,
+              id: slot.id || Math.random().toString(36).substring(2, 15)
+            }));
+            // Ensure exactly 6 slots
+            while (loadedTeam.length < 6) {
+              loadedTeam.push({ id: Math.random().toString(36).substring(2, 15) });
+            }
+            setTeam(loadedTeam.slice(0, 6));
           } else {
             localStorage.removeItem('teamBuilder_autoSave');
           }
@@ -111,12 +122,10 @@ export default function TeamBuilderPage() {
 
         // Load Pokemon data
         // Backend enrichTeamPokemon already returns pokemonData at the top level
-        const loadedTeam: TeamSlot[] = Array.from({ length: 6 }, () => ({}));
-        for (let i = 0; i < teamData.pokemon.length; i++) {
+        const loadedTeam: TeamSlot[] = Array.from({ length: 6 }, () => ({ id: Math.random().toString(36).substring(2, 15) }));
+        for (let i = 0; i < teamData.pokemon.length && i < 6; i++) {
           const tp = teamData.pokemon[i];
-          loadedTeam[i] = {
-            pokemon: tp, // tp already has pokemonData from backend enrichment
-          };
+          loadedTeam[i].pokemon = tp; // tp already has pokemonData from backend enrichment
         }
         setTeam(loadedTeam);
       }
@@ -148,6 +157,7 @@ export default function TeamBuilderPage() {
     if (pokemonResult.success && pokemonResult.data) {
       const newTeam = [...team];
       newTeam[activeSlot] = {
+        ...newTeam[activeSlot], // Preserve ID
         pokemon: {
           ...config,
           pokemonData: {
@@ -170,7 +180,7 @@ export default function TeamBuilderPage() {
   // Handle Pokemon removal
   const handleRemovePokemon = (index: number) => {
     const newTeam = [...team];
-    newTeam[index] = {};
+    newTeam[index] = { id: newTeam[index].id }; // Remove pokemon, preserve ID
     setTeam(newTeam);
   };
 
@@ -298,6 +308,9 @@ export default function TeamBuilderPage() {
       if (response.data.success) {
         // Clear auto-save
         localStorage.removeItem('teamBuilder_autoSave');
+        // Invalidate myTeams query to ensure fresh data on redirect
+        await queryClient.invalidateQueries({ queryKey: ['myTeams'] });
+
         setSuccessMessage(teamId ? 'Team updated successfully!' : 'Team created successfully!');
         setTimeout(() => {
           router.push('/teams/my');
@@ -410,6 +423,7 @@ export default function TeamBuilderPage() {
                   team={team}
                   onSlotClick={handleSlotClick}
                   onRemovePokemon={handleRemovePokemon}
+                  onTeamUpdate={setTeam}
                   activeSlot={activeSlot}
                 />
 

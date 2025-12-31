@@ -19,17 +19,19 @@ import { getApiBaseUrl } from '@/config/api';
 const API_URL = getApiBaseUrl();
 
 export default function TeamDetailPage() {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const router = useRouter();
   const { id } = router.query;
   const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
+  const currentLang = i18n.language?.startsWith('ja') ? 'ja' : 'en';
+
   // Fetch team data
   const { data: teamData, isLoading, error } = useQuery({
-    queryKey: ['team', id],
+    queryKey: ['team', id, currentLang],
     queryFn: async () => {
-      const response = await teamService.getTeamById(id as string);
+      const response = await teamService.getTeamById(id as string, currentLang);
       if (!response.success) {
         throw new Error(response.error);
       }

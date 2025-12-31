@@ -26,19 +26,22 @@ interface TeamsResponse {
 const TEAMS_PER_PAGE = 20;
 
 export default function TeamsListPage() {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [sortBy, setSortBy] = useState<'created_at' | 'likes'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
 
+  const currentLang = i18n.language.startsWith('ja') ? 'ja' : 'en';
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ['teams', sortBy, sortOrder, currentPage],
+    queryKey: ['teams', sortBy, sortOrder, currentPage, currentLang],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.append('sortBy', sortBy);
       params.append('order', sortOrder);
       params.append('limit', TEAMS_PER_PAGE.toString());
       params.append('offset', ((currentPage - 1) * TEAMS_PER_PAGE).toString());
+      params.append('lang', currentLang);
 
       const response = await axios.get<ApiResponse<TeamsResponse>>(
         `${API_URL}/teams?${params.toString()}`
@@ -76,92 +79,90 @@ export default function TeamsListPage() {
         <meta property="og:type" content="website" />
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || ''}/teams`} />
       </Head>
-      
+
       <Layout>
         <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">
-              {t('teams.title')}
-            </h1>
-            <div className="flex gap-3">
-              <Button href="/teams/my" variant="secondary">
-                {t('teams.myTeams')}
-              </Button>
-              <Button href="/teams/create" variant="primary">
-                {t('teams.createTeam')}
-              </Button>
-            </div>
-          </div>
-
-          {/* Sort Controls */}
-          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-4 mb-6" role="region" aria-label="Sort options">
-            <div className="flex items-center gap-4">
-              <span id="sort-label" className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">{t('teams.sortBy')}:</span>
-              <div className="flex gap-2" role="group" aria-labelledby="sort-label">
-                <button
-                  onClick={() => handleSortChange('created_at')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    sortBy === 'created_at'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
-                  }`}
-                  aria-pressed={sortBy === 'created_at'}
-                  aria-label={`Sort by ${sortOrder === 'desc' && sortBy === 'created_at' ? 'newest' : 'oldest'} teams`}
-                >
-                  {sortOrder === 'desc' && sortBy === 'created_at'
-                    ? t('teams.sort.newest')
-                    : t('teams.sort.oldest')}
-                </button>
-                <button
-                  onClick={() => handleSortChange('likes')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    sortBy === 'likes'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
-                  }`}
-                  aria-pressed={sortBy === 'likes'}
-                  aria-label="Sort by most liked teams"
-                >
-                  {t('teams.sort.mostLiked')}
-                </button>
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">
+                {t('teams.title')}
+              </h1>
+              <div className="flex gap-3">
+                <Button href="/teams/my" variant="secondary">
+                  {t('teams.myTeams')}
+                </Button>
+                <Button href="/teams/create" variant="primary">
+                  {t('teams.createTeam')}
+                </Button>
               </div>
             </div>
-          </div>
 
-          {/* Loading State */}
-          {isLoading ? (
-            <LoadingSpinner message={t('teams.loading')} />
-          ) : error ? (
-            <ErrorMessage error={new Error(t('teams.error'))} />
-          ) : (
-            <>
-              {teams.length === 0 ? (
-                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 text-center">
-                  <p className="text-gray-500 dark:text-dark-text-secondary">{t('teams.noResults')}</p>
+            {/* Sort Controls */}
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-4 mb-6" role="region" aria-label="Sort options">
+              <div className="flex items-center gap-4">
+                <span id="sort-label" className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">{t('teams.sortBy')}:</span>
+                <div className="flex gap-2" role="group" aria-labelledby="sort-label">
+                  <button
+                    onClick={() => handleSortChange('created_at')}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${sortBy === 'created_at'
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    aria-pressed={sortBy === 'created_at'}
+                    aria-label={`Sort by ${sortOrder === 'desc' && sortBy === 'created_at' ? 'newest' : 'oldest'} teams`}
+                  >
+                    {sortOrder === 'desc' && sortBy === 'created_at'
+                      ? t('teams.sort.newest')
+                      : t('teams.sort.oldest')}
+                  </button>
+                  <button
+                    onClick={() => handleSortChange('likes')}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${sortBy === 'likes'
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    aria-pressed={sortBy === 'likes'}
+                    aria-label="Sort by most liked teams"
+                  >
+                    {t('teams.sort.mostLiked')}
+                  </button>
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {teams.map((team) => (
-                      <TeamCard key={team.id} team={team} />
-                    ))}
+              </div>
+            </div>
+
+            {/* Loading State */}
+            {isLoading ? (
+              <LoadingSpinner message={t('teams.loading')} />
+            ) : error ? (
+              <ErrorMessage error={new Error(t('teams.error'))} />
+            ) : (
+              <>
+                {teams.length === 0 ? (
+                  <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 text-center">
+                    <p className="text-gray-500 dark:text-dark-text-secondary">{t('teams.noResults')}</p>
                   </div>
-                  
-                  {/* Pagination */}
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    className="mt-8"
-                  />
-                </>
-              )}
-            </>
-          )}
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {teams.map((team) => (
+                        <TeamCard key={team.id} team={team} />
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                      className="mt-8"
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </Layout>
+      </Layout>
     </>
   );
 }

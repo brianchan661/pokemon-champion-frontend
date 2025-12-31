@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 export default function MyTeamsPage() {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -26,10 +26,12 @@ export default function MyTeamsPage() {
     }
   }, [authLoading, isAuthenticated, router]);
 
+  const currentLang = i18n.language?.startsWith('ja') ? 'ja' : 'en';
+
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['myTeams'],
+    queryKey: ['myTeams', currentLang],
     queryFn: async () => {
-      const response = await teamService.getMyTeams();
+      const response = await teamService.getMyTeams(currentLang);
       if (!response.success) {
         throw new Error(response.error);
       }
