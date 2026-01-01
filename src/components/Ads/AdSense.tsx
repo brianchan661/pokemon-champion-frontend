@@ -99,6 +99,11 @@ export const AdSense = memo(({
   fullWidthResponsive = true,
   className = ''
 }: AdSenseProps) => {
+  // Don't do anything if no slot ID is provided (e.g. disabled slot)
+  if (!adSlot) {
+    return null;
+  }
+
   const { isLoading, error } = useAdSense(adSlot, ADSENSE_CONFIG.CLIENT_ID);
 
   // Memoize validation result to prevent repeated calculations

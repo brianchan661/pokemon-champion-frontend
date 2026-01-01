@@ -11,15 +11,17 @@ export const ADSENSE_CONFIG = {
  * Update these with your actual AdSense ad slot IDs
  */
 export const AD_SLOTS = {
-  HEADER_BANNER: '1234567890',
-  SIDEBAR_RECTANGLE: '1234567891',
-  SIDEBAR_SQUARE: '1234567895',
+  // Using the one verified slot ID for all positions temporarily to prevent 400 errors
+  // until specific ad units are created for each position.
+  HEADER_BANNER: '8010124940',
+  SIDEBAR_RECTANGLE: '8010124940',
+  SIDEBAR_SQUARE: '8010124940',
   SIDE_ADV: '8010124940', // Verified Verification Unit
-  SIDEBAR_BOTTOM: '1234567896',
-  CONTENT_INLINE: '1234567892',
-  FOOTER_BANNER: '1234567893',
-  HOME_BOTTOM_BANNER: '1234567897',
-  MOBILE_BANNER: '1234567894',
+  SIDEBAR_BOTTOM: '8010124940',
+  CONTENT_INLINE: '8010124940',
+  FOOTER_BANNER: '8010124940',
+  HOME_BOTTOM_BANNER: '8010124940',
+  MOBILE_BANNER: '8010124940',
 } as const;
 
 /**
