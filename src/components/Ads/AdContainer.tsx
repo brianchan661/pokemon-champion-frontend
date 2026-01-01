@@ -2,7 +2,7 @@ import { memo } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { AdSense } from './AdSense';
-import { AD_PLACEMENTS, getAdSlotForDevice, type AdPlacement } from '@/config/adsense';
+import { AD_PLACEMENTS, getAdSlotForDevice, shouldShowAds, type AdPlacement } from '@/config/adsense';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useAdBlocker } from '@/hooks/useAdBlocker';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
@@ -42,8 +42,8 @@ export const AdContainer = memo(({ placement, className = '', style }: AdContain
 
   const adSlot = getAdSlotForDevice(placement, isMobile);
 
-  // Show ad blocker message if detected
-  if (hasChecked && isBlocking) {
+  // Show ad blocker message if detected AND we are trying to show ads
+  if (hasChecked && isBlocking && shouldShowAds()) {
     return (
       <div className={`ad-container ad-container--${placement} ${className}`} style={style}>
         <div className="bg-gradient-to-br from-blue-50 to-primary-50 border border-primary-200 rounded-lg p-4 text-center">

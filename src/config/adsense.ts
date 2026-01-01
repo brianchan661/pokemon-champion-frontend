@@ -14,6 +14,7 @@ export const AD_SLOTS = {
   HEADER_BANNER: '1234567890',
   SIDEBAR_RECTANGLE: '1234567891',
   SIDEBAR_SQUARE: '1234567895',
+  SIDE_ADV: '8010124940', // Verified Verification Unit
   SIDEBAR_BOTTOM: '1234567896',
   CONTENT_INLINE: '1234567892',
   FOOTER_BANNER: '1234567893',
@@ -31,14 +32,14 @@ export const AD_PLACEMENTS = {
     format: 'horizontal' as const,
   },
   sidebar: {
-    desktop: AD_SLOTS.SIDEBAR_RECTANGLE,
+    desktop: AD_SLOTS.SIDE_ADV,
     mobile: AD_SLOTS.MOBILE_BANNER,
     format: 'rectangle' as const,
   },
   'sidebar-top': {
-    desktop: AD_SLOTS.SIDEBAR_RECTANGLE,
+    desktop: AD_SLOTS.SIDE_ADV,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'rectangle' as const,
+    format: 'auto' as const, // Changed to auto per user snippet
   },
   'sidebar-middle': {
     desktop: AD_SLOTS.SIDEBAR_SQUARE,
