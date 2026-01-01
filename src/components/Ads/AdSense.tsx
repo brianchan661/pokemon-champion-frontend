@@ -99,18 +99,18 @@ export const AdSense = memo(({
   fullWidthResponsive = true,
   className = ''
 }: AdSenseProps) => {
-  // Don't do anything if no slot ID is provided (e.g. disabled slot)
-  if (!adSlot) {
-    return null;
-  }
-
   const { isLoading, error } = useAdSense(adSlot, ADSENSE_CONFIG.CLIENT_ID);
 
   // Memoize validation result to prevent repeated calculations
   const isValidClient = useMemo(() =>
     ADSENSE_CONFIG.CLIENT_ID && isValidAdSenseClientId(ADSENSE_CONFIG.CLIENT_ID),
-    [ADSENSE_CONFIG.CLIENT_ID]
+    []
   );
+
+  // Don't do anything if no slot ID is provided (e.g. disabled slot)
+  if (!adSlot) {
+    return null;
+  }
 
   // Don't render if ads are disabled or no valid client ID
   if (!shouldShowAds() || !isValidClient) {
