@@ -130,7 +130,7 @@ export const AdSense = memo(({
       )}
       <ins
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'block', width: '100%', minWidth: '250px' }}
         data-ad-client={ADSENSE_CONFIG.CLIENT_ID}
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
