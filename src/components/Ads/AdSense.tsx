@@ -38,15 +38,15 @@ class AdSenseValidator {
 
   validateClientId(clientId: string): boolean {
     // Validate input type and basic format
-    if (!clientId || typeof clientId !== 'string' || clientId.length !== 26) {
+    if (!clientId || typeof clientId !== 'string' || (clientId.length !== 23 && clientId.length !== 24)) {
       return false;
     }
-    
+
     // Check cache first
     if (this.validationCache.has(clientId)) {
       return this.validationCache.get(clientId)!;
     }
-    
+
     // Implement LRU cache behavior instead of clearing all
     if (this.validationCache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.validationCache.keys().next().value;
@@ -54,10 +54,10 @@ class AdSenseValidator {
         this.validationCache.delete(firstKey);
       }
     }
-    
+
     // Strict validation with comprehensive security checks
     const isValid = this.performValidation(clientId);
-    
+
     this.validationCache.set(clientId, isValid);
     return isValid;
   }
@@ -81,7 +81,7 @@ class AdSenseValidator {
     }
 
     // Ensure no leading/trailing whitespace and validate length
-    return clientId === clientId.trim() && clientId.length === 26;
+    return clientId === clientId.trim() && (clientId.length === 23 || clientId.length === 24);
   }
 }
 
@@ -93,8 +93,8 @@ const isValidAdSenseClientId = (clientId: string): boolean => {
  * Google AdSense component with error handling and loading states
  * Requires NEXT_PUBLIC_ADSENSE_CLIENT_ID environment variable
  */
-export const AdSense = memo(({ 
-  adSlot, 
+export const AdSense = memo(({
+  adSlot,
   adFormat = 'auto',
   fullWidthResponsive = true,
   className = ''
@@ -102,7 +102,7 @@ export const AdSense = memo(({
   const { isLoading, error } = useAdSense(adSlot, ADSENSE_CONFIG.CLIENT_ID);
 
   // Memoize validation result to prevent repeated calculations
-  const isValidClient = useMemo(() => 
+  const isValidClient = useMemo(() =>
     ADSENSE_CONFIG.CLIENT_ID && isValidAdSenseClientId(ADSENSE_CONFIG.CLIENT_ID),
     [ADSENSE_CONFIG.CLIENT_ID]
   );
