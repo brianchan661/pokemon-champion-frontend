@@ -128,17 +128,15 @@ export const AdSense = memo(({
           <span className="text-gray-400 text-sm">Loading ad...</span>
         </div>
       )}
-      <ins
-        className="adsbygoogle"
-        className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client={ADSENSE_CONFIG.CLIENT_ID}
-        data-ad-slot={adSlot}
-        data-ad-format={adFormat}
-        data-full-width-responsive={fullWidthResponsive.toString()}
-        aria-label="Advertisement"
-        role="banner"
-        data-testid={`adsense-${adSlot}`}
+      className="adsbygoogle"
+      style={{ display: 'block' }}
+      data-ad-client={ADSENSE_CONFIG.CLIENT_ID}
+      data-ad-slot={adSlot}
+      data-ad-format={adFormat}
+      data-full-width-responsive={fullWidthResponsive.toString()}
+      aria-label="Advertisement"
+      role="banner"
+      data-testid={`adsense-${adSlot}`}
       />
     </div>
   );
