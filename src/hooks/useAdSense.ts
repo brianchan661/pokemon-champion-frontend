@@ -32,7 +32,7 @@ export const useAdSense = (adSlot: string, clientId?: string): UseAdSenseReturn 
         return;
       }
 
-      if (!/^ca-pub-\d{16}$/.test(clientId)) {
+      if (!/^ca-pub-\d{16,30}$/.test(clientId)) {
         setError('Invalid AdSense client ID format');
         setIsLoading(false);
         return;
@@ -76,19 +76,26 @@ export const useAdSense = (adSlot: string, clientId?: string): UseAdSenseReturn 
 
         if (!isMounted) return;
 
-        // Initialize AdSense
-        window.adsbygoogle?.push({});
-        
+        // Initialize AdSense only if there are unfilled slots matching this ID
+        const adSlots = document.querySelectorAll(`ins.adsbygoogle[data-ad-slot="${adSlot}"]`);
+        const hasUnfilledSlots = Array.from(adSlots).some(slot =>
+          !slot.hasAttribute('data-adsbygoogle-status') && !slot.hasAttribute('data-ad-status')
+        );
+
+        if (hasUnfilledSlots) {
+          window.adsbygoogle?.push({});
+        }
+
         if (isMounted) {
           setIsReady(true);
           setError(null);
         }
       } catch (err) {
         if (!isMounted) return;
-        
+
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error('AdSense initialization error:', err);
-        
+
         // Retry logic
         if (retryCount < maxRetries) {
           retryCount++;
