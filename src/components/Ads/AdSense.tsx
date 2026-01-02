@@ -13,9 +13,11 @@ export interface AdSenseProps {
   /** AdSense ad slot ID */
   adSlot: string;
   /** Ad format type */
-  adFormat?: 'auto' | 'rectangle' | 'horizontal' | 'vertical';
+  adFormat?: 'auto' | 'fluid' | 'rectangle' | 'horizontal' | 'vertical';
   /** Enable responsive ad sizing */
   fullWidthResponsive?: boolean;
+  /** Custom inline styles */
+  style?: React.CSSProperties;
   /** Additional CSS classes */
   className?: string;
 }
@@ -97,6 +99,7 @@ export const AdSense = memo(({
   adSlot,
   adFormat = 'auto',
   fullWidthResponsive = true,
+  style,
   className = ''
 }: AdSenseProps) => {
   const { isLoading, error } = useAdSense(adSlot, ADSENSE_CONFIG.CLIENT_ID);
@@ -135,7 +138,11 @@ export const AdSense = memo(({
       )}
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', width: '100%', minWidth: '250px' }}
+        style={{
+          display: 'block',
+          width: '100%',
+          ...style
+        }}
         data-ad-client={ADSENSE_CONFIG.CLIENT_ID}
         data-ad-slot={adSlot}
         data-ad-format={adFormat}

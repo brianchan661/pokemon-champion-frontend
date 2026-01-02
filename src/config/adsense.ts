@@ -27,48 +27,58 @@ export const AD_SLOTS = {
 /**
  * Ad placement configurations with responsive slot selection
  */
-export const AD_PLACEMENTS = {
+export interface AdPlacementConfig {
+  desktop: string;
+  mobile: string;
+  format: 'auto' | 'fluid' | 'rectangle' | 'horizontal' | 'vertical';
+  style?: React.CSSProperties | { [key: string]: string | number };
+}
+
+const RAW_PLACEMENTS = {
   header: {
     desktop: AD_SLOTS.HEADER_BANNER,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'horizontal' as const,
+    format: 'horizontal',
   },
   sidebar: {
     desktop: AD_SLOTS.SIDE_ADV,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'rectangle' as const,
+    format: 'rectangle',
   },
   'sidebar-top': {
     desktop: AD_SLOTS.SIDE_ADV,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'auto' as const, // Changed to auto per user snippet
+    format: 'rectangle',
+    style: { display: 'block', width: '300px', height: '250px' },
   },
   'sidebar-middle': {
     desktop: AD_SLOTS.SIDEBAR_SQUARE,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'rectangle' as const,
+    format: 'rectangle',
   },
   'sidebar-bottom': {
     desktop: AD_SLOTS.SIDEBAR_BOTTOM,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'rectangle' as const,
+    format: 'rectangle',
   },
   content: {
     desktop: AD_SLOTS.CONTENT_INLINE,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'auto' as const,
+    format: 'auto',
   },
   footer: {
     desktop: AD_SLOTS.FOOTER_BANNER,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'horizontal' as const,
+    format: 'horizontal',
   },
   'home-bottom-banner': {
     desktop: AD_SLOTS.HOME_BOTTOM_BANNER,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'horizontal' as const,
+    format: 'horizontal',
   },
 } as const;
+
+export const AD_PLACEMENTS: Record<keyof typeof RAW_PLACEMENTS, AdPlacementConfig> = RAW_PLACEMENTS;
 
 export type AdPlacement = keyof typeof AD_PLACEMENTS;
 

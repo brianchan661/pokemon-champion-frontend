@@ -12,7 +12,8 @@ interface LayoutWithSidebarProps {
 
 /**
  * Layout component with right sidebar containing AdSense ads
- * Similar to pokecabook.com layout structure
+ * Similar to pokecabook.com layout structure.
+ * Updated to use fixed size ad containers.
  */
 export const LayoutWithSidebar = ({ children, hideSidebar = false }: LayoutWithSidebarProps) => {
   return (
@@ -31,12 +32,11 @@ export const LayoutWithSidebar = ({ children, hideSidebar = false }: LayoutWithS
               <div className="w-full lg:w-96 xl:w-80 flex-shrink-0">
                 <div className="sticky top-4">
                   <div className="space-y-8">
-                    {/* Top Sidebar Ad */}
                     <ErrorBoundary>
                       <div className="adsense-sidebar-container">
                         <AdContainer
                           placement="sidebar-top"
-                          className="w-full adsense-placeholder"
+                          className="w-full"
                         />
                       </div>
                     </ErrorBoundary>
@@ -46,7 +46,7 @@ export const LayoutWithSidebar = ({ children, hideSidebar = false }: LayoutWithS
                       <div className="adsense-sidebar-container">
                         <AdContainer
                           placement="sidebar-middle"
-                          className="w-full adsense-placeholder"
+                          className="w-full"
                         />
                       </div>
                     </ErrorBoundary>
@@ -56,7 +56,7 @@ export const LayoutWithSidebar = ({ children, hideSidebar = false }: LayoutWithS
                       <div className="adsense-sidebar-container">
                         <AdContainer
                           placement="sidebar-bottom"
-                          className="w-full adsense-placeholder"
+                          className="w-full"
                         />
                       </div>
                     </ErrorBoundary>
