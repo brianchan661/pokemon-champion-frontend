@@ -46,9 +46,18 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
 
       const data = await response.json();
 
-      if (data.success && data.exists && data.hasPassword) {
-        setShowPassword(true);
-        return true; // proceed to password flow
+      if (data.success && data.exists) {
+        // If account exists but not verified, show verification prompt immediately
+        // and do NOT ask for password
+        if (data.isVerified === false) { // Explicit check
+          setIsUnverified(true);
+          return false;
+        }
+
+        if (data.hasPassword) {
+          setShowPassword(true);
+          return true; // proceed to password flow
+        }
       }
 
       return false; // proceed to magic link flow
@@ -224,65 +233,63 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
           />
         </div>
 
-        {showPassword && (
-          <>
-            <div className="animate-fade-in">
-              <div className="flex justify-between items-center mb-1">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  {t('auth.password')}
-                </label>
-                <button
-                  type="button"
-                  className="text-xs text-primary-600 hover:text-primary-700"
-                  onClick={() => {
-                    /* handle forgot password if needed, or just let them use magic link by clearing password mode? */
-                    // For now, simpler is better. If they forgot, they can likely use magic link logic if we supported switching back.
-                  }}
-                >
-                  {/* Forgot password endpoint not explicitly requested, skipping for now */}
-                </button>
-              </div>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder={t('auth.enterPassword')}
-                required
-                disabled={isLoading}
-                autoFocus
-              />
-            </div>
-            {isUnverified && (
-              <div className="mt-3 text-sm bg-yellow-50 border border-yellow-200 p-3 rounded text-yellow-800">
-                <p className="mb-2 font-medium">Account not verified</p>
-                <p className="mb-2">Did you miss the verification email?</p>
+        {isUnverified && (
+          <div className="mt-3 text-sm bg-yellow-50 border border-yellow-200 p-3 rounded text-yellow-800">
+            <p className="mb-2 font-medium">Account not verified</p>
+            <p className="mb-2">Please verify your email address to continue.</p>
 
-                {resendStatus && (
-                  <p className={`mb-2 font-medium ${resendStatus.success ? 'text-green-600' : 'text-red-600'}`}>
-                    {resendStatus.message}
-                  </p>
-                )}
-
-                {!resendStatus?.success && (
-                  <button
-                    type="button"
-                    onClick={handleResendVerification}
-                    disabled={isResending}
-                    className="text-primary-700 underline hover:text-primary-800 font-medium disabled:opacity-50"
-                  >
-                    {isResending ? 'Sending...' : 'Resend Verification Email'}
-                  </button>
-                )}
-              </div>
+            {resendStatus && (
+              <p className={`mb-2 font-medium ${resendStatus.success ? 'text-green-600' : 'text-red-600'}`}>
+                {resendStatus.message}
+              </p>
             )}
-          </>
+
+            {!resendStatus?.success && (
+              <button
+                type="button"
+                onClick={handleResendVerification}
+                disabled={isResending}
+                className="text-primary-700 underline hover:text-primary-800 font-medium disabled:opacity-50"
+              >
+                {isResending ? 'Sending...' : 'Resend Verification Email'}
+              </button>
+            )}
+          </div>
+        )}
+
+        {showPassword && (
+          <div className="animate-fade-in">
+            <div className="flex justify-between items-center mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                {t('auth.password')}
+              </label>
+              <button
+                type="button"
+                className="text-xs text-primary-600 hover:text-primary-700"
+                onClick={() => {
+                  /* handle forgot password */
+                }}
+              >
+                {/* Forgot password */}
+              </button>
+            </div>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              placeholder={t('auth.enterPassword')}
+              required
+              disabled={isLoading}
+              autoFocus
+            />
+          </div>
         )}
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || isUnverified}
           className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-2 px-4 rounded-md hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
         >
           {isLoading ? t('auth.processing') : (showPassword ? t('auth.signIn') : t('auth.continue'))}
