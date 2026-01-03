@@ -145,6 +145,18 @@ class AuthService {
     }
   }
 
+  async resendVerification(email: string): Promise<AuthResponse> {
+    try {
+      const response = await axios.post(`${API_BASE}/auth/resend-verification`, { email });
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Failed to resend verification email'
+      };
+    }
+  }
+
   setToken(token: string): void {
     this.token = token;
     if (typeof window !== 'undefined') {

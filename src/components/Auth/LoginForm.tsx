@@ -12,7 +12,10 @@ interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error, onSwitchToRegister }) => {
   const { t } = useTranslation('common');
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, resendVerification } = useAuth();
+  const [isUnverified, setIsUnverified] = useState(false);
+  const [resendStatus, setResendStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const [isResending, setIsResending] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -28,6 +31,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
     if (error && onError) {
       onError('');
     }
+    if (isUnverified) {
+      setIsUnverified(false);
+      setResendStatus(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,6 +44,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
     if (onError) {
       onError('');
     }
+    setIsUnverified(false);
+    setResendStatus(null);
 
     if (!formData.email || !formData.password) {
       if (onError) {
@@ -50,10 +59,34 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
     if (result.success) {
       onSuccess?.();
     } else {
+      const errorMessage = result.error || 'Login failed';
       if (onError) {
-        onError(result.error || 'Login failed');
+        onError(errorMessage);
+      }
+
+      // Check if error is related to unverified account
+      if (errorMessage.toLowerCase().includes('verify') || errorMessage.toLowerCase().includes('verified')) {
+        setIsUnverified(true);
       }
     }
+  };
+
+  const handleResendVerification = async () => {
+    if (!formData.email) return;
+
+    setIsResending(true);
+    setResendStatus(null);
+
+    const result = await resendVerification(formData.email);
+
+    setResendStatus({
+      success: result.success,
+      message: result.success
+        ? 'Verification email sent! Please check your inbox.'
+        : (result.error || 'Failed to resend verification email')
+    });
+
+    setIsResending(false);
   };
 
   const handleGoogleLogin = () => {
@@ -75,6 +108,26 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, error,
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
+            {isUnverified && (
+              <div className="mt-2 text-sm border-t border-red-200 pt-2">
+                <p className="mb-2">Did you miss the verification email?</p>
+                {resendStatus && (
+                  <p className={`mb-2 font-medium ${resendStatus.success ? 'text-green-600' : 'text-red-600'}`}>
+                    {resendStatus.message}
+                  </p>
+                )}
+                {!resendStatus?.success && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={isResending}
+                    className="text-red-800 underline hover:text-red-900 font-medium disabled:opacity-50"
+                  >
+                    {isResending ? 'Sending...' : 'Resend Verification Email'}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
 

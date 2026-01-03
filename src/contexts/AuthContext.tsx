@@ -11,6 +11,7 @@ interface AuthContextType {
   logout: () => void;
   updateProfile: (updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
   refreshProfile: () => Promise<void>;
+  resendVerification: (email: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -129,6 +130,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const resendVerification = async (email: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const response = await authService.resendVerification(email);
+      return { success: response.success, error: response.error };
+    } catch (error) {
+      return { success: false, error: 'Failed to resend verification email' };
+    }
+  };
+
   const value: AuthContextType = {
     user,
     isLoading,
@@ -137,7 +147,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     updateProfile,
-    refreshProfile
+    refreshProfile,
+    resendVerification
   };
 
   return (
