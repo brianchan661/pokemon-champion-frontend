@@ -36,7 +36,7 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
     }
   };
 
-  const handleCheckEmail = async () => {
+  const handleCheckEmail = async (): Promise<{ shouldAskPassword: boolean; stopFlow: boolean }> => {
     try {
       const response = await fetch(`${getApiBaseUrl()}/auth/check-email`, {
         method: 'POST',
@@ -51,19 +51,19 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
         // and do NOT ask for password
         if (data.isVerified === false) { // Explicit check
           setIsUnverified(true);
-          return false;
+          return { shouldAskPassword: false, stopFlow: true };
         }
 
         if (data.hasPassword) {
           setShowPassword(true);
-          return true; // proceed to password flow
+          return { shouldAskPassword: true, stopFlow: false }; // proceed to password flow
         }
       }
 
-      return false; // proceed to magic link flow
+      return { shouldAskPassword: false, stopFlow: false }; // proceed to magic link flow
     } catch (error) {
       console.error('Check email error:', error);
-      return false; // default to magic link on error
+      return { shouldAskPassword: false, stopFlow: false }; // default to magic link on error
     }
   };
 
@@ -159,7 +159,12 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
         await handlePasswordLogin();
       } else {
         // First step: check if we should ask for password
-        const shouldAskPassword = await handleCheckEmail();
+        const { shouldAskPassword, stopFlow } = await handleCheckEmail();
+
+        if (stopFlow) {
+          setIsLoading(false);
+          return;
+        }
 
         if (!shouldAskPassword) {
           // If not asking for password, send magic link immediately
