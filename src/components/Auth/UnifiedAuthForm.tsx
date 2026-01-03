@@ -11,7 +11,11 @@ interface UnifiedAuthFormProps {
 
 export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onError }) => {
   const { t } = useTranslation('common');
-  const { login } = useAuth();
+  const { login, resendVerification } = useAuth();
+
+  const [isUnverified, setIsUnverified] = useState(false);
+  const [resendStatus, setResendStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +29,10 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
     if (showPassword) {
       setShowPassword(false);
       setPassword('');
+    }
+    if (isUnverified) {
+      setIsUnverified(false);
+      setResendStatus(null);
     }
   };
 
@@ -50,14 +58,42 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
     }
   };
 
+  const handleResendVerification = async () => {
+    if (!email) return;
+
+    setIsResending(true);
+    setResendStatus(null);
+
+    const result = await resendVerification(email);
+
+    setResendStatus({
+      success: result.success,
+      message: result.success
+        ? 'Verification email sent! Please check your inbox.'
+        : (result.error || 'Failed to resend verification email')
+    });
+
+    setIsResending(false);
+  };
 
   const handlePasswordLogin = async () => {
     try {
+      if (isUnverified) {
+        setIsUnverified(false);
+        setResendStatus(null);
+      }
+
       const result = await login({ email, password });
       if (result.success) {
         onSuccess?.();
       } else {
-        onError?.(result.error || 'Login failed');
+        const errorMessage = result.error || 'Login failed';
+        onError?.(errorMessage);
+
+        // Check if error is related to unverified account
+        if (errorMessage.toLowerCase().includes('verify') || errorMessage.toLowerCase().includes('verified')) {
+          setIsUnverified(true);
+        }
       }
     } catch (error: any) {
       onError?.(error.message || 'Login failed');
@@ -189,34 +225,59 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
         </div>
 
         {showPassword && (
-          <div className="animate-fade-in">
-            <div className="flex justify-between items-center mb-1">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                {t('auth.password')}
-              </label>
-              <button
-                type="button"
-                className="text-xs text-primary-600 hover:text-primary-700"
-                onClick={() => {
-                  /* handle forgot password if needed, or just let them use magic link by clearing password mode? */
-                  // For now, simpler is better. If they forgot, they can likely use magic link logic if we supported switching back.
-                }}
-              >
-                {/* Forgot password endpoint not explicitly requested, skipping for now */}
-              </button>
+          <>
+            <div className="animate-fade-in">
+              <div className="flex justify-between items-center mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  {t('auth.password')}
+                </label>
+                <button
+                  type="button"
+                  className="text-xs text-primary-600 hover:text-primary-700"
+                  onClick={() => {
+                    /* handle forgot password if needed, or just let them use magic link by clearing password mode? */
+                    // For now, simpler is better. If they forgot, they can likely use magic link logic if we supported switching back.
+                  }}
+                >
+                  {/* Forgot password endpoint not explicitly requested, skipping for now */}
+                </button>
+              </div>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder={t('auth.enterPassword')}
+                required
+                disabled={isLoading}
+                autoFocus
+              />
             </div>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder={t('auth.enterPassword')}
-              required
-              disabled={isLoading}
-              autoFocus
-            />
-          </div>
+            {isUnverified && (
+              <div className="mt-3 text-sm bg-yellow-50 border border-yellow-200 p-3 rounded text-yellow-800">
+                <p className="mb-2 font-medium">Account not verified</p>
+                <p className="mb-2">Did you miss the verification email?</p>
+
+                {resendStatus && (
+                  <p className={`mb-2 font-medium ${resendStatus.success ? 'text-green-600' : 'text-red-600'}`}>
+                    {resendStatus.message}
+                  </p>
+                )}
+
+                {!resendStatus?.success && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={isResending}
+                    className="text-primary-700 underline hover:text-primary-800 font-medium disabled:opacity-50"
+                  >
+                    {isResending ? 'Sending...' : 'Resend Verification Email'}
+                  </button>
+                )}
+              </div>
+            )}
+          </>
         )}
 
         <button
@@ -279,4 +340,3 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
     </div>
   );
 };
-
