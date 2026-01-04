@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next';
 import axios from 'axios';
 import { UserTable } from './UserTable';
 import { UserDetailModal } from './UserDetailModal';
+import { ConfirmationModal } from '../UI/ConfirmationModal';
 import { getApiBaseUrl } from '@/config/api';
 
 interface UserManagementStats {
@@ -57,6 +58,11 @@ export const UserManagement = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Confirmation Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Filters
   const [search, setSearch] = useState('');
@@ -178,6 +184,44 @@ export const UserManagement = () => {
     setTimeout(() => setSuccess(''), 5000);
   };
 
+  const handleDeleteUser = (userId: string) => {
+    setUserToDelete(userId);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    try {
+      setDeleteLoading(true);
+      const token = localStorage.getItem('authToken');
+      await axios.delete(
+        `${getApiBaseUrl()}/admin/users/${userToDelete}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          data: { reason: 'Admin requested deletion' }
+        }
+      );
+
+      setSuccess('User deleted successfully');
+      setTimeout(() => setSuccess(''), 5000);
+
+      // Refresh list
+      fetchUsers();
+      // Refresh stats if we are deleting (optional but good)
+      fetchStats();
+
+      // Close modal
+      setDeleteModalOpen(false);
+      setUserToDelete(null);
+    } catch (err: any) {
+      console.error('Failed to delete user:', err);
+      setError(err.response?.data?.error || 'Failed to delete user');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -187,21 +231,19 @@ export const UserManagement = () => {
         <nav className="flex gap-4">
           <button
             onClick={() => setActiveSection('stats')}
-            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-              activeSection === 'stats'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-300'
-            }`}
+            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeSection === 'stats'
+              ? 'border-blue-500 text-blue-400'
+              : 'border-transparent text-gray-400 hover:text-gray-300'
+              }`}
           >
             {t('admin.users.sections.stats')}
           </button>
           <button
             onClick={() => setActiveSection('users')}
-            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-              activeSection === 'users'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-300'
-            }`}
+            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeSection === 'users'
+              ? 'border-blue-500 text-blue-400'
+              : 'border-transparent text-gray-400 hover:text-gray-300'
+              }`}
           >
             {t('admin.users.sections.users')}
             <span className="ml-2 px-2 py-0.5 text-xs bg-gray-700 text-gray-300 rounded-full">
@@ -210,11 +252,10 @@ export const UserManagement = () => {
           </button>
           <button
             onClick={() => setActiveSection('audit')}
-            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-              activeSection === 'audit'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-300'
-            }`}
+            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeSection === 'audit'
+              ? 'border-blue-500 text-blue-400'
+              : 'border-transparent text-gray-400 hover:text-gray-300'
+              }`}
           >
             {t('admin.users.sections.auditLog')}
           </button>
@@ -358,7 +399,12 @@ export const UserManagement = () => {
           </div>
 
           {/* User Table */}
-          <UserTable users={users} onUserClick={handleUserClick} />
+          {/* User Table */}
+          <UserTable
+            users={users}
+            onUserClick={handleUserClick}
+            onDelete={handleDeleteUser}
+          />
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -460,6 +506,21 @@ export const UserManagement = () => {
           onUserUpdated={handleUserUpdated}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setUserToDelete(null);
+        }}
+        onConfirm={confirmDeleteUser}
+        title="Delete User"
+        message="Are you sure you want to permanently delete this user? This action cannot be undone."
+        confirmLabel="Delete User"
+        isDestructive={true}
+        isLoading={deleteLoading}
+      />
     </div>
   );
 };

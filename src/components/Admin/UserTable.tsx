@@ -17,9 +17,10 @@ interface User {
 interface UserTableProps {
   users: User[];
   onUserClick: (userId: string) => void;
+  onDelete: (userId: string) => void;
 }
 
-export const UserTable = ({ users, onUserClick }: UserTableProps) => {
+export const UserTable = ({ users, onUserClick, onDelete }: UserTableProps) => {
   const { t } = useTranslation('common');
 
   const getRoleBadgeColor = (role: string) => {
@@ -126,9 +127,18 @@ export const UserTable = ({ users, onUserClick }: UserTableProps) => {
                     e.stopPropagation();
                     onUserClick(user.id);
                   }}
-                  className="text-blue-400 hover:text-blue-300 text-xs font-medium"
+                  className="text-blue-400 hover:text-blue-300 text-xs font-medium mr-3"
                 >
                   View
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(user.id);
+                  }}
+                  className="text-red-400 hover:text-red-300 text-xs font-medium"
+                >
+                  Delete
                 </button>
               </td>
             </tr>
