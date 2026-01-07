@@ -12,7 +12,7 @@ export default function PremiumPage() {
   const { t } = useTranslation('common');
   const { isPremium } = usePremiumStatus();
 
-  const BMC_URL = process.env.NEXT_PUBLIC_BMC_PAGE_URL || 'https://www.buymeacoffee.com/pokemon.champion';
+  const BMC_URL = process.env.NEXT_PUBLIC_BMC_PAGE_URL || 'https://buymeacoffee.com/pokemon.champion.coffee';
 
   const features = [
     {
@@ -149,17 +149,15 @@ export default function PremiumPage() {
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`p-6 rounded-xl border-2 transition-all duration-200 ${
-                    feature.highlight
+                  className={`p-6 rounded-xl border-2 transition-all duration-200 ${feature.highlight
                       ? 'border-primary-300 bg-primary-50 hover:border-primary-400 hover:shadow-lg'
                       : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
-                  }`}
+                    }`}
                 >
-                  <div className={`inline-flex p-3 rounded-lg mb-4 ${
-                    feature.highlight
+                  <div className={`inline-flex p-3 rounded-lg mb-4 ${feature.highlight
                       ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-white'
                       : 'bg-gray-100 text-gray-700'
-                  }`}>
+                    }`}>
                     {feature.icon}
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">

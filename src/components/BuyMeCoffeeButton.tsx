@@ -9,7 +9,8 @@ export const BuyMeCoffeeButton = ({ compact = false }: BuyMeCoffeeButtonProps) =
   const { t } = useTranslation('common');
 
   const handleClick = () => {
-    window.open('https://www.buymeacoffee.com/pokemon.champion', '_blank', 'noopener,noreferrer');
+    const url = process.env.NEXT_PUBLIC_BMC_PAGE_URL || 'https://buymeacoffee.com/pokemon.champion.coffee';
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   if (compact) {
