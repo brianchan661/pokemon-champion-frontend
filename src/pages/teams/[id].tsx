@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { teamService } from '@/services/teamService';
 import { StrategyDisplay } from '@/components/Strategy/StrategyDisplay';
 import { CommentSection } from '@/components/Social/CommentSection';
+import { ShareButton } from '@/components/Social/ShareButton';
 import { Team, Comment } from '@brianchan661/pokemon-champion-shared';
 import { getApiBaseUrl } from '@/config/api';
 
@@ -120,14 +121,23 @@ export default function TeamDetailPage() {
     <>
       <Head>
         <title>{team.name} | Pokemon Champion</title>
-        <meta name="description" content={team.description || team.strategy} />
+        <meta name="description" content={team.description || team.strategy || `Check out this Pokemon team by ${team.authorUsername}`} />
+
+        {/* Open Graph Tags for Social Sharing */}
+        <meta property="og:title" content={`${team.name} | Pokemon Champion`} />
+        <meta property="og:description" content={team.description || team.strategy || `Check out this Pokemon team by ${team.authorUsername}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${typeof window !== 'undefined' ? window.location.origin : ''}/teams/${team.id}`} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={team.name} />
+        <meta name="twitter:description" content={team.description || team.strategy || `Check out this Pokemon team by ${team.authorUsername}`} />
       </Head>
 
       <Layout>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8 pb-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Back Button */}
-            <div className="mb-6">
+            {/* Header Actions Row */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <Link
                 href="/teams"
                 className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -137,6 +147,26 @@ export default function TeamDetailPage() {
                 </svg>
                 {t('teams.browseTeams')}
               </Link>
+
+              <div className="flex gap-3">
+                <ShareButton team={team} />
+
+                {team.isPublic && (
+                  <button
+                    onClick={handleLike}
+                    disabled={likeMutation.isPending}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2 text-sm ${hasLiked
+                      ? 'bg-primary-600 text-white hover:bg-primary-700'
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
+                      }`}
+                  >
+                    <svg className="w-4 h-4" fill={hasLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    {hasLiked ? 'Liked' : 'Like'} ({team.likes})
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Pokemon Grid - Now at the top */}
@@ -170,7 +200,6 @@ export default function TeamDetailPage() {
                           {t('teams.private')}
                         </span>
                       )}
-                      {/* Placeholder for Format tag if available in the future */}
                       <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-medium border border-gray-200 dark:border-gray-600">
                         OU
                       </span>
@@ -196,23 +225,7 @@ export default function TeamDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 shrink-0">
-                  {team.isPublic && (
-                    <button
-                      onClick={handleLike}
-                      disabled={likeMutation.isPending}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2 text-sm ${hasLiked
-                        ? 'bg-primary-600 text-white hover:bg-primary-700'
-                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
-                        }`}
-                    >
-                      <svg className="w-4 h-4" fill={hasLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      {hasLiked ? 'Liked' : 'Like'} ({team.likes})
-                    </button>
-                  )}
-                </div>
+                {/* Action Buttons Area (Previously here) */}
               </div>
 
               <div>

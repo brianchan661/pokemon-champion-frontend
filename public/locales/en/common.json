@@ -1,7 +1,12 @@
 {
   "common": {
     "loading": "Loading...",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "share": "Share",
+    "download": "Download",
+    "downloadImage": "Download Image",
+    "saveImage": "Save Image",
+    "downloadTeamImage": "Download team roster as image"
   },
   "comingSoon": {
     "status": "Coming Soon"
