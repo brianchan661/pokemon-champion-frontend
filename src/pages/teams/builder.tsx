@@ -47,11 +47,14 @@ export default function TeamBuilderPage() {
   const [showPokemonSelector, setShowPokemonSelector] = useState(false);
 
   // Redirect if not authenticated
+  // Redirect logic removed to allow guest access
+  /*
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/auth?redirect=/teams/builder');
     }
   }, [authLoading, isAuthenticated, router]);
+  */
 
   // Load existing team if editing
   useEffect(() => {
@@ -61,8 +64,10 @@ export default function TeamBuilderPage() {
   }, [teamId, isAuthenticated]);
 
   // Auto-save to localStorage
+  // Auto-save to localStorage
   useEffect(() => {
-    if (isAuthenticated && (team.some(s => s.pokemon) || teamName)) {
+    // Allow auto-save for guests too
+    if (team.some(s => s.pokemon) || teamName) {
       const autoSaveData = {
         teamName,
         teamDescription,
@@ -72,11 +77,11 @@ export default function TeamBuilderPage() {
       };
       localStorage.setItem('teamBuilder_autoSave', JSON.stringify(autoSaveData));
     }
-  }, [team, teamName, teamDescription, isPublic, isAuthenticated]);
+  }, [team, teamName, teamDescription, isPublic]);
 
   // Load auto-saved data on mount (for new teams only, not when editing)
   useEffect(() => {
-    if (!teamId && isAuthenticated) {
+    if (!teamId) { // Removed isAuthenticated check
       const autoSave = localStorage.getItem('teamBuilder_autoSave');
       if (autoSave) {
         try {
@@ -105,7 +110,7 @@ export default function TeamBuilderPage() {
         }
       }
     }
-  }, [teamId, isAuthenticated]);
+  }, [teamId]); // Removed isAuthenticated dependency
 
   async function loadExistingTeam(id: string) {
     try {
@@ -266,8 +271,18 @@ export default function TeamBuilderPage() {
       const token = localStorage.getItem('authToken');
 
       if (!token) {
-        setError('Authentication required. Please log in again.');
-        router.push('/auth?redirect=/teams/builder');
+        // Force a final auto-save before redirecting
+        const autoSaveData = {
+          teamName,
+          teamDescription,
+          isPublic,
+          team,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem('teamBuilder_autoSave', JSON.stringify(autoSaveData));
+
+        // Redirect to auth with returnUrl
+        router.push('/auth?returnUrl=/teams/builder');
         return;
       }
 
@@ -353,9 +368,12 @@ export default function TeamBuilderPage() {
     );
   }
 
+  // Removed premature return to allow guest rendering
+  /*
   if (!isAuthenticated) {
     return null; // Will redirect
   }
+  */
 
   const teamPokemonCount = team.filter(s => s.pokemon).length;
   const selectedPokemonIds = team

@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { getApiBaseUrl, getBackendBaseUrl } from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,6 +11,7 @@ interface UnifiedAuthFormProps {
 }
 
 export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onError }) => {
+  const router = useRouter(); // Initialize router
   const { t } = useTranslation('common');
   const { login, resendVerification } = useAuth();
 
@@ -179,7 +181,9 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
   const handleGoogleLogin = () => {
     // Save current URL to redirect back after OAuth
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('returnUrl', window.location.pathname);
+      // Prioritize returnUrl from query if available, otherwise use current pathname
+      const returnUrl = (router.query.returnUrl as string) || window.location.pathname;
+      sessionStorage.setItem('returnUrl', returnUrl);
     }
     // Redirect to Google OAuth endpoint with timestamp to prevent browser caching
     window.location.href = `${getBackendBaseUrl()}/api/auth/google?_t=${Date.now()}`;
@@ -347,7 +351,8 @@ export const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({ onSuccess, onE
             type="button"
             onClick={() => {
               if (typeof window !== 'undefined') {
-                sessionStorage.setItem('returnUrl', window.location.pathname);
+                const returnUrl = (router.query.returnUrl as string) || window.location.pathname;
+                sessionStorage.setItem('returnUrl', returnUrl);
               }
               window.location.href = `${getBackendBaseUrl()}/api/auth/twitter?_t=${Date.now()}`;
             }}
