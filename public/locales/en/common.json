@@ -659,5 +659,27 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "Learn more about Pokemon Champion, the ultimate Pokemon team builder and strategy resource.",
+    "intro": "Welcome to Pokemon Champion, your ultimate companion for competitive Pokemon battling and team building.",
+    "mission": {
+      "title": "Our Mission",
+      "text": "Our goal is to provide trainers with the best tools to analyze, build, and share their Pokemon teams. Whether you are a seasoned competitive player or just starting your journey, Pokemon Champion offers the insights you need to succeed."
+    },
+    "features": {
+      "title": "Key Features",
+      "builder": "Advanced Team Builder: Create and analyze your dream team with detailed stats and type coverage.",
+      "database": "Comprehensive Database: Access detailed information on Pokemon, moves, abilities, and items.",
+      "community": "Community Strategies: Share your teams and discover strategies from other top trainers."
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Get in touch with the Pokemon Champion team.",
+    "intro": "Have questions, feedback, or suggestions? We would love to hear from you!",
+    "requests": "We are always looking to improve. If you have any suggestions or feature requests, please let us know!",
+    "emailLabel": "Email Us"
   }
 }
