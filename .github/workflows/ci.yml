@@ -64,7 +64,7 @@ jobs:
           docker build \
             --secret id=github_token,env=GITHUB_TOKEN \
             --build-arg NEXT_PUBLIC_API_URL=https://pokemon-champion-backend-mtphgnxlta-uc.a.run.app \
-            --build-arg NEXT_PUBLIC_ADSENSE_CLIENT_ID=${{ env.ADSENSE_ID }} \
+            --build-arg NEXT_PUBLIC_ADSENSE_CLIENT_ID=$ADSENSE_ID \
             -t us-central1-docker.pkg.dev/pokemon-champion-476912/pokemon-champion/frontend:latest \
             -t us-central1-docker.pkg.dev/pokemon-champion-476912/pokemon-champion/frontend:${{ github.sha }} \
             .
