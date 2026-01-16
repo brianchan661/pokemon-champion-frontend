@@ -76,6 +76,7 @@ const RAW_PLACEMENTS = {
     desktop: AD_SLOTS.HOME_BOTTOM_BANNER,
     mobile: AD_SLOTS.MOBILE_BANNER,
     format: 'auto',
+    style: { display: 'block', width: '100%' },
   },
 } as const;
 
