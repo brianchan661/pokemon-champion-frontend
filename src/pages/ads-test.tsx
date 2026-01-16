@@ -18,7 +18,7 @@ export default function AdsTestPage() {
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                     <h2 className="text-xl font-semibold mb-4 text-gray-800">Debug Info</h2>
                     <div className="space-y-2 text-sm font-mono bg-gray-100 p-4 rounded">
-                        <p><strong>Config Client ID:</strong> "{clientId}"</p>
+                        <p><strong>Config Client ID:</strong> &quot;{clientId}&quot;</p>
                         <p><strong>Length:</strong> {clientId?.length}</p>
                         <p><strong>Is Valid Format:</strong> {/^ca-pub-\d{16}$/.test(clientId) ? 'Yes' : 'No'}</p>
                         <p><strong>Environment:</strong> {process.env.NODE_ENV}</p>
