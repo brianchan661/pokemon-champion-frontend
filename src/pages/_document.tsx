@@ -34,10 +34,13 @@ export default function Document() {
         <link rel="icon" href="/favicon.png" type="image/png" />
 
         {/* AdSense Script */}
-        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
+        {/* AdSense Script */}
+        {(process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || '').trim() && (
           <script
             async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(
+              process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || ''
+            ).trim()}`}
             crossOrigin="anonymous"
           />
         )}
