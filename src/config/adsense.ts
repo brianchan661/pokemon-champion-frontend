@@ -56,11 +56,13 @@ const RAW_PLACEMENTS = {
     desktop: AD_SLOTS.SIDEBAR_SQUARE,
     mobile: AD_SLOTS.MOBILE_BANNER,
     format: 'rectangle',
+    style: { display: 'block', width: '300px', height: '250px' },
   },
   'sidebar-bottom': {
     desktop: AD_SLOTS.SIDEBAR_BOTTOM,
     mobile: AD_SLOTS.MOBILE_BANNER,
     format: 'rectangle',
+    style: { display: 'block', width: '300px', height: '250px' },
   },
   content: {
     desktop: AD_SLOTS.CONTENT_INLINE,
