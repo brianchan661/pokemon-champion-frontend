@@ -20,7 +20,7 @@ export const AD_SLOTS = {
   SIDEBAR_BOTTOM: '8010124940',
   CONTENT_INLINE: '8010124940',
   FOOTER_BANNER: '8010124940',
-  HOME_BOTTOM_BANNER: '8010124940',
+  HOME_BOTTOM_BANNER: '5139880024',
   MOBILE_BANNER: '8010124940',
   HOME_SIDEBAR_TOP: '1842325931',
 } as const;
@@ -75,7 +75,7 @@ const RAW_PLACEMENTS = {
   'home-bottom-banner': {
     desktop: AD_SLOTS.HOME_BOTTOM_BANNER,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'horizontal',
+    format: 'auto',
   },
 } as const;
 
