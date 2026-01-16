@@ -49,7 +49,7 @@ const RAW_PLACEMENTS = {
   'sidebar-top': {
     desktop: AD_SLOTS.HOME_SIDEBAR_TOP,
     mobile: AD_SLOTS.MOBILE_BANNER,
-    format: 'auto',
+    format: 'rectangle',
     style: { display: 'block', width: '300px', height: '250px' },
   },
   'sidebar-middle': {
