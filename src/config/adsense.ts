@@ -3,7 +3,7 @@
  */
 
 export const ADSENSE_CONFIG = {
-  CLIENT_ID: (process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || '').trim(),
+  CLIENT_ID: process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || '',
 } as const;
 
 /**
