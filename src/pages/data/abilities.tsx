@@ -42,9 +42,9 @@ export default function AbilitiesPage() {
   // Client-side filtering with useMemo for performance
   const abilities = useMemo((): Ability[] => {
     if (!allAbilities) return [];
-    
+
     if (!searchQuery) return allAbilities;
-    
+
     const query = searchQuery.toLowerCase();
     return allAbilities.filter((ability: Ability) =>
       ability.name.toLowerCase().includes(query) ||
@@ -126,13 +126,13 @@ export default function AbilitiesPage() {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
                   <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('abilities.table.name', 'Name')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('abilities.table.pokemonCount', '# Pokemon')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('abilities.table.description', 'Description')}
                       </th>
                     </tr>
@@ -140,7 +140,7 @@ export default function AbilitiesPage() {
                   <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                     {abilities.map((ability) => (
                       <tr key={ability.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Link
                               href={`/data/abilities/${ability.identifier}`}
@@ -155,12 +155,12 @@ export default function AbilitiesPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-700 dark:text-dark-text-primary">
                             {ability.pokemonCount ?? 0}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4">
                           <div className="text-sm text-gray-700 dark:text-dark-text-primary">
                             {ability.description || '-'}
                           </div>

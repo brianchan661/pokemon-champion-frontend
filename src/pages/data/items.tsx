@@ -130,8 +130,8 @@ export default function ItemsPage() {
                   <button
                     onClick={() => setCategoryFilters([])}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilters.length === 0
-                        ? 'bg-gray-800 dark:bg-gray-700 text-white'
-                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                      ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                       }`}
                   >
                     {t('items.allCategories')}
@@ -141,8 +141,8 @@ export default function ItemsPage() {
                       key={category}
                       onClick={() => toggleCategoryFilter(category)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${categoryFilters.includes(category)
-                          ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
-                          : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                        ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
+                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                         }`}
                     >
                       {t(`items.categories.${category}`, { defaultValue: category })}
@@ -182,26 +182,26 @@ export default function ItemsPage() {
               <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
-                    <thead className="bg-gray-50 dark:bg-dark-bg-tertiary sticky top-0">
+                    <thead className="bg-gray-50 dark:bg-dark-bg-tertiary sticky top-0 hidden sm:table-header-group">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                        <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                           {t('items.table.sprite')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                        <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                           {t('items.table.name')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                        <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                           {t('items.table.category')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                        <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                           {t('items.table.description')}
                         </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                       {filteredItems.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
-                          <td className="px-6 py-4 whitespace-nowrap">
+                        <tr key={item.id} className="flex flex-wrap items-center p-4 border-b border-gray-200 dark:border-dark-border sm:table-row sm:p-0 sm:border-none hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
+                          <td className="w-12 sm:w-auto sm:px-3 sm:py-2 md:px-6 md:py-4 whitespace-nowrap">
                             {item.spriteUrl && (
                               <Image
                                 src={item.spriteUrl}
@@ -212,7 +212,7 @@ export default function ItemsPage() {
                               />
                             )}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="flex-1 sm:w-auto px-2 sm:px-3 sm:py-2 md:px-6 md:py-4 whitespace-nowrap">
                             <div className="flex items-center gap-2">
                               <Link
                                 href={`/data/items/${item.identifier}`}
@@ -222,12 +222,12 @@ export default function ItemsPage() {
                               </Link>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="w-auto sm:w-auto sm:px-3 sm:py-2 md:px-6 md:py-4 whitespace-nowrap text-right sm:text-left">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-dark-bg-tertiary text-gray-800 dark:text-dark-text-primary">
                               {t(`items.categories.${item.category}`, { defaultValue: item.category })}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-700 dark:text-dark-text-primary">
+                          <td className="w-full sm:w-auto mt-2 sm:mt-0 sm:px-3 sm:py-2 md:px-6 md:py-4 text-sm text-gray-700 dark:text-dark-text-primary pt-2 sm:pt-0">
                             {item.description || '-'}
                           </td>
                         </tr>

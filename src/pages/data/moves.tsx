@@ -174,8 +174,8 @@ export default function MovesPage() {
                 <button
                   onClick={() => setTypeFilters([])}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${typeFilters.length === 0
-                      ? 'bg-gray-800 dark:bg-gray-700 text-white'
-                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                    ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                    : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                     }`}
                 >
                   {t('moves.all')}
@@ -185,8 +185,8 @@ export default function MovesPage() {
                     key={type}
                     onClick={() => toggleTypeFilter(type)}
                     className={`transition-all ${typeFilters.includes(type)
-                        ? 'ring-2 ring-primary-500 ring-offset-2'
-                        : 'opacity-70 hover:opacity-100'
+                      ? 'ring-2 ring-primary-500 ring-offset-2'
+                      : 'opacity-70 hover:opacity-100'
                       }`}
                   >
                     <TypeIcon type={type} size="md" />
@@ -209,8 +209,8 @@ export default function MovesPage() {
                 <button
                   onClick={() => setCategoryFilters([])}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilters.length === 0
-                      ? 'bg-gray-800 dark:bg-gray-700 text-white'
-                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                    ? 'bg-gray-800 dark:bg-gray-700 text-white'
+                    : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                     }`}
                 >
                   {t('moves.all')}
@@ -220,8 +220,8 @@ export default function MovesPage() {
                     key={category}
                     onClick={() => toggleCategoryFilter(category)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${categoryFilters.includes(category)
-                        ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
-                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                      ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
+                      : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                       }`}
                   >
                     <MoveCategoryIcon
@@ -252,25 +252,25 @@ export default function MovesPage() {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
                   <thead className="bg-gray-50 dark:bg-dark-bg-tertiary sticky top-0">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.name')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.type')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.category')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.power')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.accuracy')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.pp')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.description')}
                       </th>
                     </tr>
@@ -278,7 +278,7 @@ export default function MovesPage() {
                   <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                     {filteredMoves.map((move) => (
                       <tr key={move.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Link
                               href={`/data/moves/${move.identifier}`}
@@ -288,25 +288,25 @@ export default function MovesPage() {
                             </Link>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                           <TypeIcon type={move.type} size="sm" />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                           <MoveCategoryIcon
                             category={move.category as 'physical' | 'special' | 'status'}
                             size={20}
                           />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.power ?? '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.accuracy ?? '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.pp ?? '-'}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-dark-text-primary">
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.description || '-'}
                         </td>
                       </tr>
