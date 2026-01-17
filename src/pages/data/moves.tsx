@@ -153,7 +153,7 @@ export default function MovesPage() {
                     setTypeFilters([]);
                     setCategoryFilters([]);
                   }}
-                  className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-dark-bg-secondary transition-colors text-sm font-medium whitespace-nowrap"
+                  className="px-2 sm:px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-dark-bg-secondary transition-colors text-xs sm:text-sm font-medium"
                 >
                   {t('moves.clearFilters')}
                 </button>
@@ -173,11 +173,10 @@ export default function MovesPage() {
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setTypeFilters([])}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    typeFilters.length === 0
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${typeFilters.length === 0
                       ? 'bg-gray-800 dark:bg-gray-700 text-white'
                       : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
-                  }`}
+                    }`}
                 >
                   {t('moves.all')}
                 </button>
@@ -185,11 +184,10 @@ export default function MovesPage() {
                   <button
                     key={type}
                     onClick={() => toggleTypeFilter(type)}
-                    className={`transition-all ${
-                      typeFilters.includes(type)
+                    className={`transition-all ${typeFilters.includes(type)
                         ? 'ring-2 ring-primary-500 ring-offset-2'
                         : 'opacity-70 hover:opacity-100'
-                    }`}
+                      }`}
                   >
                     <TypeIcon type={type} size="md" />
                   </button>
@@ -210,11 +208,10 @@ export default function MovesPage() {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setCategoryFilters([])}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    categoryFilters.length === 0
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilters.length === 0
                       ? 'bg-gray-800 dark:bg-gray-700 text-white'
                       : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
-                  }`}
+                    }`}
                 >
                   {t('moves.all')}
                 </button>
@@ -222,11 +219,10 @@ export default function MovesPage() {
                   <button
                     key={category}
                     onClick={() => toggleCategoryFilter(category)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      categoryFilters.includes(category)
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${categoryFilters.includes(category)
                         ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
                         : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
-                    }`}
+                      }`}
                   >
                     <MoveCategoryIcon
                       category={category as 'physical' | 'special' | 'status'}
