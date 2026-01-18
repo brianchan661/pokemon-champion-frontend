@@ -106,19 +106,13 @@ export default function AbilityDetailPage() {
                   </div>
                 </div>
 
-                {/* Short Effect (Flavor Text) */}
-                {ability.description && (
-                  <div className="mt-4 p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg">
-                    <h2 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">Short Effect</h2>
-                    <p className="text-gray-900 dark:text-dark-text-primary">{ability.description}</p>
-                  </div>
-                )}
-
-                {/* Detailed Effect */}
-                {ability.effect && (
+                {/* Effect */}
+                {(ability.shortEffect || ability.effect || ability.description) && (
                   <div className="mt-4">
-                    <h2 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">Detailed Effect</h2>
-                    <p className="text-gray-900 dark:text-dark-text-primary leading-relaxed">{ability.effect}</p>
+                    <h2 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">Effect</h2>
+                    <p className="text-gray-900 dark:text-dark-text-primary leading-relaxed">
+                      {ability.shortEffect || ability.effect || ability.description}
+                    </p>
                   </div>
                 )}
               </div>
@@ -191,11 +185,10 @@ export default function AbilityDetailPage() {
                               {pokemon.ability1 ? (
                                 <Link
                                   href={`/data/abilities/${pokemon.ability1.toLowerCase().replace(/\s+/g, '-')}`}
-                                  className={`text-sm ${
-                                    pokemon.abilitySlot === 1
+                                  className={`text-sm ${pokemon.abilitySlot === 1
                                       ? 'font-bold text-primary-600 dark:text-primary-400 underline'
                                       : 'text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline'
-                                  }`}
+                                    }`}
                                 >
                                   {pokemon.ability1}
                                 </Link>
@@ -208,11 +201,10 @@ export default function AbilityDetailPage() {
                               {pokemon.ability2 ? (
                                 <Link
                                   href={`/data/abilities/${pokemon.ability2.toLowerCase().replace(/\s+/g, '-')}`}
-                                  className={`text-sm ${
-                                    pokemon.abilitySlot === 2
+                                  className={`text-sm ${pokemon.abilitySlot === 2
                                       ? 'font-bold text-primary-600 dark:text-primary-400 underline'
                                       : 'text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline'
-                                  }`}
+                                    }`}
                                 >
                                   {pokemon.ability2}
                                 </Link>
@@ -225,11 +217,10 @@ export default function AbilityDetailPage() {
                               {pokemon.abilityHidden ? (
                                 <Link
                                   href={`/data/abilities/${pokemon.abilityHidden.toLowerCase().replace(/\s+/g, '-')}`}
-                                  className={`text-sm ${
-                                    pokemon.abilitySlot === 3
+                                  className={`text-sm ${pokemon.abilitySlot === 3
                                       ? 'font-bold text-primary-600 dark:text-primary-400 underline'
                                       : 'text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline'
-                                  }`}
+                                    }`}
                                 >
                                   {pokemon.abilityHidden}
                                 </Link>

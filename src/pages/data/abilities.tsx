@@ -16,6 +16,7 @@ interface Ability {
   identifier: string;
   name: string;
   description?: string;
+  shortEffect?: string;
   isHidden?: boolean;
   pokemonCount?: number;
 }
@@ -24,6 +25,10 @@ export default function AbilitiesPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof Ability;
+    direction: 'asc' | 'desc';
+  } | null>({ key: 'name', direction: 'asc' });
 
   // Fetch all abilities once with caching
   const { data: allAbilities, isLoading, error, refetch } = useQuery({
@@ -39,19 +44,90 @@ export default function AbilitiesPage() {
     retry: 2,
   });
 
-  // Client-side filtering with useMemo for performance
+  // Client-side filtering and sorting with useMemo for performance
   const abilities = useMemo((): Ability[] => {
     if (!allAbilities) return [];
 
-    if (!searchQuery) return allAbilities;
+    let result = [...allAbilities];
 
-    const query = searchQuery.toLowerCase();
-    return allAbilities.filter((ability: Ability) =>
-      ability.name.toLowerCase().includes(query) ||
-      ability.identifier.toLowerCase().includes(query) ||
-      ability.description?.toLowerCase().includes(query)
+    // Filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((ability: Ability) =>
+        ability.name.toLowerCase().includes(query) ||
+        ability.identifier.toLowerCase().includes(query) ||
+        ability.description?.toLowerCase().includes(query) ||
+        ability.shortEffect?.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort
+    if (sortConfig) {
+      result.sort((a, b) => {
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+
+        // For description column, use shortEffect if available to match display
+        if (sortConfig.key === 'description') {
+          const aText = a.shortEffect || a.description || '';
+          const bText = b.shortEffect || b.description || '';
+          return sortConfig.direction === 'asc'
+            ? aText.localeCompare(bText, router.locale || 'en')
+            : bText.localeCompare(aText, router.locale || 'en');
+        }
+
+        if (aValue === undefined || aValue === null) return 1;
+        if (bValue === undefined || bValue === null) return -1;
+
+        if (sortConfig.key === 'name') {
+          return sortConfig.direction === 'asc'
+            ? String(aValue).localeCompare(String(bValue), router.locale || 'en')
+            : String(bValue).localeCompare(String(aValue), router.locale || 'en');
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return result;
+  }, [allAbilities, searchQuery, sortConfig, router.locale]);
+
+  const requestSort = (key: keyof Ability) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === 'asc'
+    ) {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key: keyof Ability) => {
+    if (!sortConfig || sortConfig.key !== key) {
+      return (
+        <svg className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      );
+    }
+    return sortConfig.direction === 'asc' ? (
+      <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
     );
-  }, [allAbilities, searchQuery]);
+  };
 
   const totalCount = allAbilities?.length ?? 0;
   const filteredCount = abilities.length;
@@ -126,14 +202,32 @@ export default function AbilitiesPage() {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
                   <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
                     <tr>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('abilities.table.name', 'Name')}
+                      <th
+                        className="group px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-secondary transition-colors select-none"
+                        onClick={() => requestSort('name')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('abilities.table.name', 'Name')}
+                          {getSortIcon('name')}
+                        </div>
                       </th>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('abilities.table.pokemonCount', '# Pokemon')}
+                      <th
+                        className="group px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-secondary transition-colors select-none"
+                        onClick={() => requestSort('pokemonCount')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('abilities.table.pokemonCount', '# Pokemon')}
+                          {getSortIcon('pokemonCount')}
+                        </div>
                       </th>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('abilities.table.description', 'Description')}
+                      <th
+                        className="group px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-secondary transition-colors select-none"
+                        onClick={() => requestSort('description')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('abilities.table.description', 'Description')}
+                          {getSortIcon('description')}
+                        </div>
                       </th>
                     </tr>
                   </thead>
@@ -162,7 +256,7 @@ export default function AbilitiesPage() {
                         </td>
                         <td className="px-3 py-2 sm:px-6 sm:py-4">
                           <div className="text-sm text-gray-700 dark:text-dark-text-primary">
-                            {ability.description || '-'}
+                            {ability.shortEffect || ability.description || '-'}
                           </div>
                         </td>
                       </tr>
