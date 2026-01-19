@@ -54,10 +54,8 @@ export default function AbilitiesPage() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter((ability: Ability) =>
-        ability.name.toLowerCase().includes(query) ||
-        ability.identifier.toLowerCase().includes(query) ||
-        ability.description?.toLowerCase().includes(query) ||
-        ability.shortEffect?.toLowerCase().includes(query)
+        (ability.name?.toLowerCase() || '').includes(query) ||
+        (ability.identifier?.toLowerCase() || '').includes(query)
       );
     }
 
@@ -242,11 +240,6 @@ export default function AbilitiesPage() {
                             >
                               {ability.name}
                             </Link>
-                            {ability.isHidden && (
-                              <span className="px-2 py-0.5 text-xs font-semibold rounded bg-purple-100 text-purple-800">
-                                {t('abilities.hiddenAbility', 'Hidden Ability')}
-                              </span>
-                            )}
                           </div>
                         </td>
                         <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
