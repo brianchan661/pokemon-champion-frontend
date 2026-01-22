@@ -5,6 +5,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import { useState, useEffect } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { GlobalConfigProvider } from '@/contexts/GlobalConfigContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import '@/styles/globals.css';
 
@@ -50,9 +51,11 @@ function App({ Component, pageProps }: AppProps) {
         persistOptions={{ persister }}
       >
         <HydrationWrapper>
-          <AuthProvider>
-            <Component {...pageProps} />
-          </AuthProvider>
+          <GlobalConfigProvider>
+            <AuthProvider>
+              <Component {...pageProps} />
+            </AuthProvider>
+          </GlobalConfigProvider>
         </HydrationWrapper>
       </PersistQueryClientProvider>
     </ThemeProvider>

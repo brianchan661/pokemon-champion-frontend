@@ -163,12 +163,10 @@ export default function HomePage({ newsArticles }: HomePageProps) {
                   {/* Top Sidebar Ad - Only for non-premium */}
                   {!isPremium && (
                     <ErrorBoundary>
-                      <div className="adsense-sidebar-container">
-                        <AdContainer
-                          placement="sidebar-top"
-                          className="w-full adsense-placeholder"
-                        />
-                      </div>
+                      <AdContainer
+                        placement="sidebar-top"
+                        className="w-full adsense-sidebar-container adsense-placeholder"
+                      />
                     </ErrorBoundary>
                   )}
 
@@ -180,12 +178,10 @@ export default function HomePage({ newsArticles }: HomePageProps) {
                   {/* Bottom Sidebar Ad - Only for non-premium */}
                   {!isPremium && (
                     <ErrorBoundary>
-                      <div className="adsense-sidebar-container">
-                        <AdContainer
-                          placement="sidebar-bottom"
-                          className="w-full adsense-placeholder"
-                        />
-                      </div>
+                      <AdContainer
+                        placement="sidebar-bottom"
+                        className="w-full adsense-sidebar-container adsense-placeholder"
+                      />
                     </ErrorBoundary>
                   )}
                 </div>
@@ -199,13 +195,11 @@ export default function HomePage({ newsArticles }: HomePageProps) {
           <Section className="pt-0 pb-8 bg-white dark:bg-dark-bg-primary" ariaLabel="Advertisement">
             <ErrorBoundary>
               <div className="flex justify-center">
-                <div className="adsense-sidebar-container w-full max-w-4xl" style={{ minHeight: '100px' }}>
-                  <AdContainer
-                    placement="home-bottom-banner"
-                    className="w-full adsense-placeholder"
-                    style={{ minHeight: '90px' }}
-                  />
-                </div>
+                <AdContainer
+                  placement="home-bottom-banner"
+                  className="w-full max-w-4xl adsense-sidebar-container adsense-placeholder"
+                  style={{ minHeight: '90px' }}
+                />
               </div>
             </ErrorBoundary>
           </Section>

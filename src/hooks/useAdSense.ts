@@ -64,11 +64,12 @@ export const useAdSense = (adSlot: string, clientId?: string): UseAdSenseReturn 
               }
             }, 100);
 
-            // Timeout after 5 seconds
+            // Timeout after 10 seconds - fail silently to avoid UI disruption
             setTimeout(() => {
               clearInterval(checkInterval);
-              reject(new Error('AdSense script load timeout'));
-            }, 5000);
+              console.warn('AdSense script blocked or timed out');
+              resolve(); // Resolve silently so we don't show an error box
+            }, 10000);
           });
         };
 
@@ -76,14 +77,20 @@ export const useAdSense = (adSlot: string, clientId?: string): UseAdSenseReturn 
 
         if (!isMounted) return;
 
-        // Initialize AdSense only if there are unfilled slots matching this ID
-        const adSlots = document.querySelectorAll(`ins.adsbygoogle[data-ad-slot="${adSlot}"]`);
-        const hasUnfilledSlots = Array.from(adSlots).some(slot =>
-          !slot.hasAttribute('data-adsbygoogle-status') && !slot.hasAttribute('data-ad-status')
-        );
+        // Initialize AdSense only if script loaded and there are unfilled slots matching this ID
+        if (window.adsbygoogle) {
+          const adSlots = document.querySelectorAll(`ins.adsbygoogle[data-ad-slot="${adSlot}"]`);
+          const hasUnfilledSlots = Array.from(adSlots).some(slot =>
+            !slot.hasAttribute('data-adsbygoogle-status') && !slot.hasAttribute('data-ad-status')
+          );
 
-        if (hasUnfilledSlots) {
-          window.adsbygoogle?.push({});
+          if (hasUnfilledSlots) {
+            try {
+              window.adsbygoogle.push({});
+            } catch (e) {
+              console.error('AdSense push error:', e);
+            }
+          }
         }
 
         if (isMounted) {

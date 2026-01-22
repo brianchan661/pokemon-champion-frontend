@@ -6,6 +6,7 @@ import { AD_PLACEMENTS, getAdSlotForDevice, shouldShowAds, type AdPlacement } fr
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useAdBlocker } from '@/hooks/useAdBlocker';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 import { Shield, Sparkles } from 'lucide-react';
 
 interface AdContainerProps {
@@ -26,7 +27,10 @@ export const AdContainer = memo(({ placement, className = '', style }: AdContain
   const isMobile = useMediaQuery('(max-width: 768px)');
   const { isBlocking, hasChecked } = useAdBlocker();
   const { isPremium } = usePremiumStatus();
+  const { adsDisabled } = useGlobalConfig();
   const { t } = useTranslation('common');
+
+
 
   const config = AD_PLACEMENTS[placement];
 
@@ -36,7 +40,7 @@ export const AdContainer = memo(({ placement, className = '', style }: AdContain
   }
 
   // Premium users don't see ads
-  if (isPremium) {
+  if (isPremium || adsDisabled) {
     return null;
   }
 
@@ -52,44 +56,15 @@ export const AdContainer = memo(({ placement, className = '', style }: AdContain
   };
 
   // Show ad blocker message if detected AND we are trying to show ads
-  if (hasChecked && isBlocking && shouldShowAds()) {
-    return (
-      <div className={`ad-container ad-container--${placement} ${className} overflow-hidden relative`} style={finalStyle}>
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-primary-50 border border-primary-200 rounded-lg p-4 text-center flex flex-col justify-center items-center">
-          <p className="text-[10px] text-gray-600 mb-2 leading-tight">
-            {t(
-              'adBlocker.inlineMessage',
-              'Ads help us keep Pokemon Champion free. Please consider whitelisting us.'
-            )}
-          </p>
-          <div className="flex flex-col gap-2 justify-center w-full max-w-[200px]">
-            <a
-              href="https://help.getadblock.com/support/solutions/articles/6000055743-how-to-whitelist-a-website"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1 px-3 py-1.5 text-[10px] font-medium text-primary-700 bg-white border border-primary-300 rounded hover:bg-primary-50 transition-colors whitespace-nowrap"
-            >
-              {t('adBlocker.whitelist', 'Whitelist')}
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // REMOVED: User requested to remove the "Please unblock" message container
+  // if (hasChecked && isBlocking && shouldShowAds()) { ... }
 
   return (
     <div
       className={`ad-container ad-container--${placement} ${className} relative overflow-hidden`}
       style={finalStyle}
     >
-      {/* Internal Placeholder with "ADVERTISEMENT" text */
-      /* This text sits behind the ad and is visible if the ad is transparent or loading */
-      /* standard ads (opaque) will cover it. */}
-      <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded z-0">
-        <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-medium">
-          {t('common.advertisement', 'Advertisement')}
-        </span>
-      </div>
+      {/* Internal Placeholder with "ADVERTISEMENT" text - REMOVED per user request */}
 
       {/* AdSense Unit Overlay */
       /* Positioned absolutely to cover the placeholder */}

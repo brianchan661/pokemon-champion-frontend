@@ -33,32 +33,26 @@ export const LayoutWithSidebar = ({ children, hideSidebar = false }: LayoutWithS
                 <div className="sticky top-4">
                   <div className="space-y-8">
                     <ErrorBoundary>
-                      <div className="adsense-sidebar-container">
-                        <AdContainer
-                          placement="sidebar-top"
-                          className="w-full"
-                        />
-                      </div>
+                      <AdContainer
+                        placement="sidebar-top"
+                        className="w-full adsense-sidebar-container"
+                      />
                     </ErrorBoundary>
 
                     {/* Middle Sidebar Ad */}
                     <ErrorBoundary>
-                      <div className="adsense-sidebar-container">
-                        <AdContainer
-                          placement="sidebar-middle"
-                          className="w-full"
-                        />
-                      </div>
+                      <AdContainer
+                        placement="sidebar-middle"
+                        className="w-full adsense-sidebar-container"
+                      />
                     </ErrorBoundary>
 
                     {/* Bottom Sidebar Ad */}
                     <ErrorBoundary>
-                      <div className="adsense-sidebar-container">
-                        <AdContainer
-                          placement="sidebar-bottom"
-                          className="w-full"
-                        />
-                      </div>
+                      <AdContainer
+                        placement="sidebar-bottom"
+                        className="w-full adsense-sidebar-container"
+                      />
                     </ErrorBoundary>
                   </div>
                 </div>
