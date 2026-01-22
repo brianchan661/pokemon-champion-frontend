@@ -19,8 +19,6 @@ export const useAdSense = (adSlot: string, clientId?: string): UseAdSenseReturn 
 
   useEffect(() => {
     let isMounted = true;
-    let retryCount = 0;
-    const maxRetries = 3;
 
     const initializeAd = async () => {
       if (!isMounted) return;
