@@ -45,86 +45,51 @@ export const useAdSense = (adSlot: string, clientId?: string): UseAdSenseReturn 
       }
 
       try {
-        // Wait for AdSense script with retry logic
-        const checkAdSense = () => {
-          return new Promise<void>((resolve, reject) => {
-            const checkInterval = setInterval(() => {
-              if (!isMounted) {
-                clearInterval(checkInterval);
-                reject(new Error('Component unmounted'));
-                return;
+        try {
+          // Initialize AdSense only if there are unfilled slots matching this ID
+          // We do a simple check for the script object. If it's not ready, it might be async loading.
+          // AdSense script is usually idempotent so we can try to push.
+
+          // Wait a small amount of time to allow script to define window variable if it's racing
+          if (!window.adsbygoogle) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+
+          if (window.adsbygoogle) {
+            const adSlots = document.querySelectorAll(`ins.adsbygoogle[data-ad-slot="${adSlot}"]`);
+            const hasUnfilledSlots = Array.from(adSlots).some(slot =>
+              !slot.hasAttribute('data-adsbygoogle-status') && !slot.hasAttribute('data-ad-status')
+            );
+
+            if (hasUnfilledSlots) {
+              try {
+                window.adsbygoogle.push({});
+              } catch (e) {
+                console.error('AdSense push error:', e);
               }
-
-              if (window.adsbygoogle) {
-                clearInterval(checkInterval);
-                resolve();
-              } else if (retryCount >= maxRetries) {
-                clearInterval(checkInterval);
-                reject(new Error('AdSense script failed to load after retries'));
-              }
-            }, 100);
-
-            // Timeout after 10 seconds - fail silently to avoid UI disruption
-            setTimeout(() => {
-              clearInterval(checkInterval);
-              console.warn('AdSense script blocked or timed out');
-              resolve(); // Resolve silently so we don't show an error box
-            }, 10000);
-          });
-        };
-
-        await checkAdSense();
-
-        if (!isMounted) return;
-
-        // Initialize AdSense only if script loaded and there are unfilled slots matching this ID
-        if (window.adsbygoogle) {
-          const adSlots = document.querySelectorAll(`ins.adsbygoogle[data-ad-slot="${adSlot}"]`);
-          const hasUnfilledSlots = Array.from(adSlots).some(slot =>
-            !slot.hasAttribute('data-adsbygoogle-status') && !slot.hasAttribute('data-ad-status')
-          );
-
-          if (hasUnfilledSlots) {
-            try {
-              window.adsbygoogle.push({});
-            } catch (e) {
-              console.error('AdSense push error:', e);
             }
           }
+
+          if (isMounted) {
+            setIsReady(true);
+            setError(null);
+          }
+        } catch (err) {
+        } finally {
+          if (isMounted) {
+            setIsLoading(false);
+          }
         }
+      };
 
-        if (isMounted) {
-          setIsReady(true);
-          setError(null);
-        }
-      } catch (err) {
-        if (!isMounted) return;
+      // Debounce initialization
+      const timer = setTimeout(initializeAd, 100);
 
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        console.error('AdSense initialization error:', err);
-
-        // Retry logic
-        if (retryCount < maxRetries) {
-          retryCount++;
-          setTimeout(initializeAd, 1000 * retryCount); // Exponential backoff
-        } else {
-          setError(`Advertisement initialization failed: ${errorMessage}`);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    // Debounce initialization
-    const timer = setTimeout(initializeAd, 100);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-    };
-  }, [adSlot, clientId]);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
+    }, [adSlot, clientId]);
 
   return { isLoading, error, isReady };
 };
