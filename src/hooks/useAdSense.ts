@@ -45,51 +45,52 @@ export const useAdSense = (adSlot: string, clientId?: string): UseAdSenseReturn 
       }
 
       try {
-        try {
-          // Initialize AdSense only if there are unfilled slots matching this ID
-          // We do a simple check for the script object. If it's not ready, it might be async loading.
-          // AdSense script is usually idempotent so we can try to push.
+        // Initialize AdSense only if there are unfilled slots matching this ID
+        // We do a simple check for the script object. If it's not ready, it might be async loading.
 
-          // Wait a small amount of time to allow script to define window variable if it's racing
-          if (!window.adsbygoogle) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
+        // Wait a small amount of time to allow script to define window variable if it's racing
+        if (!window.adsbygoogle) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
 
-          if (window.adsbygoogle) {
-            const adSlots = document.querySelectorAll(`ins.adsbygoogle[data-ad-slot="${adSlot}"]`);
-            const hasUnfilledSlots = Array.from(adSlots).some(slot =>
-              !slot.hasAttribute('data-adsbygoogle-status') && !slot.hasAttribute('data-ad-status')
-            );
+        if (window.adsbygoogle) {
+          const adSlots = document.querySelectorAll(`ins.adsbygoogle[data-ad-slot="${adSlot}"]`);
+          const hasUnfilledSlots = Array.from(adSlots).some(slot =>
+            !slot.hasAttribute('data-adsbygoogle-status') && !slot.hasAttribute('data-ad-status')
+          );
 
-            if (hasUnfilledSlots) {
-              try {
-                window.adsbygoogle.push({});
-              } catch (e) {
-                console.error('AdSense push error:', e);
-              }
+          if (hasUnfilledSlots) {
+            try {
+              window.adsbygoogle.push({});
+            } catch (e) {
+              console.error('AdSense push error:', e);
             }
           }
-
-          if (isMounted) {
-            setIsReady(true);
-            setError(null);
-          }
-        } catch (err) {
-        } finally {
-          if (isMounted) {
-            setIsLoading(false);
-          }
         }
-      };
 
-      // Debounce initialization
-      const timer = setTimeout(initializeAd, 100);
+        if (isMounted) {
+          setIsReady(true);
+          setError(null);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('AdSense initialization error:', err);
+        // Silent failure is preferred over error state for ads
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
 
-      return () => {
-        isMounted = false;
-        clearTimeout(timer);
-      };
-    }, [adSlot, clientId]);
+    // Debounce initialization
+    const timer = setTimeout(initializeAd, 100);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [adSlot, clientId]);
 
   return { isLoading, error, isReady };
 };
