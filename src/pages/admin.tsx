@@ -32,6 +32,9 @@ const AdminPage = () => {
   const [readOnlyMessage, setReadOnlyMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [clearingCache, setClearingCache] = useState(false);
+  const [cacheSuccess, setCacheSuccess] = useState('');
+  const [cacheError, setCacheError] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -139,6 +142,27 @@ const AdminPage = () => {
       console.error(err);
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const clearCache = async (resource?: string) => {
+    setClearingCache(true);
+    setCacheError('');
+    setCacheSuccess('');
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.post(
+        `${getApiBaseUrl()}/admin/cache/clear`,
+        resource ? { resource } : {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCacheSuccess(`${response.data.message} (${response.data.entriesRemoved} entries removed)`);
+    } catch (err) {
+      setCacheError('Failed to clear cache. Check that you are logged in as admin.');
+      console.error(err);
+    } finally {
+      setClearingCache(false);
     }
   };
 
@@ -336,6 +360,61 @@ const AdminPage = () => {
                   >
                     {updating ? 'Updating...' : adsDisabled ? 'Enable Ads' : 'Disable Ads'}
                   </button>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
+                <h2 className="text-2xl font-bold text-white mb-4">Cache Control</h2>
+                <p className="text-gray-300 mb-6">
+                  Force-refresh the in-memory cache. Use this after running a scrape script to immediately serve updated data without restarting the server.
+                </p>
+
+                <div className="space-y-4">
+                  {/* Clear All */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">Clear All Caches</h3>
+                      <p className="text-sm text-gray-400">Clears cached data for all resources (abilities, items, moves, pokemon, natures)</p>
+                    </div>
+                    <button
+                      id="admin-cache-clear-all"
+                      onClick={() => clearCache()}
+                      disabled={clearingCache}
+                      className="px-6 py-3 rounded-lg font-semibold transition-colors bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {clearingCache ? 'Clearing...' : '🗑️ Clear All'}
+                    </button>
+                  </div>
+
+                  {/* Per-resource buttons */}
+                  <div className="border-t border-gray-700 pt-4">
+                    <p className="text-sm text-gray-400 mb-3">Or clear a specific resource:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(['abilities', 'items', 'moves', 'pokemon', 'natures'] as const).map((resource) => (
+                        <button
+                          key={resource}
+                          id={`admin-cache-clear-${resource}`}
+                          onClick={() => clearCache(resource)}
+                          disabled={clearingCache}
+                          className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-700 hover:bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed capitalize"
+                        >
+                          {clearingCache ? '...' : resource}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Result feedback */}
+                  {cacheSuccess && (
+                    <div className="mt-2 bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded text-sm">
+                      ✅ {cacheSuccess}
+                    </div>
+                  )}
+                  {cacheError && (
+                    <div className="mt-2 bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded text-sm">
+                      ❌ {cacheError}
+                    </div>
+                  )}
                 </div>
               </div>
 
