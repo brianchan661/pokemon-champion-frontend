@@ -1,0 +1,34 @@
+{
+  "title": "Tutorial",
+  "intro": "",
+  "gettingPokemon": {
+    "title": "Getting Pokémon",
+    "home": "Link with Pokémon HOME to bring your Pokémon from past games or Pokémon GO directly into Pokémon Champions.",
+    "scout": "You can also use the 'Scout' feature. Once a day, you can choose one Pokémon from a random selection to join your team and fight alongside you."
+  },
+  "battleBasics": {
+    "title": "Battle Basics",
+    "team": "Build a team of 6 Pokémon from your collection. Before a battle starts, both players reveal their full teams, and you select which Pokémon to send into battle based on predictions of the opponent's strategy.",
+    "mechanics": "Take turns using moves. The player who reduces all of the opponent's Pokémon HP to 0 wins. You can swap Pokémon when in a pinch, or use 'Mega Evolution' to power up and unlock new abilities.",
+    "formats": "Battle formats include 'Single Battle' (1v1) and 'Double Battle' (2v2)."
+  },
+  "battleModes": {
+    "title": "Online Battle Modes",
+    "ranked": "Ranked Battle: Match with trainers of similar rank and aim for the top.",
+    "casual": "Casual Battle: Play for fun without worrying about your win/loss record.",
+    "private": "Private Battle: Play with friends using a shared Room ID.",
+    "tournament": "Online Tournament: Compete under specific rules for a limited time period."
+  },
+  "vpSystem": {
+    "title": "Using VP (Virtual Points)",
+    "intro": "Battling earns you 'VP' which can be used in several ways:",
+    "training": "Training: Easily customize your Pokémon's moves, natures, and stats (EVs/IVs). You can make offensive builds (Attack/Speed) or defensive walls (HP/Defense) easily to try out different strategies.",
+    "scoutExtensions": "Scout Extensions: Spend VP to Scout multiple times a day. Additionally, normally scouted Pokémon leave after a week, but you can spend VP to keep them indefinitely.",
+    "shop": "Shop: Use VP to purchase held items, Mega Stones, player outfits, makeup, ball throwing styles, and battle background music!"
+  },
+  "placeholder": "Screenshot placeholder: Drop image here",
+  "tableHeaders": {
+    "mode": "Mode",
+    "description": "Description"
+  }
+}
