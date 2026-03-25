@@ -5,7 +5,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useAuth } from '../contexts/AuthContext';
 import { useGlobalConfig } from '../contexts/GlobalConfigContext';
 import { Layout } from '../components/Layout/Layout';
-import { NewsManagement } from '../components/Admin/NewsManagement';
 import { PremiumManagement } from '../components/Admin/PremiumManagement';
 import { UserManagement } from '../components/Admin/UserManagement';
 import axios from 'axios';
@@ -25,7 +24,7 @@ const AdminPage = () => {
   const { user, isLoading } = useAuth();
   const { refreshConfig } = useGlobalConfig();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'settings' | 'news' | 'premium' | 'users'>('settings');
+  const [activeTab, setActiveTab] = useState<'settings' | 'premium' | 'users'>('settings');
   const [settings, setSettings] = useState<SystemSetting[]>([]);
   const [readOnlyMode, setReadOnlyMode] = useState(false);
   const [adsDisabled, setAdsDisabled] = useState(false);
@@ -228,15 +227,6 @@ const AdminPage = () => {
                 {t('admin.tabs.settings')}
               </button>
               <button
-                onClick={() => setActiveTab('news')}
-                className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'news'
-                  ? 'border-blue-500 text-blue-400'
-                  : 'border-transparent text-gray-400 hover:text-gray-300'
-                  }`}
-              >
-                {t('admin.tabs.news')}
-              </button>
-              <button
                 onClick={() => setActiveTab('premium')}
                 className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'premium'
                   ? 'border-blue-500 text-blue-400'
@@ -269,10 +259,6 @@ const AdminPage = () => {
             </div>
           )}
 
-          {/* News Management Tab */}
-          {activeTab === 'news' && (
-            <NewsManagement />
-          )}
 
           {/* Premium Management Tab */}
           {activeTab === 'premium' && (

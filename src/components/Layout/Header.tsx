@@ -9,7 +9,6 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 // Move navigation config outside component to prevent recreation
 const NAVIGATION_ITEMS = [
-  { key: 'news', href: '/news' },
   { key: 'pokemon', href: '/pokemon' },
   { key: 'teams', href: '/teams' },
   {
