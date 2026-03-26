@@ -35,6 +35,7 @@ export default function TeamsListPage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['teams', sortBy, sortOrder, currentPage, currentLang],
+    staleTime: 0, // Always fetch fresh — teams list changes when new teams are seeded/created
     queryFn: async () => {
       const params = new URLSearchParams();
       params.append('sortBy', sortBy);
