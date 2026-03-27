@@ -49,13 +49,13 @@ export const FeatureCard = memo(({
         }
       };
       
-      // Set timeout for slow loading images (reduced from 10s to 5s)
+      // Set timeout for slow loading images (increased to 15s for Cloud Run)
       timeoutId = setTimeout(() => {
         if (isMounted && img) {
-          console.warn(`Image loading timeout: ${backgroundImage}`);
+          console.warn(`Image loading timeout after 15s: ${backgroundImage}`);
           handleImageError();
         }
-      }, 5000);
+      }, 15000);
       
       img.onload = onLoad;
       img.onerror = onError;

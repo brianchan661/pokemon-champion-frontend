@@ -212,6 +212,26 @@
       "uptime": "Uptime",
       "minutes": "minutes",
       "message": "Status"
+    },
+    "dataDisclaimer": {
+      "title": "Important Notice:",
+      "message": "Pokémon stats, moves, and other data displayed on this site are based on existing Pokémon games. Since Pokémon Champions has not been released yet, actual game data may differ. We will update all data to match the official game once it launches on April 8th, 2026."
+    },
+    "latestNews": {
+      "header": "Latest News",
+      "date": "March 25, 2026",
+      "title": "Pokémon Champions — A Revolution for Battles",
+      "summary": "Key highlights from the early preview of Pokémon Champions:",
+      "highlights": {
+        "0": "Team Editing: no IVs — all Pokémon treated as full 31 IVs. EVs replaced by a 0–32 point system per stat (66 points total), displayed as a live visual scale.",
+        "1": "PP system simplified: PP boost items removed, unified to four tiers: 8, 12, 16, 20.",
+        "2": "Better battle UI: opponent Pokémon types shown on selection/switch screens. HP remaining displayed as percentage with detailed type effectiveness indicators.",
+        "3": "Move descriptions improved: no more vague context descriptions — now clearly shows probability, priority, effect range, and move category.",
+        "4": "Victory Points: earned via battles and daily/weekly/starter missions. Editing a full team of 6 costs ~12,000 VP. Cannot be purchased with real money.",
+        "5": "Battles: more cinematic move animations. Battle Data menu shows live stat multipliers (e.g., ×0.67 after Intimidate) — a big accessibility win.",
+        "6": "Confirmed: Mega Dragonite has Multiscale. Mega Froslass has Snow Warning. Expanding Force spread animation may be sequential (early build quirk)."
+      },
+      "learnMore": "Learn more about game mechanics in our tutorial"
     }
   },
   "error": {
