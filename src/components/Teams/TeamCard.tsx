@@ -60,7 +60,7 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '' }: TeamC
         </h2>
 
         {/* Pokemon Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
           {team.pokemon.slice(0, 6).map((p, index) => (
             <PokemonCard
               key={index}
