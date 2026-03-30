@@ -24,16 +24,16 @@ module.exports = {
         // Dark mode color palette
         dark: {
           bg: {
-            primary: '#1a1a1a',
-            secondary: '#2d2d2d',
-            tertiary: '#3a3a3a',
+            primary: '#0f1117',
+            secondary: '#161b27',
+            tertiary: '#1e2535',
           },
           text: {
-            primary: '#e5e5e5',
-            secondary: '#b3b3b3',
-            tertiary: '#8a8a8a',
+            primary: '#e8eaf0',
+            secondary: '#9aa3b8',
+            tertiary: '#6b7590',
           },
-          border: '#404040',
+          border: '#2a3347',
         },
         // Pokemon type colors
         pokemon: {
@@ -58,7 +58,7 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Exo 2', 'system-ui', 'sans-serif'],
       },
     },
   },

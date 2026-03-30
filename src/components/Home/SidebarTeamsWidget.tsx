@@ -18,7 +18,7 @@ interface SimpleTeam {
     likes: number;
 }
 
-export const SidebarTeamsWidget = () => {
+export const SidebarTeamsWidget = ({ className = '' }: { className?: string }) => {
     const { t, i18n } = useTranslation('common');
     const [teams, setTeams] = useState<SimpleTeam[]>([]);
     const [loading, setLoading] = useState(true);
@@ -48,7 +48,7 @@ export const SidebarTeamsWidget = () => {
 
     if (loading) {
         return (
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg border border-gray-200 dark:border-dark-border p-4 mb-8">
+            <div className={`bg-white dark:bg-dark-bg-secondary rounded-lg border border-gray-200 dark:border-dark-border p-4 mb-8 ${className}`}>
                 <div className="flex items-center space-x-2 mb-4">
                     <TrendingUp className="w-5 h-5 text-primary-600" />
                     <h3 className="font-bold text-gray-900 dark:text-dark-text-primary">
@@ -76,7 +76,7 @@ export const SidebarTeamsWidget = () => {
     }
 
     return (
-        <div className="bg-white dark:bg-dark-bg-secondary rounded-lg border border-gray-200 dark:border-dark-border overflow-hidden mb-8">
+        <div className={`bg-white dark:bg-dark-bg-secondary rounded-lg border border-gray-200 dark:border-dark-border overflow-hidden mb-8 ${className}`}>
             <div className="p-4 border-b border-gray-100 dark:border-dark-border">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">

@@ -8,7 +8,7 @@ export const NewsSection = () => {
   return (
     <div className="bg-white dark:bg-dark-bg-secondary border-y border-gray-200 dark:border-dark-border overflow-hidden shadow-sm">
       {/* Header */}
-      <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 dark:border-dark-border bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/20">
+      <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 dark:border-dark-border bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/40 dark:to-orange-900/30">
         <Newspaper className="w-5 h-5 text-red-500" />
         <h2 className="font-bold text-gray-900 dark:text-dark-text-primary text-base">
           {t('home.latestNews.header')}
@@ -38,12 +38,13 @@ export const NewsSection = () => {
         </p>
 
         {/* Highlights */}
-        <ul className="space-y-2 mb-5">
+        <ul className="space-y-1.5 mb-5">
           {Array.from({ length: 7 }, (_, i) => (
             <li
               key={i}
-              className="text-sm text-gray-700 dark:text-dark-text-primary leading-relaxed bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg px-4 py-2.5"
+              className="flex items-start gap-3 text-sm text-gray-700 dark:text-dark-text-primary leading-relaxed border-l-2 border-red-400 dark:border-red-500 pl-3 py-1"
             >
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-400 dark:bg-red-500 flex-shrink-0" />
               {t(`home.latestNews.highlights.${i}`)}
             </li>
           ))}

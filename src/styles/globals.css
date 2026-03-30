@@ -35,7 +35,7 @@
 
   .adsense-placeholder {
     @apply rounded flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm font-medium;
-    min-height: 250px;
+    min-height: 90px;
   }
 }
 

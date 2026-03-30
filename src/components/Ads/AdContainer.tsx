@@ -60,23 +60,13 @@ export const AdContainer = memo(({ placement, className = '', style }: AdContain
   // if (hasChecked && isBlocking && shouldShowAds()) { ... }
 
   return (
-    <div
-      className={`ad-container ad-container--${placement} ${className} relative overflow-hidden`}
-      style={finalStyle}
-    >
-      {/* Internal Placeholder with "ADVERTISEMENT" text - REMOVED per user request */}
-
-      {/* AdSense Unit Overlay */
-      /* Positioned absolutely to cover the placeholder */}
-      <div className="absolute inset-0 z-10">
-        <AdSense
-          adSlot={adSlot}
-          adFormat={config.format}
-          fullWidthResponsive={config.format === 'auto'} // Only responsive if auto
-          style={config.style} // Pass specific fixed dimensions if defined
-        />
-      </div>
-    </div>
+    <AdSense
+      adSlot={adSlot}
+      adFormat={config.format}
+      fullWidthResponsive={config.format === 'auto'}
+      style={config.style}
+      className={className}
+    />
   );
 });
 

@@ -10,9 +10,16 @@ export const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Main Footer Content */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Copyright */}
-          <div className="text-sm text-gray-600 dark:text-dark-text-secondary">
-            © {currentYear} Pokemon Champion. {t('footer.rights', 'All rights reserved.')}
+          {/* Logo + Copyright */}
+          <div className="flex items-center gap-3">
+            <img
+              src="/favicon-circle.png"
+              alt="Pokemon Champion"
+              className="w-7 h-7 flex-shrink-0 opacity-80"
+            />
+            <span className="text-sm text-gray-600 dark:text-dark-text-secondary">
+              © {currentYear} Pokemon Champion. {t('footer.rights', 'All rights reserved.')}
+            </span>
           </div>
 
           {/* Navigation Links */}
