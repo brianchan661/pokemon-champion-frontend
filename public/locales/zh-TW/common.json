@@ -39,7 +39,9 @@
     "resending": "Resending... [NEEDS_TRANSLATION]",
     "verificationEmailResent": "Verification email sent! Please check your inbox. [NEEDS_TRANSLATION]",
     "checkSpam": "Please check your spam folder [NEEDS_TRANSLATION]",
-    "emailAlreadyVerified": "Your email is already verified. [NEEDS_TRANSLATION]"
+    "emailAlreadyVerified": "Your email is already verified. [NEEDS_TRANSLATION]",
+    "enterPassword": "輸入您的密碼",
+    "processing": "處理中..."
   },
   "profile": {
     "title": "My Profile [NEEDS_TRANSLATION]",
