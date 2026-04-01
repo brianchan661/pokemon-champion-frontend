@@ -118,9 +118,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
         const abilitiesResult = await pokemonBuilderService.getPokemonAbilities(pokemonResult.data.id, currentLang);
         if (abilitiesResult.success && abilitiesResult.data) {
           setAbilities(abilitiesResult.data);
-          if (!abilityIdentifier && abilitiesResult.data.length > 0) {
-            setAbilityIdentifier(abilitiesResult.data[0].identifier);
-          }
+          setAbilityIdentifier((prev) => prev || abilitiesResult.data![0]?.identifier || '');
         }
       }
 
@@ -128,9 +126,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       const naturesResult = await naturesService.getNatures(currentLang);
       if (naturesResult.success && naturesResult.data) {
         setNatures(naturesResult.data);
-        if (!natureId && naturesResult.data.length > 0) {
-          setNatureId(naturesResult.data[0].id);
-        }
+        setNatureId((prev) => prev || naturesResult.data![0]?.id || 0);
       }
 
       // Load Tera Types
@@ -150,7 +146,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
     }
 
     loadData();
-  }, [pokemonNationalNumber, i18n.language, abilityIdentifier, natureId]);
+  }, [pokemonNationalNumber, i18n.language]);
 
   // Close item selector when clicking outside
   useEffect(() => {
