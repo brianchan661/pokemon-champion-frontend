@@ -59,24 +59,28 @@ export function calculateAllStats(
   };
 }
 
+// Pokemon Champions EV limits: 0-32 per stat, 66 total
+export const EV_MAX_PER_STAT = 32;
+export const EV_MAX_TOTAL = 66;
+
 /**
  * Validate EV spread
- * Rules: Each stat 0-252, total max 510
+ * Rules: Each stat 0-32, total max 66
  */
 export function validateEVs(evs: StatSpread): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
   // Check individual stat limits
   Object.entries(evs).forEach(([stat, value]) => {
-    if (value < 0 || value > 252) {
-      errors.push(`${stat}: Must be between 0 and 252 (current: ${value})`);
+    if (value < 0 || value > EV_MAX_PER_STAT) {
+      errors.push(`${stat}: Must be between 0 and ${EV_MAX_PER_STAT} (current: ${value})`);
     }
   });
 
   // Check total limit
   const total = Object.values(evs).reduce((sum, val) => sum + val, 0);
-  if (total > 510) {
-    errors.push(`Total EVs: ${total}/510 (exceeds maximum)`);
+  if (total > EV_MAX_TOTAL) {
+    errors.push(`Total EVs: ${total}/${EV_MAX_TOTAL} (exceeds maximum)`);
   }
 
   return {

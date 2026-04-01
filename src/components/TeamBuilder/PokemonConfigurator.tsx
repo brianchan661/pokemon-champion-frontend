@@ -8,9 +8,9 @@ import { TeraTypeIcon } from '@/components/UI/TeraTypeIcon';
 import { itemsService, Item } from '@/services/itemsService';
 import { movesService } from '@/services/movesService';
 import { getDefaultIVs, getDefaultEVs, validateEVs } from '@/utils/calculateStats';
-import { StatCalculator } from './StatCalculator';
 import { EVInputs } from './EVInputs';
 import { MoveSelector } from './MoveSelector';
+import { NaturePickerModal } from './NaturePickerModal';
 import { LoadingSpinner } from '@/components/UI/LoadingSpinner';
 import { TypeIcon } from '@/components/UI';
 
@@ -54,6 +54,9 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   const [availableMoveIdentifiers, setAvailableMoveIdentifiers] = useState<string[]>([]);
 
 
+
+  // Nature picker visibility
+  const [showNaturePicker, setShowNaturePicker] = useState(false);
 
   // Item selector visibility and search
   const [showItemSelector, setShowItemSelector] = useState(false);
@@ -319,39 +322,34 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               </select>
             </div>
 
-            {/* Nature (Moved from Stats) */}
+            {/* Nature */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.nature', 'Nature')}
               </label>
-              <select
-                value={natureId}
-                onChange={(e) => setNatureId(parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
+              <button
+                type="button"
+                onClick={() => setShowNaturePicker(true)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-dark-bg-tertiary dark:border-dark-border text-left flex items-center justify-between hover:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
               >
-                {natures.map((nature) => {
-                  const getStatLabel = (statKey: string) => {
-                    // Map API snake_case keys to translation camelCase keys
-                    const keyMap: Record<string, string> = {
-                      'hp': 'hp',
-                      'attack': 'attack',
-                      'defense': 'defense',
-                      'sp_atk': 'specialAttack',
-                      'sp_def': 'specialDefense',
-                      'speed': 'speed'
-                    };
-                    return t(`teamBuilder.statLabels.${keyMap[statKey] || statKey}`, statKey);
-                  };
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm font-medium text-gray-800 dark:text-dark-text-primary truncate">
+                    {selectedNature ? t(`natures.${selectedNature.identifier}`, selectedNature.name) : '—'}
+                  </span>
+                </div>
+                <svg className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
 
-                  return (
-                    <option key={nature.id} value={nature.id}>
-                      {t(`natures.${nature.identifier}`, nature.name)}
-                      {nature.increasedStat && nature.decreasedStat &&
-                        ` (+${getStatLabel(nature.increasedStat)}, -${getStatLabel(nature.decreasedStat)})`}
-                    </option>
-                  );
-                })}
-              </select>
+              {showNaturePicker && (
+                <NaturePickerModal
+                  natures={natures}
+                  selectedNatureId={natureId}
+                  onSelect={setNatureId}
+                  onClose={() => setShowNaturePicker(false)}
+                />
+              )}
             </div>
 
             {/* Held Item */}
@@ -483,38 +481,11 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               {t('teamBuilder.stats', 'Stats')}
             </h3>
 
-            {/* EVs */}
-            <EVInputs evs={evs} onChange={setEvs} />
-
-            {/* IVs (Collapsible) */}
-            <details>
-              <summary className="cursor-pointer text-xs font-medium text-gray-500 dark:text-dark-text-secondary mb-2 hover:text-gray-700 dark:hover:text-dark-text-primary transition-colors">
-                {t('teamBuilder.ivs', 'IVs')} ({t('teamBuilder.advanced', 'Advanced')})
-              </summary>
-              <div className="grid grid-cols-2 gap-2 mt-2 bg-gray-50 dark:bg-dark-bg-tertiary p-3 rounded-lg">
-                {(Object.keys(ivs) as Array<keyof StatSpread>).map((stat) => (
-                  <div key={stat} className="flex items-center gap-2">
-                    <label className="text-xs text-gray-500 dark:text-dark-text-secondary w-12 truncate">
-                      {stat.toUpperCase()}
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="31"
-                      value={ivs[stat]}
-                      onChange={(e) => setIvs({ ...ivs, [stat]: parseInt(e.target.value) || 0 })}
-                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded dark:bg-dark-bg-primary dark:border-dark-border dark:text-dark-text-primary"
-                    />
-                  </div>
-                ))}
-              </div>
-            </details>
-
-            {/* Stat Calculator */}
-            <StatCalculator
+            <EVInputs
+              evs={evs}
+              onChange={setEvs}
               baseStats={baseStats}
               ivs={ivs}
-              evs={evs}
               level={level}
               nature={selectedNature}
             />
