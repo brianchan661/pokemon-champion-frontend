@@ -16,6 +16,7 @@ export function SortableTeamSlot({ id, children, disabled }: SortableTeamSlotPro
         transform,
         transition,
         isDragging,
+        isOver,
     } = useSortable({ id, disabled });
 
     const style = {
@@ -27,7 +28,13 @@ export function SortableTeamSlot({ id, children, disabled }: SortableTeamSlotPro
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="h-full">
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className={`h-full rounded-lg ${isOver && !isDragging ? 'ring-2 ring-primary-400 dark:ring-primary-500 ring-offset-2 dark:ring-offset-dark-bg-primary' : ''}`}
+        >
             {children}
         </div>
     );

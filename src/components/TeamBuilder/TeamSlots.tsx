@@ -121,31 +121,29 @@ export function TeamSlots({
                         onClick={() => onSlotClick(index)}
                         className="w-full h-full p-8 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                       >
-                        <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        {/* Pokeball icon */}
+                        <svg className="w-12 h-12 mb-2" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="4">
+                          <circle cx="50" cy="50" r="44" />
+                          <line x1="6" y1="50" x2="94" y2="50" />
+                          <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="4" />
+                          <circle cx="50" cy="50" r="6" fill="currentColor" />
+                          <path d="M38 50 A12 12 0 0 1 62 50" strokeLinecap="round" />
                         </svg>
                         <span className="text-sm font-medium">
                           {t('teamBuilder.addPokemon', 'Add Pokemon')}
                         </span>
                       </button>
                     ) : (
-                      <div className="w-full h-full p-4 bg-gray-50 dark:bg-dark-bg-tertiary flex flex-col relative text-left group">
-                        {/* Make the card clickable for editing, but notice Sortable might interfere if we don't use a drag handle or if the whole thing is the handle. 
-                         By default, setting ref on the container makes the whole container draggable. 
-                         But we also need to click to edit. dnd-kit pointer sensor usually distinguishes click vs drag (movement).
-                         We should ensure the click propagates if not dragging. */}
-                        <div onClick={() => onSlotClick(index)} className="cursor-pointer h-full">
-                          <PokemonCard
-                            pokemon={pokemon}
-                            variant="detailed"
-                            showRemoveButton={true}
-                            onRemove={(e) => {
-                              e.stopPropagation();
-                              // Prevent drag start on remove button? remove button handles stopPropagation itself usually.
-                              onRemovePokemon(index);
-                            }}
-                          />
-                        </div>
+                      <div onClick={() => onSlotClick(index)} className="cursor-pointer h-full">
+                        <PokemonCard
+                          pokemon={pokemon}
+                          variant="detailed"
+                          showRemoveButton={true}
+                          onRemove={(e) => {
+                            e.stopPropagation();
+                            onRemovePokemon(index);
+                          }}
+                        />
                       </div>
                     )}
                   </div>

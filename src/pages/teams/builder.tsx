@@ -417,19 +417,35 @@ export default function TeamBuilderPage() {
             )}
 
             {/* Step Indicator */}
-            <div className="mb-6 flex items-center justify-center gap-4">
-              <div className={`flex items-center gap-2 ${step === 1 ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-dark-text-tertiary'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-secondary'}`}>
-                  1
+            <div className="mb-6">
+              <div className="flex items-center justify-center gap-3">
+                {/* Step 1 */}
+                <div className={`flex items-center gap-2 transition-colors duration-300 ${step === 1 ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-dark-text-tertiary'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${step === 1 ? 'bg-primary-600 text-white shadow-md shadow-primary-200 dark:shadow-primary-900' : 'bg-primary-600 text-white opacity-50'}`}>
+                    {step > 1 ? (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : '1'}
+                  </div>
+                  <span className="text-sm font-medium">{t('teamBuilder.step1', 'Pokemon Selection')}</span>
                 </div>
-                <span className="text-sm font-medium">{t('teamBuilder.step1', 'Pokemon Selection')}</span>
-              </div>
-              <div className="w-12 h-0.5 bg-gray-300 dark:bg-dark-border" />
-              <div className={`flex items-center gap-2 ${step === 2 ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-dark-text-tertiary'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 2 ? 'bg-primary-600 text-white' : 'bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-secondary'}`}>
-                  2
+
+                {/* Connector */}
+                <div className="w-16 h-1 rounded-full bg-gray-200 dark:bg-dark-border overflow-hidden">
+                  <div
+                    className="h-full bg-primary-600 dark:bg-primary-400 rounded-full transition-all duration-500"
+                    style={{ width: step === 2 ? '100%' : '0%' }}
+                  />
                 </div>
-                <span className="text-sm font-medium">{t('teamBuilder.step2', 'Team Details')}</span>
+
+                {/* Step 2 */}
+                <div className={`flex items-center gap-2 transition-colors duration-300 ${step === 2 ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-dark-text-tertiary'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${step === 2 ? 'bg-primary-600 text-white shadow-md shadow-primary-200 dark:shadow-primary-900' : 'bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-secondary'}`}>
+                    2
+                  </div>
+                  <span className="text-sm font-medium">{t('teamBuilder.step2', 'Team Details')}</span>
+                </div>
               </div>
             </div>
 
@@ -471,6 +487,35 @@ export default function TeamBuilderPage() {
             {/* Step 2: Team Metadata */}
             {step === 2 && (
               <div className="max-w-3xl mx-auto space-y-6">
+                {/* Team Preview */}
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-4">
+                  <div className="flex items-center justify-center gap-2">
+                    {team.map((slot, index) => (
+                      <div key={slot.id} className="flex flex-col items-center gap-1">
+                        <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-dark-bg-tertiary flex items-center justify-center border-2 border-gray-200 dark:border-dark-border overflow-hidden">
+                          {slot.pokemon?.pokemonData?.imageUrl ? (
+                            <img
+                              src={slot.pokemon.pokemonData.imageUrl}
+                              alt={slot.pokemon.pokemonData.name}
+                              className="w-12 h-12 object-contain"
+                            />
+                          ) : (
+                            <svg className="w-6 h-6 text-gray-300 dark:text-gray-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="5">
+                              <circle cx="50" cy="50" r="44" />
+                              <line x1="6" y1="50" x2="94" y2="50" />
+                              <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="5" />
+                              <circle cx="50" cy="50" r="6" fill="currentColor" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium truncate max-w-[56px] text-center">
+                          {slot.pokemon?.pokemonData?.name ?? `—`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Team Info */}
                 <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-6">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">

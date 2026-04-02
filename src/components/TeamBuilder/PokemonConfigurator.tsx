@@ -287,35 +287,74 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
             {/* Level */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
-                {t('teamBuilder.level', 'Level')} ({level})
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={level}
-                onChange={(e) => setLevel(parseInt(e.target.value))}
-                className="w-full"
-              />
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-dark-text-primary">
+                  {t('teamBuilder.level', 'Level')}
+                </span>
+                <span className="text-sm font-bold tabular-nums text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-2 py-0.5 rounded-md">
+                  {level}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-gray-400 dark:text-dark-text-tertiary w-3 flex-shrink-0 tabular-nums">1</span>
+                <div className="relative flex-1 h-3 flex items-center">
+                  {/* Track background */}
+                  <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-600" />
+                  {/* Fill */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 rounded-full transition-all duration-150"
+                    style={{
+                      width: `${((level - 1) / 99) * 100}%`,
+                      backgroundColor: '#6366f1',
+                    }}
+                  />
+                  {/* Native range input (transparent, on top) */}
+                  <input
+                    type="range"
+                    min={1}
+                    max={100}
+                    value={level}
+                    onChange={(e) => setLevel(parseInt(e.target.value))}
+                    className="absolute inset-0 w-full opacity-0 cursor-pointer h-full"
+                  />
+                </div>
+                <span className="text-[10px] text-gray-400 dark:text-dark-text-tertiary w-5 text-right flex-shrink-0 tabular-nums">100</span>
+              </div>
             </div>
 
             {/* Ability */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">
                 {t('teamBuilder.ability', 'Ability')}
               </label>
-              <select
-                value={abilityIdentifier}
-                onChange={(e) => setAbilityIdentifier(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
-              >
-                {abilities.map((ability) => (
-                  <option key={ability.identifier} value={ability.identifier}>
-                    {ability.name} {ability.isHidden && `(${t('teamBuilder.hidden', 'Hidden')})`}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-col gap-1.5">
+                {abilities.map((ability) => {
+                  const isSelected = abilityIdentifier === ability.identifier;
+                  return (
+                    <button
+                      key={ability.identifier}
+                      type="button"
+                      onClick={() => setAbilityIdentifier(ability.identifier)}
+                      className={`w-full px-3 py-2 rounded-lg text-left text-sm font-medium transition-all ${
+                        isSelected
+                          ? 'bg-primary-600 text-white shadow-sm'
+                          : 'bg-gray-100 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-200 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <span>{ability.name}</span>
+                      {ability.isHidden && (
+                        <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-normal ${
+                          isSelected
+                            ? 'bg-white/20 text-white'
+                            : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {t('teamBuilder.hidden', 'Hidden')}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Nature */}
@@ -527,7 +566,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       <div className="p-3 border-t border-gray-200 dark:border-dark-border flex-shrink-0 flex items-center justify-between bg-gray-50 dark:bg-dark-bg-tertiary rounded-b-lg">
         <div className="flex-1 mr-4">
           {error && (
-            <p className="text-sm text-red-600 dark:text-red-400 font-medium animate-pulse">
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium border-l-4 border-red-500 dark:border-red-400 pl-3">
               {error}
             </p>
           )}

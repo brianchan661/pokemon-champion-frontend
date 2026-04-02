@@ -24,8 +24,8 @@ export function TeraTypeIcon({ type }: TeraTypeIconProps) {
             <div className={`absolute inset-1 bg-gradient-to-br ${getTypeColor(type)} opacity-40 rotate-45 rounded-sm`}></div>
 
             {/* Icon */}
-            <div className="relative z-10 transform scale-75">
-                <TypeIcon type={type} size="md" />
+            <div className="relative z-10">
+                <TypeIcon type={type} size="sm" />
             </div>
 
             {/* Shine effect */}
