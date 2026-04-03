@@ -291,7 +291,8 @@
     "searchItems": "搜尋道具...",
     "noItemsFound": "未找到道具",
     "description": "描述",
-    "descriptionPlaceholder": "描述你的隊伍...（輸入 @ 可以提及寶可夢、招式、道具或特性）"
+    "descriptionPlaceholder": "描述你的隊伍...（輸入 @ 可以提及寶可夢、招式、道具或特性）",
+    "hidden": "隱藏特性"
   },
   "moves": {
     "title": "Moves [NEEDS_TRANSLATION]",

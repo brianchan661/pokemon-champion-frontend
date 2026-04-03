@@ -144,7 +144,7 @@ export default function AbilitiesPage() {
                 {t('abilities.description', 'Browse all Pokemon abilities with their descriptions')}
               </p>
               {totalCount > 0 && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300">
                   {searchQuery
                     ? t('abilities.filteredCount', `${filteredCount} of ${totalCount} abilities`, { filtered: filteredCount, total: totalCount })
                     : t('abilities.totalCount', `${totalCount} abilities`, { count: totalCount })}
@@ -155,13 +155,20 @@ export default function AbilitiesPage() {
 
           {/* Search */}
           <div className="mb-6 flex gap-2">
-            <input
-              type="text"
-              placeholder={t('abilities.searchPlaceholder', 'Search abilities...')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 max-w-md px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
-            />
+            <div className="relative flex-1 max-w-md">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder={t('abilities.searchPlaceholder', 'Search by name or identifier...')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
+              />
+            </div>
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
@@ -231,14 +238,17 @@ export default function AbilitiesPage() {
                   </thead>
                   <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                     {abilities.map((ability) => (
-                      <tr key={ability.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
+                      <tr key={ability.id} className="relative hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary cursor-pointer">
                         <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Link
                               href={`/data/abilities/${ability.identifier}`}
-                              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
+                              className="group/link flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-primary-400 after:absolute after:inset-0"
                             >
                               {ability.name}
+                              <svg className="w-3 h-3 opacity-0 group-hover/link:opacity-100 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
                             </Link>
                           </div>
                         </td>
@@ -248,7 +258,10 @@ export default function AbilitiesPage() {
                           </div>
                         </td>
                         <td className="px-3 py-2 sm:px-6 sm:py-4">
-                          <div className="text-sm text-gray-700 dark:text-dark-text-primary">
+                          <div
+                            className="text-sm text-gray-700 dark:text-dark-text-primary line-clamp-2"
+                            title={ability.shortEffect || ability.description || ''}
+                          >
                             {ability.shortEffect || ability.description || '-'}
                           </div>
                         </td>
@@ -259,8 +272,15 @@ export default function AbilitiesPage() {
               </div>
             </div>
           ) : abilities && abilities.length === 0 && !isLoading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-dark-text-secondary">{t('abilities.noResults', 'No abilities found.')}</p>
+            <div className="text-center py-20 bg-white dark:bg-dark-bg-secondary rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
+              <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+                <circle cx="50" cy="50" r="44" />
+                <line x1="6" y1="50" x2="94" y2="50" />
+                <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="3" />
+                <circle cx="50" cy="50" r="6" fill="currentColor" />
+              </svg>
+              <p className="text-gray-600 dark:text-dark-text-secondary font-medium">{t('abilities.noResults', 'No abilities found.')}</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Try adjusting your search</p>
             </div>
           ) : null}
         </div>
