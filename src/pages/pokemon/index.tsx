@@ -16,7 +16,8 @@ type ViewMode = 'table' | 'grid';
 
 export default function PokemonListPage() {
   const { t } = useTranslation('common');
-  const { locale } = useRouter();
+  const router = useRouter();
+  const { locale } = router;
   const currentLocale = locale || 'en';
 
   // --- State ---
@@ -202,6 +203,25 @@ export default function PokemonListPage() {
     ];
   }, []);
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (searchQuery) count++;
+    count += selectedTypes.length;
+    Object.entries(filterStatRanges).forEach(([stat, range]) => {
+      const key = stat as keyof typeof statLimits;
+      if (range.min > statLimits[key].min || range.max < statLimits[key].max) count++;
+    });
+    return count;
+  }, [searchQuery, selectedTypes, filterStatRanges, statLimits]);
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setSelectedTypes([]);
+    const reset = { hp: { min: 0, max: 999 }, attack: { min: 0, max: 999 }, defense: { min: 0, max: 999 }, spAtk: { min: 0, max: 999 }, spDef: { min: 0, max: 999 }, speed: { min: 0, max: 999 } };
+    setStatRanges(reset);
+    setFilterStatRanges(reset);
+  };
+
 
 
   return (
@@ -223,7 +243,7 @@ export default function PokemonListPage() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder="Search by name, number or ability..."
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -255,6 +275,11 @@ export default function PokemonListPage() {
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
                 Filters
+                {activeFilterCount > 0 && (
+                  <span className="ml-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-blue-600 text-white">
+                    {activeFilterCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -270,12 +295,10 @@ export default function PokemonListPage() {
                     <button
                       key={type}
                       onClick={() => toggleType(type)}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${selectedTypes.includes(type) ? 'ring-2 ring-offset-1 ring-blue-500 dark:ring-offset-gray-900' : 'opacity-70 hover:opacity-100'}`}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${selectedTypes.includes(type) ? 'ring-2 ring-offset-1 ring-blue-500 dark:ring-offset-gray-900' : 'opacity-50 hover:opacity-100'}`}
                       style={{ background: 'transparent' }}
                     >
-                      <div className={`${selectedTypes.includes(type) ? '' : 'grayscale'}`}>
-                        <TypeIcon type={type} size="sm" showLabel />
-                      </div>
+                      <TypeIcon type={type} size="sm" showLabel />
                     </button>
                   ))}
                 </div>
@@ -287,33 +310,76 @@ export default function PokemonListPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {Object.entries(statRanges).map(([stat, range]) => {
                     const statKey = stat as keyof typeof statRanges;
+                    const limitMin = statLimits[statKey].min;
+                    const limitMax = statLimits[statKey].max;
+                    const effectiveMin = Math.max(range.min, limitMin);
+                    const effectiveMax = Math.min(range.max, limitMax);
+                    const label = stat === 'spAtk' ? 'Sp. Atk' : stat === 'spDef' ? 'Sp. Def' : stat.charAt(0).toUpperCase() + stat.slice(1);
                     return (
                       <div key={stat} className="space-y-2">
-                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 uppercase font-medium">
-                          <span>{stat === 'spAtk' ? 'Sp. Atk' : stat === 'spDef' ? 'Sp. Def' : stat}</span>
-                          <span>{Math.max(range.min, statLimits[statKey].min)} - {Math.min(range.max, statLimits[statKey].max)}</span>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">{label}</span>
+                          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                            <input
+                              type="number"
+                              min={limitMin}
+                              max={effectiveMax}
+                              value={effectiveMin}
+                              onChange={(e) => {
+                                const v = Math.min(Number(e.target.value), effectiveMax);
+                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], min: v } }));
+                                setFilterStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], min: v } }));
+                              }}
+                              className="w-12 text-center bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-xs dark:text-gray-200"
+                            />
+                            <span>–</span>
+                            <input
+                              type="number"
+                              min={effectiveMin}
+                              max={limitMax}
+                              value={effectiveMax}
+                              onChange={(e) => {
+                                const v = Math.max(Number(e.target.value), effectiveMin);
+                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], max: v } }));
+                                setFilterStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], max: v } }));
+                              }}
+                              className="w-12 text-center bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-xs dark:text-gray-200"
+                            />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="range"
-                            min={statLimits[statKey].min}
-                            max={statLimits[statKey].max}
-                            value={Math.max(range.min, statLimits[statKey].min)}
-                            onChange={(e) => setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], min: Number(e.target.value) } }))}
-                            onMouseUp={() => setFilterStatRanges(statRanges)}
-                            onTouchEnd={() => setFilterStatRanges(statRanges)}
-                            className="w-full accent-blue-600 dark:accent-blue-400 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                          />
-                          <input
-                            type="range"
-                            min={statLimits[statKey].min}
-                            max={statLimits[statKey].max}
-                            value={Math.min(range.max, statLimits[statKey].max)}
-                            onChange={(e) => setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], max: Number(e.target.value) } }))}
-                            onMouseUp={() => setFilterStatRanges(statRanges)}
-                            onTouchEnd={() => setFilterStatRanges(statRanges)}
-                            className="w-full accent-blue-600 dark:accent-blue-400 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                          />
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-gray-400 w-6 shrink-0">Min</span>
+                            <input
+                              type="range"
+                              min={limitMin}
+                              max={limitMax}
+                              value={effectiveMin}
+                              onChange={(e) => {
+                                const v = Math.min(Number(e.target.value), effectiveMax);
+                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], min: v } }));
+                              }}
+                              onMouseUp={() => setFilterStatRanges(statRanges)}
+                              onTouchEnd={() => setFilterStatRanges(statRanges)}
+                              className="flex-1 accent-blue-600 dark:accent-blue-400 h-1 cursor-pointer"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-gray-400 w-6 shrink-0">Max</span>
+                            <input
+                              type="range"
+                              min={limitMin}
+                              max={limitMax}
+                              value={effectiveMax}
+                              onChange={(e) => {
+                                const v = Math.max(Number(e.target.value), effectiveMin);
+                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], max: v } }));
+                              }}
+                              onMouseUp={() => setFilterStatRanges(statRanges)}
+                              onTouchEnd={() => setFilterStatRanges(statRanges)}
+                              className="flex-1 accent-blue-600 dark:accent-blue-400 h-1 cursor-pointer"
+                            />
+                          </div>
                         </div>
                       </div>
                     )
@@ -334,8 +400,16 @@ export default function PokemonListPage() {
           )}
 
           {/* Results Count */}
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Showing {sortedPokemon.length} results
+          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+            <span>Showing {sortedPokemon.length} of {allPokemon.length} results</span>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={clearAllFilters}
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                Clear all filters
+              </button>
+            )}
           </div>
 
           {/* Main Content Area */}
@@ -346,6 +420,7 @@ export default function PokemonListPage() {
             handleSort={handleSort}
             sortBy={sortBy}
             sortOrder={sortOrder}
+            onNavigate={(n) => router.push(`/pokemon/${n}`)}
           />
 
         </div>
@@ -362,6 +437,7 @@ interface PokemonListProps {
   handleSort: (column: any) => void;
   sortBy: string;
   sortOrder: 'asc' | 'desc';
+  onNavigate: (nationalNumber: number) => void;
 }
 
 const TableSortIcon = ({ column, sortBy, sortOrder }: { column: string, sortBy: string, sortOrder: 'asc' | 'desc' }) => {
@@ -371,11 +447,16 @@ const TableSortIcon = ({ column, sortBy, sortOrder }: { column: string, sortBy: 
     <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
 };
 
-const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sortBy, sortOrder }: PokemonListProps) => {
+const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sortBy, sortOrder, onNavigate }: PokemonListProps) => {
   if (pokemon.length === 0 && !loading) {
     return (
       <div className="text-center py-20 bg-white dark:bg-dark-bg-secondary rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
-        <div className="text-4xl mb-4">🔍</div>
+        <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+          <circle cx="50" cy="50" r="44" />
+          <line x1="6" y1="50" x2="94" y2="50" />
+          <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="3" />
+          <circle cx="50" cy="50" r="6" fill="currentColor" />
+        </svg>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">No Pokemon found</h3>
         <p className="text-gray-500 dark:text-gray-400">Try adjusting your filters</p>
       </div>
@@ -404,7 +485,7 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
           </thead>
           <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
             {pokemon.map((p: Pokemon) => (
-              <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors cursor-pointer" onClick={() => window.open(`/pokemon/${p.nationalNumber}`, '_blank')}>
+              <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors cursor-pointer" onClick={() => onNavigate(p.nationalNumber)}>
                 <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">#{p.nationalNumber}</td>
                 <td className="px-4 py-2 whitespace-nowrap">
                   <div className="h-10 w-10 relative">
@@ -439,12 +520,32 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
     );
   }
 
+  const getTypeHex = (type: string) => {
+    const colors: Record<string, string> = {
+      water: '#3b82f6', fire: '#ef4444', grass: '#22c55e', electric: '#eab308',
+      flying: '#818cf8', bug: '#84cc16', ground: '#d97706', rock: '#78716c',
+      steel: '#94a3b8', ice: '#67e8f9', ghost: '#9333ea', dark: '#404040',
+      psychic: '#ec4899', fairy: '#fda4af', dragon: '#7c3aed', poison: '#c026d3',
+      fighting: '#ea580c', normal: '#a8a29e'
+    };
+    return colors[type.toLowerCase()] || '#6b7280';
+  };
+
+  const getCardHeaderStyle = (types: string[]) => {
+    if (types.length >= 2) {
+      const c1 = getTypeHex(types[0]);
+      const c2 = getTypeHex(types[1]);
+      return { background: `linear-gradient(to right, ${c1} 50%, ${c2} 50%)` };
+    }
+    return { backgroundColor: getTypeHex(types[0] || 'normal') };
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {pokemon.map((p: Pokemon) => (
-        <div key={p.id} className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer flex flex-col" onClick={() => window.open(`/pokemon/${p.nationalNumber}`, '_blank')}>
+        <div key={p.id} className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer flex flex-col" onClick={() => onNavigate(p.nationalNumber)}>
           {/* Card Header gradient based on types */}
-          <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-700" />
+          <div className="h-2 w-full" style={getCardHeaderStyle(p.types)} />
 
           <div className="p-4 flex flex-col gap-4 flex-1">
             <div className="flex justify-between items-start">
