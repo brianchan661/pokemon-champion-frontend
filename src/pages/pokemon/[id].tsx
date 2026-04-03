@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { PokemonFull, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { Layout } from '@/components/Layout/Layout';
-import { TypeIcon } from '@/components/UI';
+import { TypeIcon, TypeFilterGrid } from '@/components/UI';
 import { MoveCategoryIcon } from '@/components/UI/MoveCategoryIcon';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -545,22 +545,7 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
               </span>
             )}
           </label>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2">
-            {allMoveTypes.map((type) => (
-              <button
-                key={type}
-                onClick={() => toggleTypeFilter(type)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${
-                  selectedTypeFilters.includes(type)
-                    ? 'ring-2 ring-offset-1 ring-primary-500 dark:ring-offset-dark-bg-primary'
-                    : 'opacity-50 hover:opacity-100'
-                }`}
-                style={{ background: 'transparent' }}
-              >
-                <TypeIcon type={type} size="sm" showLabel />
-              </button>
-            ))}
-          </div>
+          <TypeFilterGrid selectedTypes={selectedTypeFilters} onToggle={toggleTypeFilter} types={allMoveTypes} />
         </div>
 
         {/* Category Filter Buttons */}

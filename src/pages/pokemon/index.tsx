@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Pokemon, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { Layout } from '@/components/Layout/Layout';
-import { TypeIcon } from '@/components/UI';
+import { TypeIcon, TypeFilterGrid } from '@/components/UI';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
@@ -290,18 +290,7 @@ export default function PokemonListPage() {
               {/* Types */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-dark-text-primary mb-3">Types</h3>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2">
-                  {allTypes.map(type => (
-                    <button
-                      key={type}
-                      onClick={() => toggleType(type)}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${selectedTypes.includes(type) ? 'ring-2 ring-offset-1 ring-blue-500 dark:ring-offset-gray-900' : 'opacity-50 hover:opacity-100'}`}
-                      style={{ background: 'transparent' }}
-                    >
-                      <TypeIcon type={type} size="sm" showLabel />
-                    </button>
-                  ))}
-                </div>
+                <TypeFilterGrid selectedTypes={selectedTypes} onToggle={toggleType} types={allTypes} />
               </div>
 
               {/* Stats */}
