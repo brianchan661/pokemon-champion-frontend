@@ -26,6 +26,8 @@ interface Move {
   pokemonCount?: number;
 }
 
+type SortKey = 'name' | 'type' | 'category' | 'power' | 'accuracy' | 'pp';
+
 const POKEMON_TYPES = [
   'normal', 'fire', 'water', 'electric', 'grass', 'ice',
   'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug',
@@ -40,6 +42,7 @@ export default function MovesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilters, setTypeFilters] = useState<string[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
 
   // Fetch all moves once with caching
   const {
@@ -59,29 +62,26 @@ export default function MovesPage() {
       }));
       return moves as Move[];
     },
-    staleTime: 30 * 60 * 1000, // 30 minutes - moves data rarely changes
-    gcTime: 60 * 60 * 1000, // 1 hour in memory
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   }) as { data: Move[] | undefined; isLoading: boolean; error: Error | null };
 
-  // Client-side filtering with useMemo for performance
+  // Client-side filtering and sorting with useMemo for performance
   const filteredMoves = useMemo((): Move[] => {
     if (!allMoves) return [];
 
     let result: Move[] = allMoves;
 
-    // Apply type filters (OR logic - match ANY selected type)
     if (typeFilters.length > 0) {
       result = result.filter((move: Move) => typeFilters.includes(move.type));
     }
 
-    // Apply category filters (OR logic - match ANY selected category)
     if (categoryFilters.length > 0) {
       result = result.filter((move: Move) =>
         move.category && categoryFilters.includes(move.category)
       );
     }
 
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter((move: Move) =>
@@ -90,27 +90,63 @@ export default function MovesPage() {
       );
     }
 
+    // Sort
+    result = result.slice().sort((a, b) => {
+      const { key, direction } = sortConfig;
+      const aVal = a[key];
+      const bVal = b[key];
+
+      if (aVal === undefined || aVal === null) return 1;
+      if (bVal === undefined || bVal === null) return -1;
+
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      return direction === 'asc' ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+    });
+
     return result;
-  }, [allMoves, typeFilters, categoryFilters, searchQuery]);
+  }, [allMoves, typeFilters, categoryFilters, searchQuery, sortConfig]);
 
   const totalCount = allMoves?.length ?? 0;
   const filteredCount = filteredMoves.length;
 
-  // Toggle type filter
   const toggleTypeFilter = (type: string) => {
     setTypeFilters(prev =>
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
     );
   };
 
-  // Toggle category filter
   const toggleCategoryFilter = (category: string) => {
     setCategoryFilters(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
+      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
+    );
+  };
+
+  const handleSort = (key: SortKey) => {
+    setSortConfig(prev =>
+      prev.key === key
+        ? { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' }
+        : { key, direction: 'asc' }
+    );
+  };
+
+  const SortIcon = ({ col }: { col: SortKey }) => {
+    if (sortConfig.key !== col) {
+      return (
+        <svg className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      );
+    }
+    return sortConfig.direction === 'asc' ? (
+      <svg className="w-3 h-3 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    ) : (
+      <svg className="w-3 h-3 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
     );
   };
 
@@ -126,7 +162,7 @@ export default function MovesPage() {
                 {t('moves.description')}
               </p>
               {totalCount > 0 && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300">
                   {searchQuery || typeFilters.length > 0 || categoryFilters.length > 0
                     ? t('moves.filteredMoves', { count: filteredCount })
                     : t('moves.totalMoves', { count: totalCount })}
@@ -137,15 +173,22 @@ export default function MovesPage() {
 
           {/* Filters */}
           <div className="mb-6 space-y-4">
-            {/* Search and Clear Filters */}
+            {/* Search */}
             <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder={t('moves.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
-              />
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder={t('moves.searchPlaceholder')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
+                />
+              </div>
               {(searchQuery || typeFilters.length > 0 || categoryFilters.length > 0) && (
                 <button
                   onClick={() => {
@@ -153,7 +196,7 @@ export default function MovesPage() {
                     setTypeFilters([]);
                     setCategoryFilters([]);
                   }}
-                  className="px-2 sm:px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-dark-bg-secondary transition-colors text-xs sm:text-sm font-medium"
+                  className="px-2 sm:px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-dark-bg-secondary transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
                 >
                   {t('moves.clearFilters')}
                 </button>
@@ -170,26 +213,18 @@ export default function MovesPage() {
                   </span>
                 )}
               </label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setTypeFilters([])}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${typeFilters.length === 0
-                    ? 'bg-gray-800 dark:bg-gray-700 text-white'
-                    : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
-                    }`}
-                >
-                  {t('moves.all')}
-                </button>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2">
                 {POKEMON_TYPES.map((type) => (
                   <button
                     key={type}
                     onClick={() => toggleTypeFilter(type)}
-                    className={`transition-all ${typeFilters.includes(type)
-                      ? 'ring-2 ring-primary-500 ring-offset-2'
-                      : 'opacity-70 hover:opacity-100'
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${typeFilters.includes(type)
+                      ? 'ring-2 ring-offset-1 ring-primary-500 dark:ring-offset-dark-bg-primary'
+                      : 'opacity-50 hover:opacity-100'
                       }`}
+                    style={{ background: 'transparent' }}
                   >
-                    <TypeIcon type={type} size="md" />
+                    <TypeIcon type={type} size="sm" showLabel />
                   </button>
                 ))}
               </div>
@@ -224,17 +259,13 @@ export default function MovesPage() {
                       : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
                       }`}
                   >
-                    <MoveCategoryIcon
-                      category={category as 'physical' | 'special' | 'status'}
-                      size={20}
-                    />
+                    <MoveCategoryIcon category={category as 'physical' | 'special' | 'status'} size={20} />
                     <span>{t(`moves.categories.${category}`)}</span>
                   </button>
                 ))}
               </div>
             </div>
           </div>
-
 
           {/* Loading State */}
           {isLoading ? (
@@ -252,24 +283,25 @@ export default function MovesPage() {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
                   <thead className="bg-gray-50 dark:bg-dark-bg-tertiary sticky top-0">
                     <tr>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('moves.table.name')}
-                      </th>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('moves.table.type')}
-                      </th>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('moves.table.category')}
-                      </th>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('moves.table.power')}
-                      </th>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('moves.table.accuracy')}
-                      </th>
-                      <th className="px-3 py-2 sm:px-6 sm:py-3 text-center text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
-                        {t('moves.table.pp')}
-                      </th>
+                      {([
+                        { key: 'name', label: t('moves.table.name'), align: 'left' },
+                        { key: 'type', label: t('moves.table.type'), align: 'left' },
+                        { key: 'category', label: t('moves.table.category'), align: 'left' },
+                        { key: 'power', label: t('moves.table.power'), align: 'center' },
+                        { key: 'accuracy', label: t('moves.table.accuracy'), align: 'center' },
+                        { key: 'pp', label: t('moves.table.pp'), align: 'center' },
+                      ] as { key: SortKey; label: string; align: 'left' | 'center' }[]).map(({ key, label, align }) => (
+                        <th
+                          key={key}
+                          onClick={() => handleSort(key)}
+                          className={`group px-3 py-2 sm:px-6 sm:py-3 text-${align} text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-secondary transition-colors select-none`}
+                        >
+                          <div className={`flex items-center gap-1 ${align === 'center' ? 'justify-center' : ''}`}>
+                            {label}
+                            <SortIcon col={key} />
+                          </div>
+                        </th>
+                      ))}
                       <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
                         {t('moves.table.description')}
                       </th>
@@ -277,25 +309,23 @@ export default function MovesPage() {
                   </thead>
                   <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
                     {filteredMoves.map((move) => (
-                      <tr key={move.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
+                      <tr key={move.id} className="relative hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary cursor-pointer">
                         <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <Link
-                              href={`/data/moves/${move.identifier}`}
-                              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
-                            >
-                              {move.name}
-                            </Link>
-                          </div>
+                          <Link
+                            href={`/data/moves/${move.identifier}`}
+                            className="group/link flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-primary-400 after:absolute after:inset-0"
+                          >
+                            {move.name}
+                            <svg className="w-3 h-3 opacity-0 group-hover/link:opacity-100 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
                         </td>
                         <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                           <TypeIcon type={move.type} size="sm" />
                         </td>
                         <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
-                          <MoveCategoryIcon
-                            category={move.category as 'physical' | 'special' | 'status'}
-                            size={20}
-                          />
+                          <MoveCategoryIcon category={move.category as 'physical' | 'special' | 'status'} size={20} />
                         </td>
                         <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.power ?? '-'}
@@ -306,8 +336,10 @@ export default function MovesPage() {
                         <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-center text-sm text-gray-700 dark:text-dark-text-primary">
                           {move.pp ?? '-'}
                         </td>
-                        <td className="px-3 py-2 sm:px-6 sm:py-4 text-sm text-gray-700 dark:text-dark-text-primary">
-                          {move.description || '-'}
+                        <td className="px-3 py-2 sm:px-6 sm:py-4 text-sm text-gray-700 dark:text-dark-text-primary max-w-xs">
+                          <div className="line-clamp-2" title={move.description || ''}>
+                            {move.description || '-'}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -316,8 +348,15 @@ export default function MovesPage() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-dark-text-secondary">{t('moves.noResults')}</p>
+            <div className="text-center py-20 bg-white dark:bg-dark-bg-secondary rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
+              <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+                <circle cx="50" cy="50" r="44" />
+                <line x1="6" y1="50" x2="94" y2="50" />
+                <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="3" />
+                <circle cx="50" cy="50" r="6" fill="currentColor" />
+              </svg>
+              <p className="text-gray-600 dark:text-dark-text-secondary font-medium">{t('moves.noResults')}</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Try adjusting your filters</p>
             </div>
           )}
         </div>

@@ -545,28 +545,19 @@ function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
               </span>
             )}
           </label>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedTypeFilters([])}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                selectedTypeFilters.length === 0
-                  ? 'bg-gray-800 dark:bg-gray-700 text-white'
-                  : 'bg-gray-200 dark:bg-dark-bg-primary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('pokemon.detail.allTypes') || 'All Types'}
-            </button>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2">
             {allMoveTypes.map((type) => (
               <button
                 key={type}
                 onClick={() => toggleTypeFilter(type)}
-                className={`transition-all ${
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${
                   selectedTypeFilters.includes(type)
-                    ? 'ring-2 ring-primary-500 ring-offset-2'
-                    : 'opacity-70 hover:opacity-100'
+                    ? 'ring-2 ring-offset-1 ring-primary-500 dark:ring-offset-dark-bg-primary'
+                    : 'opacity-50 hover:opacity-100'
                 }`}
+                style={{ background: 'transparent' }}
               >
-                <TypeIcon type={type} size="md" />
+                <TypeIcon type={type} size="sm" showLabel />
               </button>
             ))}
           </div>
