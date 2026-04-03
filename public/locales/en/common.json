@@ -343,7 +343,16 @@
       "selectGameVersion": "Select Game Version",
       "filterByType": "Filter by Type",
       "allTypes": "All Types"
-    }
+    },
+    "searchPlaceholder": "Search by name, number or ability...",
+    "filters": "Filters",
+    "filterTypes": "Types",
+    "filterStats": "Stats",
+    "loadingDatabase": "Loading Pokemon Database...",
+    "showingResults": "Showing {{shown}} of {{total}} results",
+    "clearAllFilters": "Clear all filters",
+    "noResultsTitle": "No Pokemon found",
+    "noResultsHint": "Try adjusting your filters"
   },
   "teams": {
     "title": "Public Teams",
@@ -704,5 +713,22 @@
     "intro": "Have questions, feedback, or suggestions? We would love to hear from you!",
     "requests": "We are always looking to improve. If you have any suggestions or feature requests, please let us know!",
     "emailLabel": "Email Us"
+  },
+  "abilities": {
+    "title": "Abilities",
+    "description": "Browse all Pokemon abilities with their descriptions",
+    "totalCount": "{{count}} abilities",
+    "filteredCount": "{{filtered}} of {{total}} abilities",
+    "searchPlaceholder": "Search by name or identifier...",
+    "clearSearch": "Clear",
+    "loading": "Loading abilities...",
+    "error": "Error loading abilities. Please try again.",
+    "retry": "Retry",
+    "noResults": "No abilities found.",
+    "table": {
+      "name": "Name",
+      "pokemonCount": "# Pokemon",
+      "description": "Description"
+    }
   }
 }

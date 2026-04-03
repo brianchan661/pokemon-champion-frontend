@@ -250,7 +250,16 @@
       "selectGameVersion": "Select Game Version [NEEDS_TRANSLATION]",
       "filterByType": "按屬性篩選",
       "allTypes": "所有屬性"
-    }
+    },
+    "searchPlaceholder": "Search by name, number or ability... [NEEDS_TRANSLATION]",
+    "filters": "Filters [NEEDS_TRANSLATION]",
+    "filterTypes": "Types [NEEDS_TRANSLATION]",
+    "filterStats": "Stats [NEEDS_TRANSLATION]",
+    "loadingDatabase": "Loading Pokemon Database... [NEEDS_TRANSLATION]",
+    "showingResults": "Showing {{shown}} of {{total}} results [NEEDS_TRANSLATION]",
+    "clearAllFilters": "Clear all filters [NEEDS_TRANSLATION]",
+    "noResultsTitle": "No Pokemon found [NEEDS_TRANSLATION]",
+    "noResultsHint": "Try adjusting your filters [NEEDS_TRANSLATION]"
   },
   "teams": {
     "title": "Public Teams [NEEDS_TRANSLATION]",
@@ -499,5 +508,22 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success"
+  },
+  "abilities": {
+    "title": "Abilities [NEEDS_TRANSLATION]",
+    "description": "Browse all Pokemon abilities with their descriptions [NEEDS_TRANSLATION]",
+    "totalCount": "{{count}} abilities [NEEDS_TRANSLATION]",
+    "filteredCount": "{{filtered}} of {{total}} abilities [NEEDS_TRANSLATION]",
+    "searchPlaceholder": "Search by name or identifier... [NEEDS_TRANSLATION]",
+    "clearSearch": "Clear [NEEDS_TRANSLATION]",
+    "loading": "Loading abilities... [NEEDS_TRANSLATION]",
+    "error": "Error loading abilities. Please try again. [NEEDS_TRANSLATION]",
+    "retry": "Retry [NEEDS_TRANSLATION]",
+    "noResults": "No abilities found. [NEEDS_TRANSLATION]",
+    "table": {
+      "name": "Name [NEEDS_TRANSLATION]",
+      "pokemonCount": "# Pokemon [NEEDS_TRANSLATION]",
+      "description": "Description [NEEDS_TRANSLATION]"
+    }
   }
 }

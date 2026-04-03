@@ -334,7 +334,16 @@
       "selectGameVersion": "ゲームバージョンを選択",
       "filterByType": "タイプでフィルター",
       "allTypes": "すべてのタイプ"
-    }
+    },
+    "searchPlaceholder": "名前、図鑑番号、特性で検索...",
+    "filters": "フィルター",
+    "filterTypes": "タイプ",
+    "filterStats": "ステータス",
+    "loadingDatabase": "ポケモンデータベースを読み込み中...",
+    "showingResults": "{{total}} 件中 {{shown}} 件を表示",
+    "clearAllFilters": "フィルターをすべてクリア",
+    "noResultsTitle": "ポケモンが見つかりませんでした",
+    "noResultsHint": "フィルターを調整してみてください"
   },
   "teams": {
     "title": "公開チーム",
@@ -673,5 +682,22 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success"
+  },
+  "abilities": {
+    "title": "特性",
+    "description": "すべてのポケモンの特性と説明を閲覧",
+    "totalCount": "{{count}} 件の特性",
+    "filteredCount": "{{total}} 件中 {{filtered}} 件",
+    "searchPlaceholder": "名前や識別子で検索...",
+    "clearSearch": "クリア",
+    "loading": "特性を読み込み中...",
+    "error": "特性の読み込みに失敗しました。もう一度お試しください。",
+    "retry": "もう一度",
+    "noResults": "特性が見つかりませんでした。",
+    "table": {
+      "name": "特性名",
+      "pokemonCount": "ポケモン数",
+      "description": "説明"
+    }
   }
 }

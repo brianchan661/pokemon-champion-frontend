@@ -243,7 +243,7 @@ export default function PokemonListPage() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search by name, number or ability..."
+                  placeholder={t('pokemon.searchPlaceholder')}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -274,7 +274,7 @@ export default function PokemonListPage() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${showFilters ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600'}`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-                Filters
+                {t('pokemon.filters')}
                 {activeFilterCount > 0 && (
                   <span className="ml-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-blue-600 text-white">
                     {activeFilterCount}
@@ -289,13 +289,13 @@ export default function PokemonListPage() {
             <div className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg border border-gray-200 dark:border-dark-border p-6 space-y-6 animate-in slide-in-from-top-2 duration-200">
               {/* Types */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-dark-text-primary mb-3">Types</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-dark-text-primary mb-3">{t('pokemon.filterTypes')}</h3>
                 <TypeFilterGrid selectedTypes={selectedTypes} onToggle={toggleType} types={allTypes} />
               </div>
 
               {/* Stats */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-dark-text-primary mb-3">Stats</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-dark-text-primary mb-3">{t('pokemon.filterStats')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {Object.entries(statRanges).map(([stat, range]) => {
                     const statKey = stat as keyof typeof statRanges;
@@ -383,20 +383,20 @@ export default function PokemonListPage() {
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 flex items-center gap-3">
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent"></div>
               <span className="text-sm text-blue-700 dark:text-blue-300">
-                Loading Pokemon Database...
+                {t('pokemon.loadingDatabase')}
               </span>
             </div>
           )}
 
           {/* Results Count */}
           <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-            <span>Showing {sortedPokemon.length} of {allPokemon.length} results</span>
+            <span>{t('pokemon.showingResults', { shown: sortedPokemon.length, total: allPokemon.length })}</span>
             {activeFilterCount > 0 && (
               <button
                 onClick={clearAllFilters}
                 className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
               >
-                Clear all filters
+                {t('pokemon.clearAllFilters')}
               </button>
             )}
           </div>
@@ -437,6 +437,7 @@ const TableSortIcon = ({ column, sortBy, sortOrder }: { column: string, sortBy: 
 };
 
 const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sortBy, sortOrder, onNavigate }: PokemonListProps) => {
+  const { t } = useTranslation('common');
   if (pokemon.length === 0 && !loading) {
     return (
       <div className="text-center py-20 bg-white dark:bg-dark-bg-secondary rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
@@ -446,8 +447,8 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
           <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="3" />
           <circle cx="50" cy="50" r="6" fill="currentColor" />
         </svg>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">No Pokemon found</h3>
-        <p className="text-gray-500 dark:text-gray-400">Try adjusting your filters</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('pokemon.noResultsTitle')}</h3>
+        <p className="text-gray-500 dark:text-gray-400">{t('pokemon.noResultsHint')}</p>
       </div>
     );
   }
@@ -459,17 +460,17 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
           <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
             <tr>
               <th onClick={() => handleSort('national_number')} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center gap-1">#{<TableSortIcon column="national_number" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-16">Image</th>
-              <th onClick={() => handleSort('name')} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center gap-1">Name{<TableSortIcon column="name" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
-              <th onClick={() => handleSort('stat_total')} className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center justify-center gap-1">Total{<TableSortIcon column="stat_total" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
-              <th onClick={() => handleSort('hp_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">HP</th>
-              <th onClick={() => handleSort('attack_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">Atk</th>
-              <th onClick={() => handleSort('defense_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">Def</th>
-              <th onClick={() => handleSort('sp_atk_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">SpA</th>
-              <th onClick={() => handleSort('sp_def_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">SpD</th>
-              <th onClick={() => handleSort('speed_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">Spe</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Abilities</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-16">{t('pokemon.image')}</th>
+              <th onClick={() => handleSort('name')} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center gap-1">{t('pokemon.name')}{<TableSortIcon column="name" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('pokemon.type')}</th>
+              <th onClick={() => handleSort('stat_total')} className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center justify-center gap-1">{t('pokemon.stats.total')}{<TableSortIcon column="stat_total" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
+              <th onClick={() => handleSort('hp_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.hp')}</th>
+              <th onClick={() => handleSort('attack_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.attack')}</th>
+              <th onClick={() => handleSort('defense_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.defense')}</th>
+              <th onClick={() => handleSort('sp_atk_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.spAtk')}</th>
+              <th onClick={() => handleSort('sp_def_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.spDef')}</th>
+              <th onClick={() => handleSort('speed_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.speed')}</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('pokemon.abilities')}</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
