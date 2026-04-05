@@ -9,6 +9,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { getApiBaseUrl } from '@/config/api';
+import { getTypeHex, getCardHeaderStyle } from '@/utils/typeColors';
 
 const API_URL = getApiBaseUrl();
 
@@ -140,9 +141,9 @@ export default function MoveDetailPage() {
 
               {/* Description */}
               {move.description && (
-                <div className="mt-6 p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg">
-                  <h2 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">{t('moves.detail.description')}</h2>
-                  <p className="text-gray-900 dark:text-dark-text-primary">{move.description}</p>
+                <div className="mt-6 border-l-4 pl-4" style={{ borderColor: getTypeHex(move.type) }}>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-text-tertiary mb-1">{t('moves.detail.description')}</h2>
+                  <p className="text-gray-900 dark:text-dark-text-primary leading-relaxed">{move.description}</p>
                 </div>
               )}
             </div>
@@ -150,10 +151,13 @@ export default function MoveDetailPage() {
 
           {/* Pokemon that can learn this move */}
           <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-dark-border">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-dark-border flex items-center gap-3">
               <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">
-                {t('moves.detail.pokemonTitle', { moveName: move.name })} {t('moves.detail.pokemonCount', { count: move.pokemon.length })}
+                {t('moves.detail.pokemonTitle', { moveName: move.name })}
               </h2>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300">
+                {move.pokemon.length}
+              </span>
             </div>
 
             {move.pokemon.length > 0 ? (
@@ -165,30 +169,33 @@ export default function MoveDetailPage() {
                       href={`/pokemon/${pokemon.nationalNumber}`}
                       className="group"
                     >
-                      <div className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-dark-bg-secondary hover:shadow-md transition-all border border-gray-200 dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-400">
-                        {/* Pokemon Image */}
-                        <div className="relative w-full h-20 mb-1">
-                          {pokemon.imageUrl && (
-                            <img
-                              src={pokemon.imageUrl}
-                              alt={pokemon.name}
-                              className="w-full h-full object-contain"
-                            />
-                          )}
-                        </div>
-
-                        {/* Pokemon Info */}
-                        <div className="space-y-1">
-                          <div className="text-xs text-gray-500 dark:text-dark-text-tertiary text-center">
-                            #{pokemon.nationalNumber}
+                      <div className="bg-white dark:bg-dark-bg-tertiary rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
+                        {/* Type-colored header bar */}
+                        <div className="h-1.5 w-full" style={getCardHeaderStyle(pokemon.types)} />
+                        <div className="p-2">
+                          {/* Pokemon Image */}
+                          <div className="relative w-full h-20 mb-1">
+                            {pokemon.imageUrl && (
+                              <img
+                                src={pokemon.imageUrl}
+                                alt={pokemon.name}
+                                className="w-full h-full object-contain"
+                              />
+                            )}
                           </div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-dark-text-primary text-center truncate group-hover:text-primary-600 dark:group-hover:text-primary-400">
-                            {pokemon.name}
-                          </div>
-                          <div className="flex gap-1 justify-center">
-                            {pokemon.types.map((type, idx) => (
-                              <TypeIcon key={idx} type={type} size="sm" />
-                            ))}
+                          {/* Pokemon Info */}
+                          <div className="space-y-1">
+                            <div className="text-xs text-gray-500 dark:text-dark-text-tertiary text-center">
+                              #{pokemon.nationalNumber}
+                            </div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-dark-text-primary text-center truncate group-hover:text-primary-600 dark:group-hover:text-primary-400">
+                              {pokemon.name}
+                            </div>
+                            <div className="flex gap-1 justify-center">
+                              {pokemon.types.map((type, idx) => (
+                                <TypeIcon key={idx} type={type} size="sm" />
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -197,8 +204,14 @@ export default function MoveDetailPage() {
                 </div>
               </div>
             ) : (
-              <div className="px-6 py-12 text-center text-gray-500 dark:text-dark-text-secondary">
-                {t('moves.detail.noPokemon')}
+              <div className="px-6 py-16 text-center">
+                <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+                  <circle cx="50" cy="50" r="44" />
+                  <line x1="6" y1="50" x2="94" y2="50" />
+                  <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="3" />
+                  <circle cx="50" cy="50" r="6" fill="currentColor" />
+                </svg>
+                <p className="text-gray-600 dark:text-dark-text-secondary font-medium">{t('moves.detail.noPokemon')}</p>
               </div>
             )}
           </div>

@@ -9,6 +9,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { getApiBaseUrl } from '@/config/api';
+import { getTypeHex, getCardHeaderStyle } from '@/utils/typeColors';
 
 const API_URL = getApiBaseUrl();
 
@@ -509,26 +510,6 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
       </div>
     );
   }
-
-  const getTypeHex = (type: string) => {
-    const colors: Record<string, string> = {
-      water: '#3b82f6', fire: '#ef4444', grass: '#22c55e', electric: '#eab308',
-      flying: '#818cf8', bug: '#84cc16', ground: '#d97706', rock: '#78716c',
-      steel: '#94a3b8', ice: '#67e8f9', ghost: '#9333ea', dark: '#404040',
-      psychic: '#ec4899', fairy: '#fda4af', dragon: '#7c3aed', poison: '#c026d3',
-      fighting: '#ea580c', normal: '#a8a29e'
-    };
-    return colors[type.toLowerCase()] || '#6b7280';
-  };
-
-  const getCardHeaderStyle = (types: string[]) => {
-    if (types.length >= 2) {
-      const c1 = getTypeHex(types[0]);
-      const c2 = getTypeHex(types[1]);
-      return { background: `linear-gradient(to right, ${c1} 50%, ${c2} 50%)` };
-    }
-    return { backgroundColor: getTypeHex(types[0] || 'normal') };
-  };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

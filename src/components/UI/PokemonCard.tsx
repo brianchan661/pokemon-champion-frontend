@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { TypeIcon } from './TypeIcon';
 import { TeraTypeIcon } from './TeraTypeIcon';
 import { MoveCategoryIcon, MoveCategory } from './MoveCategoryIcon';
+import { getTypeHex } from '@/utils/typeColors';
 
 interface PokemonCardProps {
   pokemon?: {
@@ -65,24 +66,11 @@ export function PokemonCard({
 
   const { t } = useTranslation('common');
 
-  // Map types to hex colors for gradients
-  const getTypeHex = (t: string) => {
-    const colors: Record<string, string> = {
-      water: '#3b82f6', fire: '#ef4444', grass: '#22c55e', electric: '#eab308',
-      flying: '#818cf8', bug: '#84cc16', ground: '#d97706', rock: '#78716c',
-      steel: '#94a3b8', ice: '#67e8f9', ghost: '#9333ea', dark: '#404040',
-      psychic: '#ec4899', fairy: '#fda4af', dragon: '#7c3aed', poison: '#c026d3',
-      fighting: '#ea580c', normal: '#a8a29e'
-    };
-    return colors[t.toLowerCase()] || '#6b7280';
-  };
-
   const getHeaderStyle = () => {
     const types = pokemon?.pokemonData?.types || [];
     if (types.length === 2) {
       const color1 = getTypeHex(types[0]);
       const color2 = getTypeHex(types[1]);
-      // Split color: 50% color1, 50% color2 with a hard stop
       return { background: `linear-gradient(to right, ${color1} 50%, ${color2} 50%)` };
     }
     return { backgroundColor: getTypeHex(types[0] || 'normal') };
