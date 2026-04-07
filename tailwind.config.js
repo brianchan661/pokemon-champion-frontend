@@ -21,19 +21,19 @@ module.exports = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
-        // Dark mode color palette
+        // Dark mode color palette — uses CSS vars so light mode can override
         dark: {
           bg: {
-            primary: '#0f1117',
-            secondary: '#161b27',
-            tertiary: '#1e2535',
+            primary: 'var(--color-bg-primary)',
+            secondary: 'var(--color-bg-secondary)',
+            tertiary: 'var(--color-bg-tertiary)',
           },
           text: {
-            primary: '#e8eaf0',
-            secondary: '#9aa3b8',
-            tertiary: '#6b7590',
+            primary: 'var(--color-text-primary)',
+            secondary: 'var(--color-text-secondary)',
+            tertiary: 'var(--color-text-tertiary)',
           },
-          border: '#2a3347',
+          border: 'var(--color-border)',
         },
         // Pokemon type colors
         pokemon: {

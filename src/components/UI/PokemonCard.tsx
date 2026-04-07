@@ -5,6 +5,15 @@ import { TeraTypeIcon } from './TeraTypeIcon';
 import { MoveCategoryIcon, MoveCategory } from './MoveCategoryIcon';
 import { getTypeHex } from '@/utils/typeColors';
 
+interface StatSpread {
+  hp: number;
+  attack: number;
+  defense: number;
+  specialAttack: number;
+  specialDefense: number;
+  speed: number;
+}
+
 interface PokemonCardProps {
   pokemon?: {
     level?: number;
@@ -14,6 +23,7 @@ interface PokemonCardProps {
       imageUrl?: string;
       types?: string[];
       nationalNumber?: number;
+      baseStats?: StatSpread;
     };
     itemData?: {
       spriteUrl?: string;
@@ -35,9 +45,13 @@ interface PokemonCardProps {
     abilityIdentifier?: string;
     natureData?: {
       name?: string;
+      increasedStat?: string;
+      decreasedStat?: string;
     };
     natureId?: number;
     teraType?: string;
+    evs?: StatSpread;
+    ivs?: StatSpread;
   };
   onRemove?: (e: React.MouseEvent) => void;
   showRemoveButton?: boolean;
@@ -48,10 +62,44 @@ interface PokemonCardProps {
   className?: string;
 }
 
+const STAT_LABELS: { key: keyof StatSpread; label: string; color: string }[] = [
+  { key: 'hp',             label: 'HP',   color: '#4ade80' },
+  { key: 'attack',         label: 'Atk',  color: '#f97316' },
+  { key: 'defense',        label: 'Def',  color: '#facc15' },
+  { key: 'specialAttack',  label: 'SpA',  color: '#60a5fa' },
+  { key: 'specialDefense', label: 'SpD',  color: '#a78bfa' },
+  { key: 'speed',          label: 'Spe',  color: '#34d399' },
+];
+
+const NATURE_STAT_KEY: Record<string, keyof StatSpread> = {
+  attack: 'attack', defense: 'defense',
+  specialAttack: 'specialAttack', specialDefense: 'specialDefense', speed: 'speed',
+  // DB column name variants
+  sp_atk: 'specialAttack', sp_def: 'specialDefense',
+};
+
+function calcStat(
+  key: keyof StatSpread,
+  base: number,
+  ev: number,
+  iv: number,
+  level: number,
+  increasedStat?: string,
+  decreasedStat?: string,
+): number {
+  const statVal = Math.floor((2 * base + iv + Math.floor(ev / 4)) * level / 100);
+  if (key === 'hp') {
+    return statVal + level + 10;
+  }
+  let natureMod = 1;
+  if (increasedStat && NATURE_STAT_KEY[increasedStat] === key) natureMod = 1.1;
+  if (decreasedStat && NATURE_STAT_KEY[decreasedStat] === key) natureMod = 0.9;
+  return Math.floor((statVal + 5) * natureMod);
+}
+
+
 /**
  * Reusable Pokemon card display component
- * Shows Pokemon sprite, name, types, item, and moves
- * Supports compact (simple) and detailed (with stats) variants
  */
 export function PokemonCard({
   pokemon,
@@ -63,176 +111,240 @@ export function PokemonCard({
   enableLinks = false,
   className = '',
 }: PokemonCardProps) {
-
   const { t } = useTranslation('common');
 
-  const getHeaderStyle = () => {
+  const getHeaderGradient = () => {
     const types = pokemon?.pokemonData?.types || [];
     if (types.length === 2) {
-      const color1 = getTypeHex(types[0]);
-      const color2 = getTypeHex(types[1]);
-      return { background: `linear-gradient(to right, ${color1} 50%, ${color2} 50%)` };
+      const c1 = getTypeHex(types[0]);
+      const c2 = getTypeHex(types[1]);
+      return `linear-gradient(135deg, ${c1}cc 0%, ${c2}cc 100%)`;
     }
-    return { backgroundColor: getTypeHex(types[0] || 'normal') };
+    const c = getTypeHex(types[0] || 'normal');
+    return `linear-gradient(135deg, ${c}cc 0%, ${c}44 100%)`;
   };
 
-  if (variant === 'detailed') {
-    return (
-      <div className={`bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-300 flex flex-col h-full group relative ${className}`}>
-        {/* Header Bar */}
-        <div className="h-2 w-full" style={getHeaderStyle()} />
+  const evs = pokemon?.evs;
+  const defaultEv: StatSpread = { hp: 0, attack: 0, defense: 0, specialAttack: 0, specialDefense: 0, speed: 0 };
 
-        <div className="p-4 flex-1 flex flex-col">
-          {/* Top Row: Name, Tera, and Sprite */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1 min-w-0 pr-2">
-              <div className="flex items-center gap-2 mb-1">
+  const nature = pokemon?.natureData;
+
+  if (variant === 'detailed') {
+    const statLabel = (stat: string) =>
+      stat === 'sp_atk' ? 'SpA' : stat === 'sp_def' ? 'SpD' :
+      stat.replace('specialAttack', 'SpA').replace('specialDefense', 'SpD')
+        .replace('attack', 'Atk').replace('defense', 'Def').replace('speed', 'Spe');
+
+    const types = pokemon?.pokemonData?.types || [];
+    const c1 = getTypeHex(types[0] || 'normal');
+    const c2 = getTypeHex(types[1] || types[0] || 'normal');
+
+    return (
+      <div
+        className={`relative rounded-2xl overflow-hidden flex flex-col h-full group ${className}`}
+        style={{
+          background: `linear-gradient(160deg, ${c1}55 0%, var(--color-bg-primary) 50%, var(--color-bg-secondary) 100%)`,
+          border: `1px solid ${c1}88`,
+          boxShadow: `0 4px 24px rgba(0,0,0,0.4), 0 0 12px ${c1}33`,
+        }}
+      >
+        {/* ── TOP SECTION: sprite left, info right ── */}
+        <div className="flex" style={{ background: getHeaderGradient() }}>
+          {/* Sprite */}
+          <div className="relative shrink-0 flex items-end justify-center w-24 pb-1">
+            {pokemon?.teraType && (
+              <div className="absolute top-1.5 left-1.5 flex flex-col items-center z-10">
+                <TeraTypeIcon type={pokemon.teraType} />
+                <span className="text-[8px] font-bold uppercase tracking-wider text-white/70 leading-none mt-0.5">Tera</span>
+              </div>
+            )}
+            {pokemon?.pokemonData?.imageUrl ? (
+              <img
+                src={pokemon.pokemonData.imageUrl}
+                alt={pokemon.pokemonData.name}
+                className="w-20 h-20 object-contain"
+                style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.6))' }}
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-white/10" />
+            )}
+            {pokemon?.itemData?.spriteUrl && (
+              <img
+                src={pokemon.itemData.spriteUrl}
+                alt={pokemon.itemData.name || ''}
+                title={pokemon.itemData.name}
+                className="absolute bottom-1 right-1 w-7 h-7 object-contain z-10"
+                style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.8))' }}
+              />
+            )}
+          </div>
+
+          {/* Info: left col (name/types/item/ability) + right col (level/nature) */}
+          <div className="flex-1 min-w-0 flex gap-2 py-2.5 pr-3">
+            {/* Left: name, types, item, ability */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+              {/* Name + types */}
+              <div className="flex items-center gap-1.5 min-w-0">
                 {enableLinks && (pokemon?.pokemonData?.nationalNumber || pokemon?.pokemonId) ? (
                   <Link
                     href={`/pokemon/${pokemon.pokemonData?.nationalNumber || pokemon.pokemonId}`}
-                    className="font-bold text-lg text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors truncate relative z-10"
+                    className="font-extrabold text-base leading-tight text-white hover:text-yellow-300 transition-colors drop-shadow truncate"
+                    style={{ fontFamily: "'Rajdhani', sans-serif" }}
                   >
                     {pokemon?.pokemonData?.name || 'Unknown'}
                   </Link>
                 ) : (
-                  <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors truncate">
+                  <span
+                    className="font-extrabold text-base leading-tight text-white drop-shadow truncate"
+                    style={{ fontFamily: "'Rajdhani', sans-serif" }}
+                  >
                     {pokemon?.pokemonData?.name || 'Unknown'}
-                  </h3>
+                  </span>
                 )}
-                {/* Types */}
                 <div className="flex gap-0.5 shrink-0">
-                  {pokemon?.pokemonData?.types?.map((t: string) => (
-                    <TypeIcon key={t} type={t} size="xs" />
+                  {pokemon?.pokemonData?.types?.map((type: string) => (
+                    <TypeIcon key={type} type={type} size="xs" />
                   ))}
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-medium">
-                  Lv. {pokemon?.level || 50}
-                </span>
-                <span>{pokemon?.natureData?.name || pokemon?.natureId || 'Unknown'}</span>
-              </div>
-            </div>
 
-            {/* Tera Badge */}
-            {pokemon?.teraType && (
-              <div className="flex flex-col items-center mr-3 shrink-0">
-                <TeraTypeIcon type={pokemon.teraType} />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mt-0.5">Tera</span>
-              </div>
-            )}
-
-            <div className="relative -mt-2 shrink-0">
-              <div className="w-20 h-20 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center">
-                {pokemon?.pokemonData?.imageUrl ? (
-                  <img src={pokemon.pokemonData.imageUrl} alt={pokemon.pokemonData.name} className="w-16 h-16 object-contain z-10" />
-                ) : (
-                  <div className="w-12 h-12 bg-gray-200 rounded-full" />
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Item and Ability */}
-          <div className="grid grid-cols-[1.4fr_0.6fr] gap-3 mb-4 bg-gray-50 dark:bg-gray-700/30 p-3 rounded-lg">
-            <div className="flex flex-col min-w-0 justify-center">
-              {enableLinks && pokemon?.itemData?.identifier ? (
-                <Link
-                  href={`/data/items/${pokemon.itemData.identifier}`}
-                  className="flex items-center gap-2 group/item transition-colors"
-                >
-                  {pokemon?.itemData?.spriteUrl && (
-                    <img
-                      src={pokemon.itemData.spriteUrl}
-                      alt={pokemon.itemData.name}
-                      className="w-6 h-6 object-contain shrink-0"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <span
-                    className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate group-hover/item:text-primary-600 dark:group-hover/item:text-primary-400 group-hover/item:underline"
-                    title={pokemon?.itemData?.name}
-                  >
-                    {pokemon?.itemData?.name || t('teamBuilder.heldItem', 'Item')}
-                  </span>
-                </Link>
-              ) : (
-                <div className="flex items-center gap-2">
-                  {pokemon?.itemData?.spriteUrl && (
-                    <img
-                      src={pokemon.itemData.spriteUrl}
-                      alt={pokemon.itemData.name}
-                      className="w-6 h-6 object-contain shrink-0"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate" title={pokemon?.itemData?.name}>
-                    {pokemon?.itemData?.name || t('teamBuilder.none', 'None')}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col min-w-0 justify-center">
-              {enableLinks && pokemon?.abilityIdentifier ? (
-                <Link
-                  href={`/data/abilities/${pokemon.abilityIdentifier}`}
-                  className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate hover:text-primary-600 dark:hover:text-primary-400 hover:underline"
-                  title={pokemon?.abilityData?.name}
-                >
-                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || t('teamBuilder.ability', 'Ability')}
-                </Link>
-              ) : (
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-200 truncate" title={pokemon?.abilityData?.name}>
-                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || t('teamBuilder.none', 'None')}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Moves */}
-          <div className="mt-auto space-y-2">
-            {pokemon?.movesData?.map((move, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 rounded-md border border-transparent hover:border-gray-200 dark:hover:border-gray-600 transition-colors">
-                {move.type && <TypeIcon type={move.type} size="xs" />}
-                {move.category && <MoveCategoryIcon category={move.category as MoveCategory} size={16} />}
-                {enableLinks && move.identifier ? (
+              {/* Ability */}
+              <div className="flex items-center gap-1 min-w-0">
+                {enableLinks && pokemon?.abilityIdentifier ? (
                   <Link
-                    href={`/data/moves/${move.identifier}`}
-                    className="font-medium text-gray-700 dark:text-gray-300 flex-1 hover:text-primary-600 dark:hover:text-primary-400 hover:underline"
+                    href={`/data/abilities/${pokemon.abilityIdentifier}`}
+                    className="text-[11px] font-semibold text-white/90 truncate hover:text-yellow-300 transition-colors"
+                    title={pokemon?.abilityData?.name}
                   >
-                    {move.name}
+                    {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || '—'}
                   </Link>
                 ) : (
-                  <span className="font-medium text-gray-700 dark:text-gray-300 flex-1">{move.name}</span>
+                  <span className="text-[11px] font-semibold text-white/90 truncate" title={pokemon?.abilityData?.name}>
+                    {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || '—'}
+                  </span>
                 )}
-                <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-                  {move.power ? <span className="min-w-[1.5rem] text-right">{move.power}</span> : <span className="min-w-[1.5rem] text-right">-</span>}
-                  <span>/</span>
-                  {move.accuracy ? <span className="min-w-[1.5rem] text-right">{move.accuracy}%</span> : <span className="min-w-[1.5rem] text-right">-</span>}
-                  <span>/</span>
-                  <span className="min-w-[1.5rem] text-right">{move.pp}PP</span>
-                </div>
               </div>
-            ))}
-            {/* Empty slots */}
-            {pokemon?.movesData && pokemon.movesData.length < 4 && Array.from({ length: 4 - pokemon.movesData.length }).map((_, i) => (
-              <div key={`empty-${i}`} className="flex items-center gap-2 text-xs bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 rounded-md border border-transparent">
-                <span className="text-gray-400 dark:text-gray-600 flex-1">-</span>
+
+              {/* Item */}
+              <div className="flex items-center gap-1 min-w-0">
+                {enableLinks && pokemon?.itemData?.identifier ? (
+                  <Link
+                    href={`/data/items/${pokemon.itemData.identifier}`}
+                    className="text-[11px] font-semibold text-white/90 truncate hover:text-yellow-300 transition-colors"
+                    title={pokemon.itemData.name}
+                  >
+                    {pokemon.itemData.name || '—'}
+                  </Link>
+                ) : (
+                  <span className="text-[11px] font-semibold text-white/90 truncate" title={pokemon?.itemData?.name}>
+                    {pokemon?.itemData?.name || '—'}
+                  </span>
+                )}
               </div>
-            ))}
+            </div>
+
+            {/* Right: level + nature (fills the empty right space) */}
+            <div className="shrink-0 flex flex-col items-end justify-center gap-1">
+              <span
+                className="px-2 py-0.5 rounded text-[11px] font-bold text-white leading-none"
+                style={{ background: 'rgba(0,0,0,0.3)', fontFamily: "'Rajdhani', sans-serif" }}
+              >
+                Lv.{pokemon?.level ?? 50}
+              </span>
+              <span className="text-[11px] text-white/80 font-medium text-right">{nature?.name ?? '—'}</span>
+            </div>
           </div>
         </div>
 
-        {/* Remove Button */}
+        {/* ── BOTTOM SECTION: moves (left) + stats (right) ── */}
+        <div className="flex-1 flex gap-2 p-3">
+
+          {/* Left: moves */}
+          <div className="flex-1 min-w-0 flex flex-col justify-between gap-1">
+            {Array.from({ length: 4 }).map((_, i) => {
+              const move = pokemon?.movesData?.[i];
+              if (!move) {
+                return (
+                  <div
+                    key={`empty-${i}`}
+                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs flex-1"
+                    style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
+                  >
+                    <span className="text-gray-700">—</span>
+                  </div>
+                );
+              }
+              const moveColor = move.type ? getTypeHex(move.type) : '#6b7280';
+              return (
+                <div
+                  key={i}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs flex-1"
+                  style={{
+                    background: `linear-gradient(90deg, ${moveColor}22 0%, ${moveColor}08 100%)`,
+                    border: `1px solid ${moveColor}33`,
+                  }}
+                >
+                  {move.type && <TypeIcon type={move.type} size="xs" />}
+                  {move.category && <MoveCategoryIcon category={move.category as MoveCategory} size={13} />}
+                  {enableLinks && move.identifier ? (
+                    <Link
+                      href={`/data/moves/${move.identifier}`}
+                      className="flex-1 font-semibold text-dark-text-primary truncate hover:text-yellow-500 transition-colors text-[11px]"
+                    >
+                      {move.name}
+                    </Link>
+                  ) : (
+                    <span className="flex-1 font-semibold text-dark-text-primary truncate text-[11px]">{move.name}</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right: vertical stat column */}
+          <div
+            className="shrink-0 flex flex-col justify-between rounded-lg px-2.5 py-1.5"
+            style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)', width: '96px' }}
+          >
+            {STAT_LABELS.map(({ key, label, color }) => {
+              const base = pokemon?.pokemonData?.baseStats?.[key];
+              const ev = (evs ?? defaultEv)[key];
+              const iv = pokemon?.ivs?.[key] ?? 31;
+              const level = pokemon?.level ?? 50;
+              const calc = base != null
+                ? calcStat(key, base, ev, iv, level, nature?.increasedStat, nature?.decreasedStat)
+                : null;
+              const isUp = nature?.increasedStat && NATURE_STAT_KEY[nature.increasedStat] === key;
+              const isDown = nature?.decreasedStat && NATURE_STAT_KEY[nature.decreasedStat] === key;
+              return (
+                <div key={key} className="flex items-center gap-1">
+                  <span className="text-[9px] font-bold w-8 shrink-0 flex items-center gap-px" style={{ color }}>
+                    {isUp && <span style={{ color: '#16a34a', fontSize: '8px' }}>▲</span>}
+                    {isDown && <span style={{ color: '#dc2626', fontSize: '8px' }}>▼</span>}
+                    {!isUp && !isDown && <span style={{ fontSize: '8px', opacity: 0 }}>▲</span>}
+                    {label}
+                  </span>
+                  <span
+                    className="text-[11px] font-mono font-bold w-7 text-right"
+                    style={{ color: isUp ? '#16a34a' : isDown ? '#dc2626' : 'var(--color-text-primary)' }}
+                  >
+                    {calc ?? '—'}
+                  </span>
+                  <span className="text-[9px] font-mono font-semibold w-7 text-right leading-none" style={{ color: 'rgba(251,191,36,0.8)' }}>
+                    {ev > 0 ? `+${ev}` : ''}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+        </div>
+
+        {/* Remove button */}
         {showRemoveButton && onRemove && (
           <button
             onClick={onRemove}
             className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors z-20 shadow-sm"
-            title="Remove"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -250,10 +362,9 @@ export function PokemonCard({
     );
   }
 
-  // Compact variant (original)
+  // Compact variant
   return (
     <div className={className}>
-      {/* Pokemon Header with Sprite */}
       <div className="flex gap-2 mb-2">
         {pokemon?.pokemonData?.imageUrl ? (
           <img
@@ -280,34 +391,22 @@ export function PokemonCard({
         </div>
       </div>
 
-      {/* Item Sprite */}
       <div className="flex items-center justify-center mb-2 py-1 bg-white dark:bg-dark-bg-primary rounded h-8">
         {pokemon?.itemData?.spriteUrl && (
-          <img
-            src={pokemon.itemData.spriteUrl}
-            alt={pokemon.itemData.name || 'Item'}
-            title={pokemon.itemData.name}
-            className="w-6 h-6 object-contain"
-          />
+          <img src={pokemon.itemData.spriteUrl} alt={pokemon.itemData.name || 'Item'} title={pokemon.itemData.name} className="w-6 h-6 object-contain" />
         )}
       </div>
 
-      {/* Moves */}
       <div className="space-y-1">
         {Array.from({ length: 4 }).map((_, index) => {
           const move = pokemon?.movesData?.[index];
           return (
-            <div
-              key={index}
-              className="flex items-center gap-1.5 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded"
-            >
+            <div key={index} className="flex items-center gap-1.5 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded">
               {move && move.type && move.name ? (
                 <>
                   <TypeIcon type={move.type} size="xs" />
                   {move.category && <MoveCategoryIcon category={move.category as MoveCategory} size={16} />}
-                  <span className="font-medium truncate flex-1 text-gray-800 dark:text-dark-text-primary">
-                    {move.name}
-                  </span>
+                  <span className="font-medium truncate flex-1 text-gray-800 dark:text-dark-text-primary">{move.name}</span>
                 </>
               ) : (
                 <span className="text-gray-400 dark:text-gray-600 flex-1">-</span>
@@ -317,12 +416,10 @@ export function PokemonCard({
         })}
       </div>
 
-      {/* Remove Button */}
       {showRemoveButton && onRemove && (
         <button
           onClick={onRemove}
           className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors z-10"
-          title="Remove"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -330,7 +427,6 @@ export function PokemonCard({
         </button>
       )}
 
-      {/* Slot Number */}
       {showSlotNumber && slotNumber !== undefined && (
         <div className="absolute bottom-1 left-1 w-5 h-5 bg-gray-700 text-white text-xs rounded-full flex items-center justify-center font-medium">
           {slotNumber}
@@ -339,4 +435,3 @@ export function PokemonCard({
     </div>
   );
 }
-

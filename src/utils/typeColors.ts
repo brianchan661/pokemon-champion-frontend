@@ -9,7 +9,7 @@ const TYPE_HEX: Record<string, string> = {
 };
 
 export const getTypeHex = (type: string): string =>
-  TYPE_HEX[type] ?? '#9ca3af';
+  TYPE_HEX[type.toLowerCase()] ?? '#9ca3af';
 
 export const getCardHeaderStyle = (types: string[]): CSSProperties => {
   if (types.length >= 2) {
