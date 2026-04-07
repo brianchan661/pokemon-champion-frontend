@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 
 const TYPE_HEX: Record<string, string> = {
   water: '#3b82f6', fire: '#ef4444', grass: '#22c55e', electric: '#eab308',
-  psychic: '#ec4899', ice: '#06b6d4', dragon: '#7c3aed', dark: '#374151',
+  psychic: '#ec4899', ice: '#06b6d4', dragon: '#7c3aed', dark: '#94a3b8',
   fairy: '#f472b6', normal: '#9ca3af', fighting: '#dc2626', flying: '#38bdf8',
   poison: '#a855f7', ground: '#d97706', rock: '#78716c', bug: '#84cc16',
   ghost: '#6d28d9', steel: '#64748b',

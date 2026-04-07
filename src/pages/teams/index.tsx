@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Team, ApiResponse } from '@brianchan661/pokemon-champion-shared';
 import { Layout } from '@/components/Layout/Layout';
-import { Button, LoadingSpinner, ErrorMessage, Pagination } from '@/components/UI';
+import { Pagination } from '@/components/UI';
 import { TeamCard } from '@/components/Teams';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
+import Link from 'next/link';
 import { getApiBaseUrl } from '@/config/api';
+import { useTheme } from '@/hooks/useTheme';
 
 const API_URL = getApiBaseUrl();
 
@@ -25,25 +27,37 @@ interface TeamsResponse {
 
 const TEAMS_PER_PAGE = 20;
 
+type SortKey = 'created_at' | 'likes';
+
 export default function TeamsListPage() {
   const { t, i18n } = useTranslation('common');
-  const [sortBy, setSortBy] = useState<'created_at' | 'likes'>('created_at');
+  const [sortBy, setSortBy] = useState<SortKey>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [layout, setLayout] = useState<'grid' | 'list'>('list');
+  const { theme, setTheme } = useTheme();
+
+  // Force dark mode for this page
+  useEffect(() => {
+    const prev = theme;
+    setTheme('dark');
+    return () => setTheme(prev);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const currentLang = i18n.language.startsWith('ja') ? 'ja' : 'en';
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['teams', sortBy, sortOrder, currentPage, currentLang],
-    staleTime: 0, // Always fetch fresh — teams list changes when new teams are seeded/created
+    staleTime: 0,
     queryFn: async () => {
-      const params = new URLSearchParams();
-      params.append('sortBy', sortBy);
-      params.append('order', sortOrder);
-      params.append('limit', TEAMS_PER_PAGE.toString());
-      params.append('offset', ((currentPage - 1) * TEAMS_PER_PAGE).toString());
-      params.append('lang', currentLang);
-
+      const params = new URLSearchParams({
+        sortBy,
+        order: sortOrder,
+        limit: TEAMS_PER_PAGE.toString(),
+        offset: ((currentPage - 1) * TEAMS_PER_PAGE).toString(),
+        lang: currentLang,
+      });
       const response = await axios.get<ApiResponse<TeamsResponse>>(
         `${API_URL}/teams?${params.toString()}`
       );
@@ -55,14 +69,14 @@ export default function TeamsListPage() {
   const totalTeams = data?.total || 0;
   const totalPages = Math.ceil(totalTeams / TEAMS_PER_PAGE);
 
-  const handleSortChange = (newSort: 'created_at' | 'likes') => {
+  const handleSortChange = (newSort: SortKey) => {
     if (sortBy === newSort) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(newSort);
       setSortOrder('desc');
     }
-    setCurrentPage(1); // Reset to first page when sorting changes
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
@@ -75,90 +89,209 @@ export default function TeamsListPage() {
       <Head>
         <title>{t('teams.title')} | Pokemon Champion</title>
         <meta name="description" content={t('teams.description', 'Browse and discover competitive Pokemon teams shared by the community')} />
-        <meta property="og:title" content={`${t('teams.title')} | Pokemon Champion`} />
-        <meta property="og:description" content={t('teams.description', 'Browse and discover competitive Pokemon teams shared by the community')} />
-        <meta property="og:type" content="website" />
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || ''}/teams`} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
       </Head>
 
       <Layout>
-        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">
-                {t('teams.title')}
-              </h1>
-              <div className="flex gap-3">
-                <Button href="/teams/my" variant="secondary">
-                  {t('teams.myTeams')}
-                </Button>
-                <Button href="/teams/create" variant="primary">
-                  {t('teams.createTeam')}
-                </Button>
+        <div className="min-h-screen bg-dark-bg-primary">
+
+          {/* ── HERO ── */}
+          <div
+            className="relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(160deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 50%, var(--color-bg-tertiary) 100%)',
+              borderBottom: '1px solid var(--color-border)',
+            }}
+          >
+            {/* Decorative scanline texture */}
+            <div
+              className="absolute inset-0 pointer-events-none opacity-[0.03]"
+              style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,1) 2px, rgba(255,255,255,1) 3px)',
+              }}
+            />
+            {/* Radial glow */}
+            <div
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 pointer-events-none"
+              style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.1) 0%, transparent 70%)' }}
+            />
+
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-400/70 mb-2">
+                    Community
+                  </p>
+                  <h1
+                    className="text-5xl sm:text-6xl font-bold text-dark-text-primary leading-none"
+                    style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: '-0.01em' }}
+                  >
+                    {t('teams.title')}
+                  </h1>
+                  {totalTeams > 0 && (
+                    <p className="mt-2 text-sm text-gray-500">
+                      {totalTeams} {t('teams.teamsCount', { count: totalTeams, defaultValue: 'teams shared' })}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex gap-3 shrink-0">
+                  <Link
+                    href="/teams/my"
+                    className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                    style={{
+                      background: 'var(--color-bg-tertiary)',
+                      color: 'var(--color-text-secondary)',
+                      border: '1px solid var(--color-border)',
+                    }}
+                  >
+                    {t('teams.myTeams')}
+                  </Link>
+                  <Link
+                    href="/teams/create"
+                    className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary-600 dark:bg-primary-600/25 text-white dark:text-primary-400 border border-primary-600 dark:border-primary-600/40"
+                  >
+                    + {t('teams.createTeam')}
+                  </Link>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Sort Controls */}
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-4 mb-6" role="region" aria-label="Sort options">
-              <div className="flex items-center gap-4">
-                <span id="sort-label" className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">{t('teams.sortBy')}:</span>
-                <div className="flex gap-2" role="group" aria-labelledby="sort-label">
+          {/* ── CONTROLS ── */}
+          <div
+            className="sticky top-0 z-20"
+            style={{
+              background: 'var(--color-bg-primary)',
+              backdropFilter: 'blur(12px)',
+              borderBottom: '1px solid var(--color-border)',
+            }}
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-600 mr-1">
+                  {t('teams.sortBy')}
+                </span>
+                {([
+                  { key: 'created_at' as SortKey, label: t('teams.sort.newest') },
+                  { key: 'likes' as SortKey, label: t('teams.sort.mostLiked') },
+                ] as { key: SortKey; label: string }[]).map(({ key, label }) => (
                   <button
-                    onClick={() => handleSortChange('created_at')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${sortBy === 'created_at'
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
-                      }`}
-                    aria-pressed={sortBy === 'created_at'}
-                    aria-label={`Sort by ${sortOrder === 'desc' && sortBy === 'created_at' ? 'newest' : 'oldest'} teams`}
+                    key={key}
+                    onClick={() => handleSortChange(key)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${sortBy === key ? 'bg-primary-600 dark:bg-primary-600/25 text-white dark:text-primary-400' : ''}`}
+                    style={sortBy === key
+                      ? { border: '1px solid rgba(37,99,235,0.4)' }
+                      : { background: 'var(--color-bg-tertiary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
+                    }
                   >
-                    {sortOrder === 'desc' && sortBy === 'created_at'
-                      ? t('teams.sort.newest')
-                      : t('teams.sort.oldest')}
+                    {label}
+                    {sortBy === key && (
+                      <span className="ml-1 opacity-60">{sortOrder === 'desc' ? '↓' : '↑'}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 ml-auto">
+                {totalTeams > 0 && (
+                  <span className="text-[11px] text-gray-600 shrink-0">
+                    {t('pagination.page', { page: currentPage, total: totalPages, defaultValue: `Page ${currentPage} / ${totalPages}` })}
+                  </span>
+                )}
+                {/* Layout toggle — hidden on mobile */}
+                <div className="hidden md:flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
+                  <button
+                    onClick={() => setLayout('grid')}
+                    className="p-1.5 transition-all"
+                    style={layout === 'grid'
+                      ? { background: 'rgba(37,99,235,0.25)', color: '#60a5fa' }
+                      : { background: 'var(--color-bg-tertiary)', color: 'var(--color-text-tertiary)' }
+                    }
+                    title="2-column grid"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <rect x="3" y="3" width="8" height="8" rx="1.5" />
+                      <rect x="13" y="3" width="8" height="8" rx="1.5" />
+                      <rect x="3" y="13" width="8" height="8" rx="1.5" />
+                      <rect x="13" y="13" width="8" height="8" rx="1.5" />
+                    </svg>
                   </button>
                   <button
-                    onClick={() => handleSortChange('likes')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${sortBy === 'likes'
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
-                      }`}
-                    aria-pressed={sortBy === 'likes'}
-                    aria-label="Sort by most liked teams"
+                    onClick={() => setLayout('list')}
+                    className="p-1.5 transition-all"
+                    style={layout === 'list'
+                      ? { background: 'rgba(37,99,235,0.25)', color: '#60a5fa' }
+                      : { background: 'var(--color-bg-tertiary)', color: 'var(--color-text-tertiary)' }
+                    }
+                    title="1-column list"
                   >
-                    {t('teams.sort.mostLiked')}
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <rect x="3" y="4" width="18" height="5" rx="1.5" />
+                      <rect x="3" y="11" width="18" height="5" rx="1.5" />
+                      <rect x="3" y="18" width="18" height="2.5" rx="1.25" />
+                    </svg>
                   </button>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Loading State */}
+          {/* ── CONTENT ── */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {isLoading ? (
-              <LoadingSpinner message={t('teams.loading')} />
-            ) : error ? (
-              <ErrorMessage error={new Error(t('teams.error'))} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-44 rounded-2xl animate-pulse"
+                    style={{
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      animationDelay: `${i * 100}ms`,
+                    }}
+                  />
+                ))}
+              </div>
+            ) : teams.length === 0 ? (
+              <div
+                className="rounded-2xl p-16 text-center"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <div className="text-6xl mb-4 opacity-20">⚪</div>
+                <h3
+                  className="text-2xl font-bold text-white mb-2"
+                  style={{ fontFamily: "'Rajdhani', sans-serif" }}
+                >
+                  {t('teams.noResults')}
+                </h3>
+                <p className="text-gray-500 text-sm mb-6">{t('teams.beFirst', { defaultValue: 'Be the first to share a team.' })}</p>
+                <Link
+                  href="/teams/create"
+                  className="inline-block px-6 py-2.5 rounded-xl text-sm font-semibold"
+                  style={{ background: 'rgba(37,99,235,0.2)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)' }}
+                >
+                  {t('teams.createTeam')}
+                </Link>
+              </div>
             ) : (
               <>
-                {teams.length === 0 ? (
-                  <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm p-8 text-center">
-                    <p className="text-gray-500 dark:text-dark-text-secondary">{t('teams.noResults')}</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-1 gap-6">
-                      {teams.map((team) => (
-                        <TeamCard key={team.id} team={team} />
-                      ))}
-                    </div>
+                <div className={`grid gap-4 grid-cols-1 ${layout === 'grid' ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
+                  {teams.map((team, i) => (
+                    <TeamCard key={team.id} team={team} index={i} layout={layout} />
+                  ))}
+                </div>
 
-                    {/* Pagination */}
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={handlePageChange}
-                      className="mt-8"
-                    />
-                  </>
-                )}
+                <div className="mt-8">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
               </>
             )}
           </div>
