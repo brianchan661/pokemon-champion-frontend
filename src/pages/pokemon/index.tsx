@@ -48,7 +48,7 @@ export default function PokemonListPage() {
   const toggleForms = useCallback((nationalNumber: number) => {
     setCollapsedForms(prev => {
       const next = new Set(prev);
-      next.has(nationalNumber) ? next.delete(nationalNumber) : next.add(nationalNumber);
+      if (next.has(nationalNumber)) { next.delete(nationalNumber); } else { next.add(nationalNumber); }
       return next;
     });
   }, []);
