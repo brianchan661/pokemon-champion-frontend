@@ -1,4 +1,4 @@
-import { useState, useMemo, memo, useCallback } from 'react';
+import React, { useState, useMemo, memo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Pokemon, ApiResponse } from '@brianchan661/pokemon-champion-shared';
@@ -489,8 +489,8 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
           </thead>
           <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
             {pokemon.map((p: Pokemon) => (
-              <>
-                <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors cursor-pointer" onClick={() => onNavigate(p.nationalNumber)}>
+              <React.Fragment key={p.id}>
+                <tr className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors cursor-pointer" onClick={() => onNavigate(p.nationalNumber)}>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center gap-1">
                       #{p.nationalNumber}
@@ -561,12 +561,12 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                     <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{form.baseStats?.speed?.base ?? '-'}</td>
                     <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex flex-col text-xs">
-                        {form.abilities?.slice(0, 2).map((a: string) => <span key={a}>{a}</span>)}
+                        {form.abilities?.slice(0, 2).map((a: string, ai: number) => <span key={ai}>{a}</span>)}
                       </div>
                     </td>
                   </tr>
                 ))}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
