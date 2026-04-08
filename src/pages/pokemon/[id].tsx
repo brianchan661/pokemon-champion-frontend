@@ -19,24 +19,32 @@ const moveNameToIdentifier = (name: string): string => {
   return name.toLowerCase().replace(/\s+/g, '-');
 };
 
+function parseFormSlug(id: string): { nationalNumber: string; formSlug: string | null } {
+  const match = id.match(/^(\d+)(?:-(.+))?$/);
+  if (!match) return { nationalNumber: id, formSlug: null };
+  return { nationalNumber: match[1], formSlug: match[2] || null };
+}
+
 export default function PokemonDetailPage() {
   const router = useRouter();
-  const { id } = router.query; // This is actually the national number from the URL
+  const { id } = router.query;
   const { t } = useTranslation('common');
-  const [selectedFormIndex, setSelectedFormIndex] = useState<number>(-1); // -1 means base form
+
+  const rawId = Array.isArray(id) ? id[0] : (id ?? '');
+  const { nationalNumber, formSlug } = parseFormSlug(rawId);
 
   const { data: pokemon, isLoading, error } = useQuery({
-    queryKey: ['pokemon', id, router.locale],
+    queryKey: ['pokemon', nationalNumber, router.locale],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.append('lang', router.locale || 'en');
 
       const response = await axios.get<ApiResponse<PokemonFull>>(
-        `${API_URL}/pokemon/${id}?${params.toString()}`
+        `${API_URL}/pokemon/${nationalNumber}?${params.toString()}`
       );
       return response.data.data;
     },
-    enabled: !!id,
+    enabled: !!nationalNumber,
     retry: (failureCount, error: any) => {
       // Don't retry on 404 errors
       if (error?.response?.status === 404) {
@@ -129,43 +137,58 @@ export default function PokemonDetailPage() {
           {/* Header Card with Stats */}
           <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-6 mb-6">
             {/* Form Tabs (if alternative forms exist) */}
-            {pokemon.details?.forms && pokemon.details.forms.length > 0 && (
-              <div className="mb-6 border-b border-gray-200 dark:border-dark-border">
-                <div className="flex flex-wrap gap-2 -mb-px">
-                  {/* Base Form Tab */}
-                  <button
-                    onClick={() => setSelectedFormIndex(-1)}
-                    className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
-                      selectedFormIndex === -1
-                        ? 'border-blue-600 text-blue-600 dark:text-primary-400'
-                        : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
-                  >
-                    {pokemon.name}
-                  </button>
-                  {/* Alternative Form Tabs */}
-                  {pokemon.details.forms.map((form: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedFormIndex(idx)}
-                      className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
-                        selectedFormIndex === idx
-                          ? 'border-blue-600 text-blue-600 dark:text-primary-400'
-                          : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
-                      }`}
-                    >
-                      {form.formName}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            {pokemon.details?.forms && pokemon.details.forms.length > 0 && (() => {
+              const activeFormIndex = formSlug
+                ? (pokemon.details!.forms!.findIndex((f: any) => f.formName === formSlug))
+                : -1;
+              return (
+                <>
+                  <div className="mb-6 border-b border-gray-200 dark:border-dark-border">
+                    <div className="flex flex-wrap gap-2 -mb-px">
+                      {/* Base Form Tab */}
+                      <Link
+                        href={`/pokemon/${nationalNumber}`}
+                        className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+                          activeFormIndex === -1
+                            ? 'border-blue-600 text-blue-600 dark:text-primary-400'
+                            : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
+                        }`}
+                      >
+                        {pokemon.name}
+                      </Link>
+                      {/* Alternative Form Tabs */}
+                      {pokemon.details.forms.map((form: any, idx: number) => (
+                        <Link
+                          key={idx}
+                          href={`/pokemon/${nationalNumber}-${form.formName}`}
+                          className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+                            activeFormIndex === idx
+                              ? 'border-blue-600 text-blue-600 dark:text-primary-400'
+                              : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
+                          }`}
+                        >
+                          {form.formName}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  <PokemonFormDisplay
+                    pokemon={pokemon}
+                    selectedFormIndex={activeFormIndex}
+                    t={t}
+                  />
+                </>
+              );
+            })()}
 
-            <PokemonFormDisplay
-              pokemon={pokemon}
-              selectedFormIndex={selectedFormIndex}
-              t={t}
-            />
+            {/* Base form display (no alternate forms) */}
+            {(!pokemon.details?.forms || pokemon.details.forms.length === 0) && (
+              <PokemonFormDisplay
+                pokemon={pokemon}
+                selectedFormIndex={-1}
+                t={t}
+              />
+            )}
           </div>
 
           {/* Moves (if available) */}
