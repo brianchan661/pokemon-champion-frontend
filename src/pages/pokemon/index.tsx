@@ -43,10 +43,10 @@ export default function PokemonListPage() {
   const [sortBy, setSortBy] = useState<'name' | 'national_number' | 'stat_total' | 'hp_max' | 'attack_max' | 'defense_max' | 'sp_atk_max' | 'sp_def_max' | 'speed_max'>('national_number');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  // Expanded forms state
-  const [expandedForms, setExpandedForms] = useState<Set<number>>(new Set());
+  // Collapsed forms state — forms are expanded by default, track which are collapsed
+  const [collapsedForms, setCollapsedForms] = useState<Set<number>>(new Set());
   const toggleForms = useCallback((nationalNumber: number) => {
-    setExpandedForms(prev => {
+    setCollapsedForms(prev => {
       const next = new Set(prev);
       next.has(nationalNumber) ? next.delete(nationalNumber) : next.add(nationalNumber);
       return next;
@@ -419,7 +419,7 @@ export default function PokemonListPage() {
             sortBy={sortBy}
             sortOrder={sortOrder}
             onNavigate={(n) => router.push(`/pokemon/${n}`)}
-            expandedForms={expandedForms}
+            collapsedForms={collapsedForms}
             onToggleForms={toggleForms}
           />
 
@@ -438,7 +438,7 @@ interface PokemonListProps {
   sortBy: string;
   sortOrder: 'asc' | 'desc';
   onNavigate: (nationalNumber: number) => void;
-  expandedForms: Set<number>;
+  collapsedForms: Set<number>;
   onToggleForms: (nationalNumber: number) => void;
 }
 
@@ -449,7 +449,7 @@ const TableSortIcon = ({ column, sortBy, sortOrder }: { column: string, sortBy: 
     <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
 };
 
-const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sortBy, sortOrder, onNavigate, expandedForms, onToggleForms }: PokemonListProps) => {
+const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sortBy, sortOrder, onNavigate, collapsedForms, onToggleForms }: PokemonListProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   if (pokemon.length === 0 && !loading) {
@@ -498,9 +498,9 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                         <button
                           onClick={(e) => { e.stopPropagation(); onToggleForms(p.nationalNumber); }}
                           className="ml-1 text-gray-400 hover:text-blue-500 transition-colors"
-                          title={expandedForms.has(p.nationalNumber) ? 'Hide forms' : `Show ${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
+                          title={!collapsedForms.has(p.nationalNumber) ? 'Hide forms' : `Show ${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
                         >
-                          <svg className={`w-3.5 h-3.5 transition-transform ${expandedForms.has(p.nationalNumber) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className={`w-3.5 h-3.5 transition-transform ${!collapsedForms.has(p.nationalNumber) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </button>
@@ -534,7 +534,7 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                   </td>
                 </tr>
                 {/* Form sub-rows */}
-                {p.forms && p.forms.length > 0 && expandedForms.has(p.nationalNumber) && p.forms.map((form: any) => (
+                {p.forms && p.forms.length > 0 && !collapsedForms.has(p.nationalNumber) && p.forms.map((form: any) => (
                   <tr
                     key={`${p.id}-${form.formName}`}
                     className="bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-100/50 dark:hover:bg-blue-900/20 cursor-pointer border-l-2 border-blue-300 dark:border-blue-700"
@@ -619,16 +619,16 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                 onClick={(e) => { e.stopPropagation(); onToggleForms(p.nationalNumber); }}
                 className="flex items-center justify-center gap-1 py-1.5 text-xs font-medium text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 border-t border-gray-100 dark:border-gray-700 transition-colors"
               >
-                <svg className={`w-3 h-3 transition-transform ${expandedForms.has(p.nationalNumber) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-3 h-3 transition-transform ${!collapsedForms.has(p.nationalNumber) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-                {expandedForms.has(p.nationalNumber) ? 'Hide' : `${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
+                {!collapsedForms.has(p.nationalNumber) ? 'Hide' : `${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
               </button>
             )}
           </div>
 
           {/* Form sub-cards */}
-          {p.forms && p.forms.length > 0 && expandedForms.has(p.nationalNumber) && (
+          {p.forms && p.forms.length > 0 && !collapsedForms.has(p.nationalNumber) && (
             <div className="flex flex-col gap-1.5 pl-4 border-l-2 border-blue-300 dark:border-blue-700">
               {p.forms.map((form: any) => (
                 <div
