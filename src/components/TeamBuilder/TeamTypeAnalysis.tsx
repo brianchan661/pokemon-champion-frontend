@@ -29,19 +29,19 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
                 {t('teamBuilder.typeCoverageDesc', 'See how effective your team\'s moves are against each type.')}
             </p>
 
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
+            <div className="rounded-lg shadow-sm border overflow-hidden" style={{ background: 'var(--color-bg-secondary)', borderColor: 'var(--color-border)' }}>
                 <div className="overflow-x-auto" onMouseLeave={() => setHoveredCell(null)}>
                     <table className="w-full text-sm text-center border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 dark:bg-dark-bg-tertiary border-b border-gray-200 dark:border-dark-border">
-                                <th className="p-3 text-left min-w-[150px] sticky left-0 z-10 bg-gray-50 dark:bg-dark-bg-tertiary border-r border-gray-200 dark:border-dark-border text-xs font-semibold text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">
+                            <tr className="border-b" style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
+                                <th className="p-3 text-left min-w-[150px] sticky left-0 z-10 border-r text-xs font-semibold text-dark-text-secondary uppercase tracking-wider" style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
                                     {t('teamBuilder.pokemon', 'Pokemon')}
                                 </th>
                                 {TYPES.map((type) => (
-                                    <th key={type} className={`p-2 min-w-[40px] border-r border-gray-100 dark:border-dark-border/50 last:border-r-0 transition-colors duration-75 ${hoveredCell?.type === type
+                                    <th key={type} className={`p-2 min-w-[40px] border-r last:border-r-0 transition-colors duration-75 ${hoveredCell?.type === type
                                         ? 'bg-blue-100 dark:bg-blue-900/50 ring-2 ring-inset ring-blue-400 dark:ring-blue-500'
                                         : ''
-                                        }`}>
+                                        }`} style={{ borderColor: 'var(--color-border)' }}>
                                         <div className="flex flex-col items-center">
                                             <TypeIcon type={type} size="sm" />
                                         </div>
@@ -49,18 +49,18 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 dark:divide-dark-border">
+                        <tbody style={{ borderColor: 'var(--color-border)' }}>
                             {teamMembers.map((slot, index) => {
                                 const pokemon = slot.pokemon!;
                                 const moves = pokemon.movesData || [];
                                 const isHoveredRow = hoveredCell?.pokemonIndex === index;
 
                                 return (
-                                    <tr key={`${pokemon.pokemonId}-${index}`} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary/50 transition-colors">
-                                        <td className={`p-3 text-left sticky left-0 z-10 border-r border-gray-200 dark:border-dark-border transition-colors duration-75 ${isHoveredRow
-                                            ? '!bg-blue-100 dark:!bg-blue-900/50 ring-2 ring-inset ring-blue-400 dark:ring-blue-500'
-                                            : 'bg-white dark:bg-dark-bg-secondary group-hover:bg-gray-50 dark:group-hover:bg-dark-bg-tertiary/50'
-                                            }`}>
+                                    <tr key={`${pokemon.pokemonId}-${index}`} className="border-b transition-colors" style={{ borderColor: 'var(--color-border)' }}>
+                                        <td className={`p-3 text-left sticky left-0 z-10 border-r transition-colors duration-75 ${isHoveredRow
+                                            ? '!bg-blue-100 dark:!bg-blue-900/30 ring-2 ring-inset ring-blue-400 dark:ring-blue-500'
+                                            : ''
+                                            }`} style={{ background: isHoveredRow ? undefined : 'var(--color-bg-secondary)', borderColor: 'var(--color-border)' }}>
                                             <div className="flex items-center gap-2">
                                                 {pokemon.pokemonData?.imageUrl && (
                                                     <img
@@ -130,13 +130,11 @@ export function TeamTypeAnalysis({ team, className = '' }: TeamTypeAnalysisProps
                                             const isHoveredCell = isHoveredRow && isHoveredCol;
 
                                             if (isHoveredCell) {
-                                                // Strong highlight for the active cell
-                                                cellClass = `ring-2 ring-inset ring-blue-500 z-20 ${cellClass || 'bg-blue-50 dark:bg-gray-700'}`;
+                                                cellClass = `ring-2 ring-inset ring-blue-500 z-20 ${cellClass || 'bg-blue-50 dark:bg-blue-900/30'}`;
                                             } else if (isHoveredRow || isHoveredCol) {
-                                                // Subtle highlight for the row/col
-                                                cellClass = `${cellClass} brightness-95 dark:brightness-110`;
+                                                cellClass = `${cellClass} opacity-80`;
                                                 if (!cellClass.includes('bg-')) {
-                                                    cellClass += ' bg-gray-50 dark:bg-gray-700/50';
+                                                    cellClass += ' bg-gray-100 dark:bg-white/5';
                                                 }
                                             }
 

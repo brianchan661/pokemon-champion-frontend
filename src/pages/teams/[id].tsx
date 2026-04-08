@@ -16,6 +16,7 @@ import { StrategyDisplay } from '@/components/Strategy/StrategyDisplay';
 import { CommentSection } from '@/components/Social/CommentSection';
 import { ShareButton } from '@/components/Social/ShareButton';
 import { TypeIcon } from '@/components/UI/TypeIcon';
+import { TeamTypeAnalysis } from '@/components/TeamBuilder/TeamTypeAnalysis';
 import { Team, Comment } from '@brianchan661/pokemon-champion-shared';
 import { getApiBaseUrl } from '@/config/api';
 
@@ -183,21 +184,23 @@ export default function TeamDetailPage() {
 
           {/* ─── HERO BANNER ─────────────────────────────────────────── */}
           <div
-            className="relative overflow-hidden"
+            className="relative"
             style={{
               background: 'linear-gradient(160deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 60%)',
               borderBottom: '1px solid var(--color-border)',
             }}
           >
-            {/* Decorative blobs */}
-            <div
-              className="absolute -top-20 -right-20 w-96 h-96 rounded-full pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)' }}
-            />
-            <div
-              className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)' }}
-            />
+            {/* Decorative blobs — clipped inside their own container */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div
+                className="absolute -top-20 -right-20 w-96 h-96 rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)' }}
+              />
+              <div
+                className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)' }}
+              />
+            </div>
 
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {/* Back link */}
@@ -310,6 +313,21 @@ export default function TeamDetailPage() {
                 />
               ))}
             </div>
+
+            {/* Offensive Type Coverage */}
+            <TeamTypeAnalysis team={team.pokemon.map((p, i) => ({
+              id: String(i),
+              pokemon: p.pokemonData ? {
+                ...p,
+                pokemonData: {
+                  id: p.pokemonData.id,
+                  nationalNumber: Number(p.pokemonData.nationalNumber),
+                  name: p.pokemonData.name,
+                  imageUrl: p.pokemonData.imageUrl,
+                  types: p.pokemonData.types,
+                },
+              } : undefined,
+            }))} />
 
             {/* Strategy section */}
             {(team.strategy || team.description) && (
