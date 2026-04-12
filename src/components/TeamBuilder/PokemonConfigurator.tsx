@@ -55,6 +55,9 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
 
 
+  // Ability description tooltip
+  const [expandedAbility, setExpandedAbility] = useState<string | null>(null);
+
   // Nature picker visibility
   const [showNaturePicker, setShowNaturePicker] = useState(false);
 
@@ -330,28 +333,57 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               <div className="flex flex-col gap-1.5">
                 {abilities.map((ability) => {
                   const isSelected = abilityIdentifier === ability.identifier;
+                  const isExpanded = expandedAbility === ability.identifier;
                   return (
-                    <button
-                      key={ability.identifier}
-                      type="button"
-                      onClick={() => setAbilityIdentifier(ability.identifier)}
-                      className={`w-full px-3 py-2 rounded-lg text-left text-sm font-medium transition-all ${
-                        isSelected
-                          ? 'bg-primary-600 text-white shadow-sm'
-                          : 'bg-gray-100 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-200 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      <span>{ability.name}</span>
-                      {ability.isHidden && (
-                        <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-normal ${
+                    <div key={ability.identifier}>
+                      <button
+                        type="button"
+                        onClick={() => setAbilityIdentifier(ability.identifier)}
+                        className={`w-full px-3 py-2 rounded-lg text-left text-sm font-medium transition-all ${
                           isSelected
-                            ? 'bg-white/20 text-white'
-                            : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
-                        }`}>
-                          {t('teamBuilder.hidden', 'Hidden')}
-                        </span>
+                            ? 'bg-primary-600 text-white shadow-sm'
+                            : 'bg-gray-100 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span>{ability.name}</span>
+                            {ability.isHidden && (
+                              <span className={`text-xs px-1.5 py-0.5 rounded font-normal flex-shrink-0 ${
+                                isSelected
+                                  ? 'bg-white/20 text-white'
+                                  : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
+                              }`}>
+                                {t('teamBuilder.hidden', 'Hidden')}
+                              </span>
+                            )}
+                          </div>
+                          {ability.description && (
+                            <span
+                              className={`flex-shrink-0 w-4 h-4 rounded-full border text-xs flex items-center justify-center font-bold leading-none cursor-pointer ${
+                                isExpanded
+                                  ? 'bg-white/30 border-white text-white'
+                                  : isSelected
+                                    ? 'border-white/50 text-white/70 hover:bg-white/20'
+                                    : 'border-gray-400 dark:border-gray-500 text-gray-400 dark:text-gray-500 hover:border-gray-600 dark:hover:border-gray-300'
+                              }`}
+                              title={ability.description}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedAbility(isExpanded ? null : ability.identifier);
+                              }}
+                            >
+                              ?
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                      {isExpanded && ability.description && (
+                        <div className="mt-1 px-3 py-2 rounded-lg bg-gray-50 dark:bg-dark-bg-secondary border border-gray-200 dark:border-dark-border text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                          {ability.description}
+                        </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>

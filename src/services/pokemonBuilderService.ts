@@ -6,9 +6,9 @@ const API_BASE = getApiBaseUrl();
 
 interface PokemonFilters {
   type?: string;
-  sortBy?: 'name' | 'national_number' | 'stat_total' | 'hp_max' | 'attack_max' | 'defense_max' | 'sp_atk_max' | 'sp_def_max' | 'speed_max';
+  sortBy?: 'name' | 'national_number' | 'stat_total' | 'hp_base' | 'attack_base' | 'defense_base' | 'sp_atk_base' | 'sp_def_base' | 'speed_base';
   order?: 'asc' | 'desc';
-  lang?: 'en' | 'ja';
+  lang?: 'en' | 'ja' | 'zh-CN' | 'zh-TW';
 }
 
 interface PokemonAbility {
@@ -34,7 +34,7 @@ class PokemonBuilderService {
       if (filters.lang) params.append('lang', filters.lang);
 
       const response = await axios.get<ApiResponse<Pokemon[]>>(
-        `${API_BASE}/pokemon?${params.toString()}`
+        `${API_BASE}/champions/pokemon?${params.toString()}`
       );
       return response.data;
     } catch (error: any) {

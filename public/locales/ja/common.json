@@ -400,6 +400,7 @@
     "level": "レベル",
     "ability": "特性",
     "nature": "性格",
+    "neutralNatures": "無補正",
     "heldItem": "持ち物",
     "teraType": "テラスタイプ",
     "ivs": "個体値",

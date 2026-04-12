@@ -409,6 +409,7 @@
     "level": "Level",
     "ability": "Ability",
     "nature": "Nature",
+    "neutralNatures": "Neutral",
     "heldItem": "Held Item",
     "teraType": "Tera Type",
     "ivs": "IVs",

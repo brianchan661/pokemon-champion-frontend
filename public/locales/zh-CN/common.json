@@ -361,7 +361,8 @@
     "noItemsFound": "未找到道具",
     "description": "描述",
     "descriptionPlaceholder": "描述你的队伍...（输入 @ 可以提及宝可梦、招式、道具或特性）",
-    "hidden": "隐藏特性"
+    "hidden": "隐藏特性",
+    "neutralNatures": "无补正"
   },
   "moves": {
     "title": "Moves [NEEDS_TRANSLATION]",

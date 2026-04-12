@@ -83,8 +83,8 @@ export function NaturePickerModal({ natures, selectedNatureId, onSelect, onClose
                   {GRID_STATS.map((dec) => {
                     return (
                       <th key={dec} className="pb-2 px-1 font-semibold text-center">
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-800/60 text-blue-700 dark:text-blue-200 text-xs font-semibold">
-                          {statLabel(dec)} <ArrowDown className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-800/60 text-blue-700 dark:text-blue-200 text-xs font-semibold whitespace-nowrap">
+                          {statLabel(dec)} <ArrowDown className="w-3 h-3 shrink-0" />
                         </span>
                       </th>
                     );
@@ -97,8 +97,8 @@ export function NaturePickerModal({ natures, selectedNatureId, onSelect, onClose
                     <tr key={inc}>
                       {/* Row header */}
                       <td className="pr-2 py-1 text-right">
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-red-100 dark:bg-red-800/60 text-red-700 dark:text-red-200 text-xs font-semibold">
-                          {statLabel(inc)} <ArrowUp className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-red-100 dark:bg-red-800/60 text-red-700 dark:text-red-200 text-xs font-semibold whitespace-nowrap">
+                          {statLabel(inc)} <ArrowUp className="w-3 h-3 shrink-0" />
                         </span>
                       </td>
                       {GRID_STATS.map((dec) => {
