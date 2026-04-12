@@ -329,11 +329,19 @@
       "category": "分類",
       "power": "威力",
       "accuracy": "命中",
+      "display": "表示",
       "noMoves": "わざデータがありません",
       "selectGeneration": "世代を選択",
       "selectGameVersion": "ゲームバージョンを選択",
       "filterByType": "タイプでフィルター",
-      "allTypes": "すべてのタイプ"
+      "allTypes": "すべてのタイプ",
+      "actualStats": "実数値",
+      "statColStat": "ステータス",
+      "statColBase": "種族値",
+      "statColNoSP": "無振り",
+      "statColMaxSP": "32振り",
+      "statColBoosted": "特化",
+      "statColLowered": "下降"
     },
     "searchPlaceholder": "名前、図鑑番号、特性で検索...",
     "filters": "フィルター",
@@ -459,7 +467,26 @@
       "power": "威力",
       "accuracy": "命中",
       "pp": "PP",
-      "description": "説明"
+      "priority": "優先度",
+      "description": "説明",
+      "battleEffect": "戦闘効果"
+    },
+    "advanced": "詳細フィルター",
+    "flags": {
+      "contact": "接触",
+      "punch": "パンチ",
+      "sound": "音",
+      "biting": "かみつき",
+      "slicing": "斬る",
+      "bullet": "弾",
+      "wind": "風",
+      "powder": "粉"
+    },
+    "effects": {
+      "battle": "戦闘効果",
+      "inDepth": "詳細効果",
+      "secondary": "追加効果",
+      "target": "対象"
     },
     "loading": "わざを読み込み中...",
     "loadingMore": "さらに読み込み中...",
@@ -694,10 +721,22 @@
     "error": "特性の読み込みに失敗しました。もう一度お試しください。",
     "retry": "もう一度",
     "noResults": "特性が見つかりませんでした。",
+    "pokemonWithAbility": "{{abilityName}}を持つチャンピオンポケモン",
     "table": {
       "name": "特性名",
       "pokemonCount": "ポケモン数",
       "description": "説明"
+    },
+    "mechanics": {
+      "title": "特性の相互作用",
+      "blocksRolePlay": "なりきり・うつしえを封じる",
+      "blocksPowerOfAlchemy": "うけつぎ・かがくのちからを封じる",
+      "blocksEntrainment": "なかまづくりを封じる",
+      "blocksTrace": "トレースを封じる",
+      "blocksSkillSwap": "スキルスワップ・さまようたましいを封じる",
+      "blocksGastroAcid": "いえき・かがくへんかガスを封じる",
+      "removedByMoldBreaker": "かたやぶり・ターボブレイズ・テラボルテージで無効化",
+      "notUsedIfTransformed": "へんしん中は発動しない"
     }
   }
 }

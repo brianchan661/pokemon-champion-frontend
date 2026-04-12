@@ -245,11 +245,19 @@
       "category": "Category [NEEDS_TRANSLATION]",
       "power": "Power [NEEDS_TRANSLATION]",
       "accuracy": "Accuracy [NEEDS_TRANSLATION]",
+      "display": "顯示 [NEEDS_TRANSLATION]",
       "noMoves": "No moves data available [NEEDS_TRANSLATION]",
       "selectGeneration": "Select Generation [NEEDS_TRANSLATION]",
       "selectGameVersion": "Select Game Version [NEEDS_TRANSLATION]",
       "filterByType": "按屬性篩選",
-      "allTypes": "所有屬性"
+      "allTypes": "所有屬性",
+      "actualStats": "實際數值",
+      "statColStat": "能力",
+      "statColBase": "種族值",
+      "statColNoSP": "0努力值",
+      "statColMaxSP": "最大單項",
+      "statColBoosted": "強化性格",
+      "statColLowered": "削弱性格"
     },
     "searchPlaceholder": "Search by name, number or ability... [NEEDS_TRANSLATION]",
     "filters": "Filters [NEEDS_TRANSLATION]",
@@ -332,7 +340,26 @@
       "power": "Power [NEEDS_TRANSLATION]",
       "accuracy": "Accuracy [NEEDS_TRANSLATION]",
       "pp": "PP [NEEDS_TRANSLATION]",
-      "description": "Description [NEEDS_TRANSLATION]"
+      "priority": "優先度",
+      "description": "Description [NEEDS_TRANSLATION]",
+      "battleEffect": "戰鬥效果"
+    },
+    "advanced": "進階篩選",
+    "flags": {
+      "contact": "接觸",
+      "punch": "拳擊",
+      "sound": "聲音",
+      "biting": "咬擊",
+      "slicing": "斬擊",
+      "bullet": "彈丸",
+      "wind": "風",
+      "powder": "粉末"
+    },
+    "effects": {
+      "battle": "戰鬥效果",
+      "inDepth": "詳細效果",
+      "secondary": "附加效果",
+      "target": "目標"
     },
     "loading": "Loading moves... [NEEDS_TRANSLATION]",
     "loadingMore": "Loading more moves... [NEEDS_TRANSLATION]",
@@ -520,10 +547,22 @@
     "error": "Error loading abilities. Please try again. [NEEDS_TRANSLATION]",
     "retry": "Retry [NEEDS_TRANSLATION]",
     "noResults": "No abilities found. [NEEDS_TRANSLATION]",
+    "pokemonWithAbility": "擁有{{abilityName}}的冠軍寶可夢",
     "table": {
       "name": "Name [NEEDS_TRANSLATION]",
       "pokemonCount": "# Pokemon [NEEDS_TRANSLATION]",
       "description": "Description [NEEDS_TRANSLATION]"
+    },
+    "mechanics": {
+      "title": "特性交互",
+      "blocksRolePlay": "封鎖角色扮演・塗鴉 [NEEDS_TRANSLATION]",
+      "blocksPowerOfAlchemy": "封鎖承接・化學之力 [NEEDS_TRANSLATION]",
+      "blocksEntrainment": "封鎖同化 [NEEDS_TRANSLATION]",
+      "blocksTrace": "封鎖描摹 [NEEDS_TRANSLATION]",
+      "blocksSkillSwap": "封鎖技能互換・游蕩之魂 [NEEDS_TRANSLATION]",
+      "blocksGastroAcid": "封鎖胃液・化學變化氣體 [NEEDS_TRANSLATION]",
+      "removedByMoldBreaker": "可被破格・渦輪烈焰・超導電壓無效化 [NEEDS_TRANSLATION]",
+      "notUsedIfTransformed": "變形中不發動 [NEEDS_TRANSLATION]"
     }
   }
 }

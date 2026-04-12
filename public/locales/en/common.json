@@ -338,11 +338,19 @@
       "category": "Category",
       "power": "Power",
       "accuracy": "Accuracy",
+      "display": "Display",
       "noMoves": "No moves data available",
       "selectGeneration": "Select Generation",
       "selectGameVersion": "Select Game Version",
       "filterByType": "Filter by Type",
-      "allTypes": "All Types"
+      "allTypes": "All Types",
+      "actualStats": "Actual Stats",
+      "statColStat": "Stat",
+      "statColBase": "Base",
+      "statColNoSP": "0 SP",
+      "statColMaxSP": "Max SP",
+      "statColBoosted": "Boosted",
+      "statColLowered": "Lowered"
     },
     "searchPlaceholder": "Search by name, number or ability...",
     "filters": "Filters",
@@ -468,7 +476,26 @@
       "power": "Power",
       "accuracy": "Accuracy",
       "pp": "PP",
-      "description": "Description"
+      "priority": "Pri.",
+      "description": "Description",
+      "battleEffect": "Battle Effect"
+    },
+    "advanced": "Advanced",
+    "flags": {
+      "contact": "Contact",
+      "punch": "Punch",
+      "sound": "Sound",
+      "biting": "Biting",
+      "slicing": "Slicing",
+      "bullet": "Bullet",
+      "wind": "Wind",
+      "powder": "Powder"
+    },
+    "effects": {
+      "battle": "Battle Effect",
+      "inDepth": "In-Depth Effect",
+      "secondary": "Secondary Effect",
+      "target": "Target"
     },
     "loading": "Loading moves...",
     "loadingMore": "Loading more moves...",
@@ -725,10 +752,22 @@
     "error": "Error loading abilities. Please try again.",
     "retry": "Retry",
     "noResults": "No abilities found.",
+    "pokemonWithAbility": "Pokemon with {{abilityName}}",
     "table": {
       "name": "Name",
       "pokemonCount": "# Pokemon",
       "description": "Description"
+    },
+    "mechanics": {
+      "title": "Ability Interactions",
+      "blocksRolePlay": "Blocks Role Play & Doodle",
+      "blocksPowerOfAlchemy": "Blocks Receive & Power of Alchemy",
+      "blocksEntrainment": "Blocks Entrainment",
+      "blocksTrace": "Blocks Trace",
+      "blocksSkillSwap": "Blocks Skill Swap & Wandering Spirit",
+      "blocksGastroAcid": "Blocks Gastro Acid & Neutralizing Gas",
+      "removedByMoldBreaker": "Removed by Mold Breaker / Turboblaze / Teravolt",
+      "notUsedIfTransformed": "Not Used if Transformed"
     }
   }
 }

@@ -14,18 +14,20 @@ import { getTypeHex, getCardHeaderStyle } from '@/utils/typeColors';
 const API_URL = getApiBaseUrl();
 
 type ViewMode = 'table' | 'grid';
+type SortKey = 'name' | 'national_number' | 'stat_total' | 'hp_base' | 'attack_base' | 'defense_base' | 'sp_atk_base' | 'sp_def_base' | 'speed_base';
 
-export default function PokemonListPage() {
+function toSlug(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+export default function ChampionsPokemonListPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { locale } = router;
   const currentLocale = locale || 'en';
 
-  // --- State ---
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [showFilters, setShowFilters] = useState(false);
-
-  // Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [statRanges, setStatRanges] = useState({
@@ -36,181 +38,120 @@ export default function PokemonListPage() {
     spDef: { min: 0, max: 999 },
     speed: { min: 0, max: 999 },
   });
-  // Active filter state (updated on interaction end)
   const [filterStatRanges, setFilterStatRanges] = useState(statRanges);
-
-  // Sorting
-  const [sortBy, setSortBy] = useState<'name' | 'national_number' | 'stat_total' | 'hp_max' | 'attack_max' | 'defense_max' | 'sp_atk_max' | 'sp_def_max' | 'speed_max'>('national_number');
+  const [sortBy, setSortBy] = useState<SortKey>('national_number');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-
-  // Collapsed forms state — forms are expanded by default, track which are collapsed
   const [collapsedForms, setCollapsedForms] = useState<Set<number>>(new Set());
-  const toggleForms = useCallback((nationalNumber: number) => {
+  const toggleForms = useCallback((id: number) => {
     setCollapsedForms(prev => {
       const next = new Set(prev);
-      if (next.has(nationalNumber)) { next.delete(nationalNumber); } else { next.add(nationalNumber); }
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   }, []);
 
-  // --- Data Fetching ---
   const {
     data: allPokemon = [] as Pokemon[],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['pokemon-all', currentLocale, 'v3'],
+    queryKey: ['champions-pokemon', currentLocale, 'v1'],
     queryFn: async () => {
-      // Fetch ALL pokemon in one request, including forms data
       const params = new URLSearchParams();
       params.append('lang', currentLocale);
       params.append('sortBy', 'national_number');
       params.append('order', 'asc');
-      params.append('includeForms', 'true');
-
       const response = await axios.get<ApiResponse<Pokemon[]>>(
-        `${API_URL}/pokemon?${params.toString()}`
+        `${API_URL}/champions/pokemon?${params.toString()}`
       );
-      if (Array.isArray(response.data.data)) {
-        return response.data.data;
-      }
-      // @ts-expect-error: Handling potential API response variations
-      return response.data.data?.data || [];
+      if (Array.isArray(response.data.data)) return response.data.data;
+      return [];
     },
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    staleTime: 1000 * 60 * 5,
   });
 
-  // --- Filtering Logic ---
-  // --- filtering Logic ---
-  // 1. Base Filter (Search & Types) - Used to calculate available stat ranges
   const baseFilteredPokemon = useMemo(() => {
     if (allPokemon.length === 0) return [];
-
     return allPokemon.filter((p: Pokemon) => {
-      // 1. Search (Name/Number/Ability)
       if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const nameMatch = p.name.toLowerCase().includes(query);
-        const numberMatch = p.nationalNumber.toString().includes(query);
-        const abilityMatch = (
-          p.ability1.toLowerCase().includes(query) ||
-          (p.ability2 && p.ability2.toLowerCase().includes(query)) ||
-          (p.abilityHidden && p.abilityHidden.toLowerCase().includes(query))
-        );
+        const q = searchQuery.toLowerCase();
+        const nameMatch = p.name.toLowerCase().includes(q);
+        const numberMatch = p.nationalNumber.toString().includes(q);
+        const abilityMatch = p.ability1.toLowerCase().includes(q) || (p.ability2 && p.ability2.toLowerCase().includes(q));
         if (!nameMatch && !numberMatch && !abilityMatch) return false;
       }
-
-      // 2. Types
       if (selectedTypes.length > 0) {
-        const hasType = selectedTypes.some(type =>
-          p.types.some(pt => pt.toLowerCase() === type.toLowerCase())
-        );
+        const hasType = selectedTypes.some(type => p.types.some(pt => pt.toLowerCase() === type.toLowerCase()));
         if (!hasType) return false;
       }
-
       return true;
     });
   }, [allPokemon, searchQuery, selectedTypes]);
 
-  // 2. Calculate dynamic stat limits based on baseFilteredPokemon
   const statLimits = useMemo(() => {
-    const limits = {
-      hp: { min: 0, max: 999 },
-      attack: { min: 0, max: 999 },
-      defense: { min: 0, max: 999 },
-      spAtk: { min: 0, max: 999 },
-      spDef: { min: 0, max: 999 },
-      speed: { min: 0, max: 999 },
-    };
-
+    const limits = { hp: { min: 0, max: 999 }, attack: { min: 0, max: 999 }, defense: { min: 0, max: 999 }, spAtk: { min: 0, max: 999 }, spDef: { min: 0, max: 999 }, speed: { min: 0, max: 999 } };
     if (baseFilteredPokemon.length === 0) return limits;
-
-    // Helper to find min/max
     const findMinMax = (key: keyof Pokemon) => {
-      let min = 999;
-      let max = 0;
-      baseFilteredPokemon.forEach((p: Pokemon) => {
-        const val = p[key] as number;
-        if (val < min) min = val;
-        if (val > max) max = val;
-      });
+      let min = 999, max = 0;
+      baseFilteredPokemon.forEach((p: Pokemon) => { const v = p[key] as number; if (v < min) min = v; if (v > max) max = v; });
       return { min, max };
     };
-
-    limits.hp = findMinMax('hpMax');
-    limits.attack = findMinMax('attackMax');
-    limits.defense = findMinMax('defenseMax');
-    limits.spAtk = findMinMax('spAtkMax');
-    limits.spDef = findMinMax('spDefMax');
-    limits.speed = findMinMax('speedMax');
-
+    limits.hp = findMinMax('hpBase');
+    limits.attack = findMinMax('attackBase');
+    limits.defense = findMinMax('defenseBase');
+    limits.spAtk = findMinMax('spAtkBase');
+    limits.spDef = findMinMax('spDefBase');
+    limits.speed = findMinMax('speedBase');
     return limits;
   }, [baseFilteredPokemon]);
 
-  // 3. Final Filter (Stats)
   const finalFilteredPokemon = useMemo(() => {
     return baseFilteredPokemon.filter((p: Pokemon) => {
-      if (p.hpMax < filterStatRanges.hp.min || p.hpMax > filterStatRanges.hp.max) return false;
-      if (p.attackMax < filterStatRanges.attack.min || p.attackMax > filterStatRanges.attack.max) return false;
-      if (p.defenseMax < filterStatRanges.defense.min || p.defenseMax > filterStatRanges.defense.max) return false;
-      if (p.spAtkMax < filterStatRanges.spAtk.min || p.spAtkMax > filterStatRanges.spAtk.max) return false;
-      if (p.spDefMax < filterStatRanges.spDef.min || p.spDefMax > filterStatRanges.spDef.max) return false;
-      if (p.speedMax < filterStatRanges.speed.min || p.speedMax > filterStatRanges.speed.max) return false;
+      const hp = p.hpBase ?? 0, atk = p.attackBase ?? 0, def = p.defenseBase ?? 0;
+      const spa = p.spAtkBase ?? 0, spd = p.spDefBase ?? 0, spe = p.speedBase ?? 0;
+      if (hp < filterStatRanges.hp.min || hp > filterStatRanges.hp.max) return false;
+      if (atk < filterStatRanges.attack.min || atk > filterStatRanges.attack.max) return false;
+      if (def < filterStatRanges.defense.min || def > filterStatRanges.defense.max) return false;
+      if (spa < filterStatRanges.spAtk.min || spa > filterStatRanges.spAtk.max) return false;
+      if (spd < filterStatRanges.spDef.min || spd > filterStatRanges.spDef.max) return false;
+      if (spe < filterStatRanges.speed.min || spe > filterStatRanges.speed.max) return false;
       return true;
     });
   }, [baseFilteredPokemon, filterStatRanges]);
 
-  // --- Sorting Logic ---
   const sortedPokemon = useMemo(() => {
     return finalFilteredPokemon.slice().sort((a: Pokemon, b: Pokemon) => {
-      let aValue: number | string;
-      let bValue: number | string;
-
+      let av: number | string, bv: number | string;
       switch (sortBy) {
-        case 'name': aValue = a.name; bValue = b.name; break;
-        case 'national_number': aValue = a.nationalNumber; bValue = b.nationalNumber; break;
-        case 'stat_total': aValue = a.statTotal; bValue = b.statTotal; break;
-        case 'hp_max': aValue = a.hpMax; bValue = b.hpMax; break;
-        case 'attack_max': aValue = a.attackMax; bValue = b.attackMax; break;
-        case 'defense_max': aValue = a.defenseMax; bValue = b.defenseMax; break;
-        case 'sp_atk_max': aValue = a.spAtkMax; bValue = b.spAtkMax; break;
-        case 'sp_def_max': aValue = a.spDefMax; bValue = b.spDefMax; break;
-        case 'speed_max': aValue = a.speedMax; bValue = b.speedMax; break;
-        default: aValue = a.nationalNumber; bValue = b.nationalNumber;
+        case 'name': av = a.name; bv = b.name; break;
+        case 'national_number': av = a.nationalNumber; bv = b.nationalNumber; break;
+        case 'stat_total': av = a.statTotal; bv = b.statTotal; break;
+        case 'hp_base': av = a.hpBase ?? 0; bv = b.hpBase ?? 0; break;
+        case 'attack_base': av = a.attackBase ?? 0; bv = b.attackBase ?? 0; break;
+        case 'defense_base': av = a.defenseBase ?? 0; bv = b.defenseBase ?? 0; break;
+        case 'sp_atk_base': av = a.spAtkBase ?? 0; bv = b.spAtkBase ?? 0; break;
+        case 'sp_def_base': av = a.spDefBase ?? 0; bv = b.spDefBase ?? 0; break;
+        case 'speed_base': av = a.speedBase ?? 0; bv = b.speedBase ?? 0; break;
+        default: av = a.nationalNumber; bv = b.nationalNumber;
       }
-
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-      }
-      return sortOrder === 'asc' ? (aValue as number) - (bValue as number) : (bValue as number) - (aValue as number);
+      if (typeof av === 'string') return sortOrder === 'asc' ? av.localeCompare(bv as string) : (bv as string).localeCompare(av);
+      return sortOrder === 'asc' ? (av as number) - (bv as number) : (bv as number) - (av as number);
     });
   }, [finalFilteredPokemon, sortBy, sortOrder]);
 
+  const handleSort = useCallback((col: SortKey) => {
+    if (sortBy === col) setSortOrder(o => o === 'asc' ? 'desc' : 'asc');
+    else { setSortBy(col); setSortOrder('asc'); }
+  }, [sortBy]);
 
-  // --- Helper Functions ---
-  const handleSort = useCallback((column: typeof sortBy) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(column);
-      setSortOrder('asc');
-    }
-  }, [sortBy, sortOrder]);
-
-  const toggleType = (type: string) => {
-    if (selectedTypes.includes(type)) {
-      setSelectedTypes(selectedTypes.filter(t => t !== type));
-    } else {
-      setSelectedTypes([...selectedTypes, type]);
-    }
-  };
-
-  const allTypes = useMemo(() => {
-    return [
-      'normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground',
-      'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'steel', 'dark', 'fairy'
-    ];
+  const toggleType = useCallback((type: string) => {
+    setSelectedTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
   }, []);
+
+  const allTypes = useMemo(() => [
+    'normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground',
+    'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'steel', 'dark', 'fairy',
+  ], []);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -223,15 +164,17 @@ export default function PokemonListPage() {
     return count;
   }, [searchQuery, selectedTypes, filterStatRanges, statLimits]);
 
-  const clearAllFilters = () => {
+  const clearAllFilters = useCallback(() => {
     setSearchQuery('');
     setSelectedTypes([]);
     const reset = { hp: { min: 0, max: 999 }, attack: { min: 0, max: 999 }, defense: { min: 0, max: 999 }, spAtk: { min: 0, max: 999 }, spDef: { min: 0, max: 999 }, speed: { min: 0, max: 999 } };
     setStatRanges(reset);
     setFilterStatRanges(reset);
-  };
+  }, []);
 
-
+  const navigate = useCallback((p: Pokemon) => {
+    router.push(`/pokemon/${p.nameLower ?? toSlug(p.name)}`);
+  }, [router]);
 
   return (
     <Layout>
@@ -253,7 +196,7 @@ export default function PokemonListPage() {
                 <input
                   type="text"
                   placeholder={t('pokemon.searchPlaceholder')}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -293,16 +236,13 @@ export default function PokemonListPage() {
             </div>
           </div>
 
-          {/* Advanced Filters Panel */}
+          {/* Filters Panel */}
           {showFilters && (
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg border border-gray-200 dark:border-dark-border p-6 space-y-6 animate-in slide-in-from-top-2 duration-200">
-              {/* Types */}
+            <div className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg border border-gray-200 dark:border-dark-border p-6 space-y-6">
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-dark-text-primary mb-3">{t('pokemon.filterTypes')}</h3>
                 <TypeFilterGrid selectedTypes={selectedTypes} onToggle={toggleType} types={allTypes} />
               </div>
-
-              {/* Stats */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-dark-text-primary mb-3">{t('pokemon.filterStats')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -319,28 +259,14 @@ export default function PokemonListPage() {
                           <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">{label}</span>
                           <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                             <input
-                              type="number"
-                              min={limitMin}
-                              max={effectiveMax}
-                              value={effectiveMin}
-                              onChange={(e) => {
-                                const v = Math.min(Number(e.target.value), effectiveMax);
-                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], min: v } }));
-                                setFilterStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], min: v } }));
-                              }}
+                              type="number" min={limitMin} max={effectiveMax} value={effectiveMin}
+                              onChange={(e) => { const v = Math.min(Number(e.target.value), effectiveMax); setStatRanges(p => ({ ...p, [stat]: { ...p[statKey], min: v } })); setFilterStatRanges(p => ({ ...p, [stat]: { ...p[statKey], min: v } })); }}
                               className="w-12 text-center bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-xs dark:text-gray-200"
                             />
                             <span>–</span>
                             <input
-                              type="number"
-                              min={effectiveMin}
-                              max={limitMax}
-                              value={effectiveMax}
-                              onChange={(e) => {
-                                const v = Math.max(Number(e.target.value), effectiveMin);
-                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], max: v } }));
-                                setFilterStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], max: v } }));
-                              }}
+                              type="number" min={effectiveMin} max={limitMax} value={effectiveMax}
+                              onChange={(e) => { const v = Math.max(Number(e.target.value), effectiveMin); setStatRanges(p => ({ ...p, [stat]: { ...p[statKey], max: v } })); setFilterStatRanges(p => ({ ...p, [stat]: { ...p[statKey], max: v } })); }}
                               className="w-12 text-center bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-xs dark:text-gray-200"
                             />
                           </div>
@@ -348,52 +274,40 @@ export default function PokemonListPage() {
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] text-gray-400 w-6 shrink-0">Min</span>
-                            <input
-                              type="range"
-                              min={limitMin}
-                              max={limitMax}
-                              value={effectiveMin}
-                              onChange={(e) => {
-                                const v = Math.min(Number(e.target.value), effectiveMax);
-                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], min: v } }));
-                              }}
-                              onMouseUp={() => setFilterStatRanges(statRanges)}
-                              onTouchEnd={() => setFilterStatRanges(statRanges)}
+                            <input type="range" min={limitMin} max={limitMax} value={effectiveMin}
+                              onChange={(e) => { const v = Math.min(Number(e.target.value), effectiveMax); setStatRanges(p => ({ ...p, [stat]: { ...p[statKey], min: v } })); }}
+                              onMouseUp={() => setFilterStatRanges(statRanges)} onTouchEnd={() => setFilterStatRanges(statRanges)}
                               className="flex-1 accent-blue-600 dark:accent-blue-400 h-1 cursor-pointer"
                             />
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] text-gray-400 w-6 shrink-0">Max</span>
-                            <input
-                              type="range"
-                              min={limitMin}
-                              max={limitMax}
-                              value={effectiveMax}
-                              onChange={(e) => {
-                                const v = Math.max(Number(e.target.value), effectiveMin);
-                                setStatRanges(prev => ({ ...prev, [stat]: { ...prev[statKey], max: v } }));
-                              }}
-                              onMouseUp={() => setFilterStatRanges(statRanges)}
-                              onTouchEnd={() => setFilterStatRanges(statRanges)}
+                            <input type="range" min={limitMin} max={limitMax} value={effectiveMax}
+                              onChange={(e) => { const v = Math.max(Number(e.target.value), effectiveMin); setStatRanges(p => ({ ...p, [stat]: { ...p[statKey], max: v } })); }}
+                              onMouseUp={() => setFilterStatRanges(statRanges)} onTouchEnd={() => setFilterStatRanges(statRanges)}
                               className="flex-1 accent-blue-600 dark:accent-blue-400 h-1 cursor-pointer"
                             />
                           </div>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Loading Progress */}
+          {/* Loading */}
           {isLoading && (
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 flex items-center gap-3">
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent"></div>
-              <span className="text-sm text-blue-700 dark:text-blue-300">
-                {t('pokemon.loadingDatabase')}
-              </span>
+              <span className="text-sm text-blue-700 dark:text-blue-300">{t('pokemon.loadingDatabase')}</span>
+            </div>
+          )}
+
+          {isError && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-sm text-red-700 dark:text-red-300">
+              Failed to load Pokemon data.
             </div>
           )}
 
@@ -401,57 +315,54 @@ export default function PokemonListPage() {
           <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
             <span>{t('pokemon.showingResults', { shown: sortedPokemon.length, total: allPokemon.length })}</span>
             {activeFilterCount > 0 && (
-              <button
-                onClick={clearAllFilters}
-                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-              >
+              <button onClick={clearAllFilters} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
                 {t('pokemon.clearAllFilters')}
               </button>
             )}
           </div>
 
-          {/* Main Content Area */}
-          <MemoizedPokemonList
+          {/* Main Content */}
+          <ChampionsPokemonList
             pokemon={sortedPokemon}
             loading={isLoading}
             viewMode={viewMode}
             handleSort={handleSort}
             sortBy={sortBy}
             sortOrder={sortOrder}
-            onNavigate={(n) => router.push(`/pokemon/${n}`)}
+            onNavigate={navigate}
             collapsedForms={collapsedForms}
             onToggleForms={toggleForms}
           />
-
         </div>
       </div>
     </Layout>
   );
 }
 
-// --- Sub-components for Performance ---
-interface PokemonListProps {
+// --- Sub-components ---
+interface ChampionsPokemonListProps {
   pokemon: Pokemon[];
   loading: boolean;
-  viewMode: 'table' | 'grid';
-  handleSort: (column: any) => void;
-  sortBy: string;
+  viewMode: ViewMode;
+  handleSort: (col: SortKey) => void;
+  sortBy: SortKey;
   sortOrder: 'asc' | 'desc';
-  onNavigate: (nationalNumber: number) => void;
+  onNavigate: (p: Pokemon) => void;
   collapsedForms: Set<number>;
-  onToggleForms: (nationalNumber: number) => void;
+  onToggleForms: (id: number) => void;
 }
 
-const TableSortIcon = ({ column, sortBy, sortOrder }: { column: string, sortBy: string, sortOrder: 'asc' | 'desc' }) => {
+const TableSortIcon = ({ column, sortBy, sortOrder }: { column: string; sortBy: string; sortOrder: 'asc' | 'desc' }) => {
   if (sortBy !== column) return <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>;
-  return sortOrder === 'asc' ?
-    <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg> :
-    <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
+  return sortOrder === 'asc'
+    ? <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+    : <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
 };
 
-const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sortBy, sortOrder, onNavigate, collapsedForms, onToggleForms }: PokemonListProps) => {
+const ChampionsPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sortBy, sortOrder, onNavigate, collapsedForms, onToggleForms }: ChampionsPokemonListProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
+
   if (pokemon.length === 0 && !loading) {
     return (
       <div className="text-center py-20 bg-white dark:bg-dark-bg-secondary rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
@@ -473,34 +384,43 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
         <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
           <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
             <tr>
-              <th onClick={() => handleSort('national_number')} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center gap-1">#{<TableSortIcon column="national_number" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
+              <th onClick={() => handleSort('national_number')} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                <div className="flex items-center gap-1">#<TableSortIcon column="national_number" sortBy={sortBy} sortOrder={sortOrder} /></div>
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-16">{t('pokemon.image')}</th>
-              <th onClick={() => handleSort('name')} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center gap-1">{t('pokemon.name')}{<TableSortIcon column="name" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
+              <th onClick={() => handleSort('name')} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                <div className="flex items-center gap-1">{t('pokemon.name')}<TableSortIcon column="name" sortBy={sortBy} sortOrder={sortOrder} /></div>
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('pokemon.type')}</th>
-              <th onClick={() => handleSort('stat_total')} className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"><div className="flex items-center justify-center gap-1">{t('pokemon.stats.total')}{<TableSortIcon column="stat_total" sortBy={sortBy} sortOrder={sortOrder} />}</div></th>
-              <th onClick={() => handleSort('hp_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.hp')}</th>
-              <th onClick={() => handleSort('attack_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.attack')}</th>
-              <th onClick={() => handleSort('defense_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.defense')}</th>
-              <th onClick={() => handleSort('sp_atk_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.spAtk')}</th>
-              <th onClick={() => handleSort('sp_def_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.spDef')}</th>
-              <th onClick={() => handleSort('speed_max')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.speed')}</th>
+              <th onClick={() => handleSort('stat_total')} className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                <div className="flex items-center justify-center gap-1">{t('pokemon.stats.total')}<TableSortIcon column="stat_total" sortBy={sortBy} sortOrder={sortOrder} /></div>
+              </th>
+              <th onClick={() => handleSort('hp_base')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.hp')}</th>
+              <th onClick={() => handleSort('attack_base')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.attack')}</th>
+              <th onClick={() => handleSort('defense_base')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.defense')}</th>
+              <th onClick={() => handleSort('sp_atk_base')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.spAtk')}</th>
+              <th onClick={() => handleSort('sp_def_base')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.spDef')}</th>
+              <th onClick={() => handleSort('speed_base')} className="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">{t('pokemon.stats.speed')}</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('pokemon.abilities')}</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
             {pokemon.map((p: Pokemon) => (
               <React.Fragment key={p.id}>
-                <tr className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors cursor-pointer" onClick={() => onNavigate(p.nationalNumber)}>
+                <tr
+                  className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary transition-colors cursor-pointer"
+                  onClick={() => onNavigate(p)}
+                >
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center gap-1">
                       #{p.nationalNumber}
                       {p.forms && p.forms.length > 0 && (
                         <button
-                          onClick={(e) => { e.stopPropagation(); onToggleForms(p.nationalNumber); }}
+                          onClick={(e) => { e.stopPropagation(); onToggleForms(p.id); }}
                           className="ml-1 text-gray-400 hover:text-blue-500 transition-colors"
-                          title={!collapsedForms.has(p.nationalNumber) ? 'Hide forms' : `Show ${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
+                          title={!collapsedForms.has(p.id) ? 'Hide forms' : `Show ${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
                         >
-                          <svg className={`w-3.5 h-3.5 transition-transform ${!collapsedForms.has(p.nationalNumber) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className={`w-3.5 h-3.5 transition-transform ${!collapsedForms.has(p.id) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </button>
@@ -515,30 +435,28 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                   <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{p.name}</td>
                   <td className="px-4 py-2 whitespace-nowrap">
                     <div className="flex gap-1">
-                      {p.types.map((t: string) => <TypeIcon key={t} type={t} size="sm" />)}
+                      {p.types.map((type: string) => <TypeIcon key={type} type={type} size="sm" />)}
                     </div>
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-center font-bold text-gray-700 dark:text-gray-300">{p.statTotal}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.hpMax}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.attackMax}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.defenseMax}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.spAtkMax}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.spDefMax}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.speedMax}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.hpBase}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.attackBase}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.defenseBase}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.spAtkBase}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.spDefBase}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{p.speedBase}</td>
                   <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex flex-col text-xs">
                       <span>{p.ability1}</span>
                       {p.ability2 && <span>{p.ability2}</span>}
-                      {p.abilityHidden && <span className="text-gray-400 italic">{p.abilityHidden} (H)</span>}
                     </div>
                   </td>
                 </tr>
-                {/* Form sub-rows */}
-                {p.forms && p.forms.length > 0 && !collapsedForms.has(p.nationalNumber) && p.forms.map((form: any) => (
+                {p.forms && p.forms.length > 0 && !collapsedForms.has(p.id) && p.forms.map((form: any) => (
                   <tr
-                    key={`${p.id}-${form.formName}`}
+                    key={form.formName}
                     className="bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-100/50 dark:hover:bg-blue-900/20 cursor-pointer border-l-2 border-blue-300 dark:border-blue-700"
-                    onClick={() => router.push(`/pokemon/${p.nationalNumber}-${form.formName}`)}
+                    onClick={() => form.nameLower && router.push(`/pokemon/${form.nameLower}`)}
                   >
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-400 dark:text-gray-500 pl-8">↳</td>
                     <td className="px-4 py-2 whitespace-nowrap">
@@ -561,7 +479,7 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                     <td className="px-2 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{form.baseStats?.speed?.base ?? '-'}</td>
                     <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex flex-col text-xs">
-                        {form.abilities?.slice(0, 2).map((a: string, ai: number) => <span key={ai}>{a}</span>)}
+                        {form.abilities?.slice(0, 2).map((a: string, i: number) => <span key={i}>{a}</span>)}
                       </div>
                     </td>
                   </tr>
@@ -574,12 +492,15 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
     );
   }
 
+  // Grid view
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {pokemon.map((p: Pokemon) => (
         <div key={p.id} className="flex flex-col gap-2">
-          {/* Base Pokemon card */}
-          <div className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer flex flex-col" onClick={() => onNavigate(p.nationalNumber)}>
+          <div
+            className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col cursor-pointer"
+            onClick={() => onNavigate(p)}
+          >
             <div className="h-2 w-full" style={getCardHeaderStyle(p.types)} />
             <div className="p-4 flex flex-col gap-4 flex-1">
               <div className="flex justify-between items-start">
@@ -587,10 +508,11 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                   <span className="text-xs font-mono text-gray-500 dark:text-gray-400">#{String(p.nationalNumber).padStart(3, '0')}</span>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">{p.name}</h3>
                   <div className="flex gap-1 mt-1.5">
-                    {p.types.map((t: string) => <TypeIcon key={t} type={t} size="sm" />)}
+                    {p.types.map((type: string) => <TypeIcon key={type} type={type} size="sm" />)}
                   </div>
                 </div>
-                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center p-2 shrink-0">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center p-2 shrink-0"
+                  style={{ background: `radial-gradient(circle, ${getTypeHex(p.types[0] ?? 'normal')}18 0%, transparent 70%)` }}>
                   {p.imageUrl && <img src={p.imageUrl} alt={p.name} loading="lazy" className="w-full h-full object-contain" />}
                 </div>
               </div>
@@ -613,28 +535,26 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
                 ))}
               </div>
             </div>
-            {/* Forms toggle button */}
             {p.forms && p.forms.length > 0 && (
               <button
-                onClick={(e) => { e.stopPropagation(); onToggleForms(p.nationalNumber); }}
+                onClick={(e) => { e.stopPropagation(); onToggleForms(p.id); }}
                 className="flex items-center justify-center gap-1 py-1.5 text-xs font-medium text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 border-t border-gray-100 dark:border-gray-700 transition-colors"
               >
-                <svg className={`w-3 h-3 transition-transform ${!collapsedForms.has(p.nationalNumber) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-3 h-3 transition-transform ${!collapsedForms.has(p.id) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-                {!collapsedForms.has(p.nationalNumber) ? 'Hide' : `${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
+                {!collapsedForms.has(p.id) ? 'Hide forms' : `${p.forms.length} form${p.forms.length > 1 ? 's' : ''}`}
               </button>
             )}
           </div>
 
-          {/* Form sub-cards */}
-          {p.forms && p.forms.length > 0 && !collapsedForms.has(p.nationalNumber) && (
+          {p.forms && p.forms.length > 0 && !collapsedForms.has(p.id) && (
             <div className="flex flex-col gap-1.5 pl-4 border-l-2 border-blue-300 dark:border-blue-700">
               {p.forms.map((form: any) => (
                 <div
                   key={form.formName}
                   className="bg-blue-50/70 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5 flex items-center gap-3 cursor-pointer hover:bg-blue-100/70 dark:hover:bg-blue-900/20 transition-colors"
-                  onClick={() => router.push(`/pokemon/${p.nationalNumber}-${form.formName}`)}
+                  onClick={() => form.nameLower && router.push(`/pokemon/${form.nameLower}`)}
                 >
                   <div className="w-10 h-10 shrink-0">
                     {form.imageUrl && <img src={form.imageUrl} alt={form.formName} loading="lazy" className="w-10 h-10 object-contain" />}
@@ -656,12 +576,10 @@ const MemoizedPokemonList = memo(({ pokemon, loading, viewMode, handleSort, sort
   );
 });
 
-MemoizedPokemonList.displayName = 'MemoizedPokemonList';
+ChampionsPokemonList.displayName = 'ChampionsPokemonList';
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale || 'en', ['common'])),
-    },
-  };
-};
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale || 'en', ['common'])),
+  },
+});

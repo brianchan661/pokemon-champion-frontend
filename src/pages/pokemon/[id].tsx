@@ -1,117 +1,344 @@
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { PokemonFull, ApiResponse } from '@brianchan661/pokemon-champion-shared';
+import Head from 'next/head';
 import { Layout } from '@/components/Layout/Layout';
-import { TypeIcon, TypeFilterGrid } from '@/components/UI';
-import { MoveCategoryIcon } from '@/components/UI/MoveCategoryIcon';
-import { GetStaticProps, GetStaticPaths } from 'next';
+import { TypeIcon } from '@/components/UI';
+import { MoveCategoryIcon, MoveCategory } from '@/components/UI/MoveCategoryIcon';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { getApiBaseUrl } from '@/config/api';
+import { getTypeHex } from '@/utils/typeColors';
+import { ApiResponse } from '@brianchan661/pokemon-champion-shared';
+import { useTheme } from '@/hooks/useTheme';
 
 const API_URL = getApiBaseUrl();
 
-// Helper to convert move name to identifier format
-const moveNameToIdentifier = (name: string): string => {
-  return name.toLowerCase().replace(/\s+/g, '-');
-};
+// ─── Types ───────────────────────────────────────────────────────────────────
 
-function parseFormSlug(id: string): { nationalNumber: string; formSlug: string | null } {
-  const match = id.match(/^(\d+)(?:-(.+))?$/);
-  if (!match) return { nationalNumber: id, formSlug: null };
-  return { nationalNumber: match[1], formSlug: match[2] || null };
+interface ChampionsMoveEntry {
+  identifier: string;
+  nameEn: string;
+  nameJa: string | null;
+  type: string;
+  category: string;
+  power: number | null;
+  accuracy: number | null;
+  pp: number | null;
+  effectPct: string | null;
+  description: string | null;
 }
 
-export default function PokemonDetailPage() {
-  const router = useRouter();
-  const { id } = router.query;
+interface ChampionsAbilityDetail {
+  identifier: string;
+  nameEn: string;
+  nameJa: string | null;
+  descriptionEn: string | null;
+  descriptionJa: string | null;
+}
+
+interface PokemonBase {
+  id: number;
+  nationalNumber: number;
+  name: string;
+  types: string[];
+  ability1: string;
+  ability2?: string;
+  imageUrl?: string;
+  hpBase?: number;
+  attackBase?: number;
+  defenseBase?: number;
+  spAtkBase?: number;
+  spDefBase?: number;
+  speedBase?: number;
+  statTotal: number;
+}
+
+interface ChampionsPokemonDetail {
+  base: PokemonBase;
+  forms: PokemonBase[];
+  moves: ChampionsMoveEntry[];
+  abilities: ChampionsAbilityDetail[];
+  species: string | null;
+  height: string | null;
+  weight: string | null;
+  genderRatio: string | null;
+}
+
+// ─── Stat Formula ─────────────────────────────────────────────────────────────
+
+const FIXED_LEVEL = 50;
+const EV_STAT_MAX = 32;
+
+function calcStat(base: number, sp: number, natureMod: number, isHp: boolean): number {
+  const inner = Math.floor((2 * base + 31) * FIXED_LEVEL / 100);
+  if (isHp) return inner + FIXED_LEVEL + 10 + sp;
+  return Math.floor((inner + 5 + sp) * natureMod);
+}
+
+const STAT_CONFIG = [
+  { key: 'hpBase'      as keyof PokemonBase, label: 'HP',  color: '#4ade80', idx: 0 },
+  { key: 'attackBase'  as keyof PokemonBase, label: 'Atk', color: '#f87171', idx: 1 },
+  { key: 'defenseBase' as keyof PokemonBase, label: 'Def', color: '#fb923c', idx: 2 },
+  { key: 'spAtkBase'   as keyof PokemonBase, label: 'SpA', color: '#c084fc', idx: 3 },
+  { key: 'spDefBase'   as keyof PokemonBase, label: 'SpD', color: '#818cf8', idx: 4 },
+  { key: 'speedBase'   as keyof PokemonBase, label: 'Spe', color: '#fbbf24', idx: 5 },
+];
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function StatTable({ pokemon, t }: { pokemon: PokemonBase; t: (key: string) => string }) {
+  return (
+    <table className="w-full text-base font-mono border-collapse">
+      <thead>
+        <tr>
+          <th className="pb-2 text-left w-12" />
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-sky-500 dark:text-sky-400">
+            <span className="inline-flex items-center gap-1">
+              {t('pokemon.detail.statColLowered')}
+              <span title="0 SP, ×0.9 nature" className="cursor-help text-[10px] font-bold leading-none w-3.5 h-3.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-500 dark:text-sky-400 inline-flex items-center justify-center">?</span>
+            </span>
+          </th>
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
+            {t('pokemon.detail.statColBase')}
+          </th>
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
+            {t('pokemon.detail.statColNoSP')}
+          </th>
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
+            {t('pokemon.detail.statColMaxSP')}
+          </th>
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-orange-500 dark:text-orange-400">
+            <span className="inline-flex items-center gap-1">
+              {t('pokemon.detail.statColBoosted')}
+              <span title="32 SP, ×1.1 nature" className="cursor-help text-[10px] font-bold leading-none w-3.5 h-3.5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-500 dark:text-orange-400 inline-flex items-center justify-center">?</span>
+            </span>
+          </th>
+        </tr>
+        <tr>
+          <td colSpan={6} className="pb-2">
+            <div className="h-px bg-gray-100 dark:bg-white/5" />
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        {STAT_CONFIG.map(({ key, label, color, idx }) => {
+          const base = (pokemon[key] as number) ?? 0;
+          const isHp = idx === 0;
+          const v0    = calcStat(base, 0,           1,   isHp);
+          const v32   = calcStat(base, EV_STAT_MAX, 1,   isHp);
+          const vToku = calcStat(base, EV_STAT_MAX, isHp ? 1 : 1.1, isHp);
+          const vDown = calcStat(base, 0,           isHp ? 1 : 0.9, isHp);
+          return (
+            <tr key={key} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
+              <td className="py-1.5">
+                <span className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                  <span className="font-semibold text-sm text-gray-600 dark:text-gray-200">{label}</span>
+                </span>
+              </td>
+              <td className="py-1.5 text-right tabular-nums font-bold text-sky-600 dark:text-sky-400">{isHp ? v0 : vDown}</td>
+              <td className="py-1.5 text-right tabular-nums text-sm text-gray-600 dark:text-gray-300">{base}</td>
+              <td className="py-1.5 text-right tabular-nums text-gray-700 dark:text-gray-300">{v0}</td>
+              <td className="py-1.5 text-right tabular-nums text-gray-700 dark:text-gray-300">{v32}</td>
+              <td className="py-1.5 text-right tabular-nums font-bold text-orange-600 dark:text-orange-400">{isHp ? v32 : vToku}</td>
+            </tr>
+          );
+        })}
+        <tr>
+          <td colSpan={6} className="pt-1 pb-0.5">
+            <div className="h-px bg-gray-100 dark:bg-white/5" />
+          </td>
+        </tr>
+        <tr>
+          <td className="py-1.5">
+            <span className="font-semibold text-sm text-gray-600 dark:text-gray-200 pl-4">Total</span>
+          </td>
+          <td />
+          <td className="py-1.5 text-right tabular-nums text-sm font-bold text-gray-700 dark:text-gray-300">{pokemon.statTotal}</td>
+          <td /><td /><td />
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+function FormCard({ form, basePokemon, onClick }: { form: PokemonBase; basePokemon?: PokemonBase; onClick: () => void }) {
+  const primaryType = form.types[0]?.toLowerCase() ?? 'normal';
+  const accent = getTypeHex(primaryType);
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-all duration-200"
+      style={{ background: `${accent}05` }}
+    >
+      <div
+        className="w-14 h-14 rounded-xl shrink-0 flex items-center justify-center"
+        style={{ background: `radial-gradient(circle, ${accent}25, ${accent}05)` }}
+      >
+        {form.imageUrl && (
+          <img src={form.imageUrl} alt={form.name} className="w-12 h-12 object-contain drop-shadow" />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight">{form.name}</p>
+        <div className="flex gap-1 mt-1">
+          {form.types.map((type: string) => <TypeIcon key={type} type={type} size="xs" />)}
+        </div>
+        <div className="flex flex-wrap gap-x-2 mt-1">
+          {[form.ability1, form.ability2, (form as any).abilityHidden].filter(Boolean).map((ab: string) => (
+            <span key={ab} className="text-xs text-gray-500 dark:text-gray-400">{ab}</span>
+          ))}
+        </div>
+      </div>
+      <div className="shrink-0 text-right">
+        <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400">{form.statTotal} BST</span>
+        <table className="mt-1 font-mono text-xs border-collapse">
+          <tbody>
+            {STAT_CONFIG.map(({ key, label, color }) => {
+              const val = (form[key as keyof PokemonBase] as number) ?? 0;
+              const baseVal = basePokemon ? (basePokemon[key as keyof PokemonBase] as number) ?? 0 : null;
+              const diff = baseVal !== null ? val - baseVal : null;
+              return (
+                <tr key={key}>
+                  <td className="pr-2 py-0.5">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                      <span className="text-gray-400 dark:text-gray-500">{label}</span>
+                    </span>
+                  </td>
+                  <td className="text-right tabular-nums text-gray-700 dark:text-gray-300 pr-2">{val}</td>
+                  {diff !== null && (
+                    <td className={`text-right tabular-nums text-xs w-8 ${diff > 0 ? 'text-green-500' : diff < 0 ? 'text-red-400' : 'text-gray-300 dark:text-gray-600'}`}>
+                      {diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : '—'}
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </button>
+  );
+}
+
+function MoveRow({ move, onClick, showEffect }: { move: ChampionsMoveEntry; onClick: () => void; showEffect: boolean }) {
   const { t } = useTranslation('common');
+  return (
+    <div
+      onClick={onClick}
+      className="group rounded-lg cursor-pointer transition-all duration-150 overflow-hidden"
+      style={{ border: '1px solid rgba(128,128,128,0.15)' }}
+      onMouseEnter={e => {
+        const el = e.currentTarget;
+        el.style.background = 'rgba(59,130,246,0.15)';
+        el.style.border = '1px solid rgba(99,160,255,1)';
+        el.style.boxShadow = '0 0 0 1px rgba(99,160,255,0.4), 0 4px 20px rgba(59,130,246,0.2)';
+        el.style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={e => {
+        const el = e.currentTarget;
+        el.style.background = '';
+        el.style.border = '1px solid rgba(128,128,128,0.15)';
+        el.style.boxShadow = '';
+        el.style.transform = '';
+      }}
+    >
+      <div className="grid items-center px-3 py-2.5" style={{ gridTemplateColumns: '2fr 1fr 1fr 3rem 3rem 3rem' }}>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors truncate">{move.nameEn}</span>
+          <svg className="w-3 h-3 shrink-0 text-blue-400 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+        <div className="flex items-center gap-1">
+          <TypeIcon type={move.type} size="sm" />
+          <span className="hidden sm:inline text-sm font-medium text-gray-900 dark:text-dark-text-primary">{t(`types.${move.type.toLowerCase()}`, { defaultValue: move.type })}</span>
+        </div>
+        <div><MoveCategoryIcon category={move.category as MoveCategory} /></div>
+        <div className="text-center font-mono text-sm tabular-nums text-gray-700 dark:text-gray-300">
+          {move.power !== null ? <span className="font-bold">{move.power}</span> : <span className="text-gray-400">—</span>}
+        </div>
+        <div className="text-center font-mono text-sm text-gray-700 dark:text-gray-400 tabular-nums">
+          {move.accuracy ?? <span className="text-gray-400">—</span>}
+        </div>
+        <div className="text-center font-mono text-sm text-gray-700 dark:text-gray-500 tabular-nums">{move.pp ?? '—'}</div>
+      </div>
+      {showEffect && move.description && (
+        <div className="px-3 pb-2.5 -mt-1" onClick={e => e.stopPropagation()}>
+          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-200/50 dark:border-white/10 pt-2">{move.description}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
-  const rawId = Array.isArray(id) ? id[0] : (id ?? '');
-  const { nationalNumber, formSlug } = parseFormSlug(rawId);
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
-  const { data: pokemon, isLoading, error } = useQuery({
-    queryKey: ['pokemon', nationalNumber, router.locale],
+export default function ChampionsPokemonDetailPage() {
+  const { t } = useTranslation('common');
+  const router = useRouter();
+  const { id: slug } = router.query;
+  const { locale } = router;
+  const currentLocale = locale || 'en';
+
+  const [moveTypeFilter, setMoveTypeFilter] = useState<string | null>(null);
+  const [moveCategoryFilter, setMoveCategoryFilter] = useState<string | null>(null);
+  const [showMoveEffects, setShowMoveEffects] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    const prev = theme;
+    setTheme('dark');
+    return () => setTheme(prev);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['champions-pokemon-detail', slug, currentLocale],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      params.append('lang', router.locale || 'en');
-
-      const response = await axios.get<ApiResponse<PokemonFull>>(
-        `${API_URL}/pokemon/${nationalNumber}?${params.toString()}`
+      const response = await axios.get<ApiResponse<ChampionsPokemonDetail>>(
+        `${API_URL}/champions/pokemon/${slug}?lang=${currentLocale}`
       );
-      return response.data.data;
+      return response.data.data as ChampionsPokemonDetail;
     },
-    enabled: !!nationalNumber,
-    retry: (failureCount, error: any) => {
-      // Don't retry on 404 errors
-      if (error?.response?.status === 404) {
-        return false;
-      }
-      // Retry up to 3 times for other errors
-      return failureCount < 3;
-    },
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5,
   });
+
+  const pokemon = data?.base;
+  const primaryType = pokemon?.types[0]?.toLowerCase() ?? 'normal';
+  const secondaryType = pokemon?.types[1]?.toLowerCase();
+  const accentColor = getTypeHex(primaryType);
+  const secondaryColor = secondaryType ? getTypeHex(secondaryType) : accentColor;
 
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-blue-600"></div>
-              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('pokemon.loading')}</p>
-            </div>
+        <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-6 px-4">
+          <div className="max-w-5xl mx-auto space-y-4">
+            <div className="h-4 w-32 bg-gray-200 dark:bg-white/5 rounded animate-pulse" />
+            <div className="rounded-2xl overflow-hidden bg-white dark:bg-dark-bg-secondary border border-gray-200 dark:border-dark-border h-64 animate-pulse" />
           </div>
         </div>
       </Layout>
     );
   }
 
-  if (error || !pokemon) {
+  if (isError || !pokemon || !data) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
-          <div className="max-w-6xl mx-auto">
-            {/* Pokemon Not Found Error */}
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-8 text-center">
-              <div className="mb-6">
-                <svg
-                  className="mx-auto h-24 w-24 text-gray-400 dark:text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">
-                {t('pokemon.detail.notFound.title')}
-              </h2>
-              <p className="text-gray-600 dark:text-dark-text-secondary mb-8">
-                {t('pokemon.detail.notFound.description')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={() => router.back()}
-                  className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 dark:border-dark-border text-base font-medium rounded-md text-gray-700 dark:text-dark-text-primary bg-white dark:bg-dark-bg-tertiary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                >
-                  {t('error.notFound.goBack')}
-                </button>
-                <button
-                  onClick={() => router.push('/pokemon')}
-                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-                >
-                  {t('pokemon.detail.notFound.browsePokemon')}
-                </button>
-              </div>
+        <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-6 px-4">
+          <div className="max-w-4xl mx-auto">
+            <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-6 transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              {t('pokemon.title')}
+            </button>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-red-700 dark:text-red-300">
+              {t('pokemon.detail.notFound.title')}
             </div>
           </div>
         </div>
@@ -121,721 +348,283 @@ export default function PokemonDetailPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-100 dark:bg-dark-bg-primary py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Back Button */}
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+
+      <div className="min-h-screen bg-dark-bg-primary py-6 px-4">
+        <div className="max-w-5xl mx-auto space-y-4">
+
+          {/* Back link */}
           <button
-            onClick={() => router.back()}
-            className="mb-4 flex items-center gap-2 text-blue-600 dark:text-primary-400 hover:text-blue-800 dark:hover:text-primary-300"
+            onClick={() => router.push('/pokemon')}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            {t('pokemon.detail.back')}
+            {t('pokemon.title')}
           </button>
 
-          {/* Header Card with Stats */}
-          <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-6 mb-6">
-            {/* Form Tabs (if alternative forms exist) */}
-            {pokemon.details?.forms && pokemon.details.forms.length > 0 && (() => {
-              const activeFormIndex = formSlug
-                ? (pokemon.details!.forms!.findIndex((f: any) => f.formName === formSlug))
-                : -1;
-              return (
-                <>
-                  <div className="mb-6 border-b border-gray-200 dark:border-dark-border">
-                    <div className="flex flex-wrap gap-2 -mb-px">
-                      {/* Base Form Tab */}
-                      <Link
-                        href={`/pokemon/${nationalNumber}`}
-                        className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
-                          activeFormIndex === -1
-                            ? 'border-blue-600 text-blue-600 dark:text-primary-400'
-                            : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
-                        }`}
-                      >
-                        {pokemon.name}
-                      </Link>
-                      {/* Alternative Form Tabs */}
-                      {pokemon.details.forms.map((form: any, idx: number) => (
-                        <Link
-                          key={idx}
-                          href={`/pokemon/${nationalNumber}-${form.formName}`}
-                          className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
-                            activeFormIndex === idx
-                              ? 'border-blue-600 text-blue-600 dark:text-primary-400'
-                              : 'border-transparent text-gray-500 dark:text-dark-text-tertiary hover:text-gray-700 dark:hover:text-dark-text-primary hover:border-gray-300 dark:hover:border-gray-600'
-                          }`}
-                        >
-                          {form.formName}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                  <PokemonFormDisplay
-                    pokemon={pokemon}
-                    selectedFormIndex={activeFormIndex}
-                    t={t}
-                  />
-                </>
-              );
-            })()}
+          {/* ── Main card ── */}
+          <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}>
+            <div className="flex flex-col sm:flex-row">
 
-            {/* Base form display (no alternate forms) */}
-            {(!pokemon.details?.forms || pokemon.details.forms.length === 0) && (
-              <PokemonFormDisplay
-                pokemon={pokemon}
-                selectedFormIndex={-1}
-                t={t}
-              />
+              {/* Left 50%: image */}
+              <div className="sm:w-1/2 shrink-0 self-stretch">
+                <div
+                  className="relative flex items-center justify-center p-6 h-full"
+                  style={{
+                    background: secondaryType && secondaryType !== primaryType
+                      ? `linear-gradient(160deg, ${accentColor}30 0%, ${secondaryColor}20 100%)`
+                      : `${accentColor}18`,
+                  }}
+                >
+                  <p className="absolute top-3 left-4 text-lg font-mono font-semibold text-gray-600 dark:text-gray-400 tracking-widest">
+                    #{String(pokemon.nationalNumber).padStart(3, '0')}
+                  </p>
+                  {(pokemon.imageUrl) ? (
+                    <img
+                      src={pokemon.imageUrl}
+                      alt={pokemon.name}
+                      className="max-w-full max-h-full object-contain"
+                      style={{ filter: `drop-shadow(0 6px 20px ${accentColor}55)` }}
+                    />
+                  ) : (
+                    <div className="w-40 h-40 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                  )}
+                </div>
+              </div>
+
+              {/* Right 50%: identity + stats */}
+              <div className="relative sm:w-1/2 min-w-0 p-5 flex flex-col gap-4 border-t sm:border-t-0 sm:border-l" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+
+                {/* Types — top-right corner */}
+                <div className="absolute top-4 right-4 flex gap-1.5">
+                  {pokemon.types.map((type: string) => (
+                    <TypeIcon key={type} type={type} size="sm" showLabel />
+                  ))}
+                </div>
+
+                {/* Name */}
+                <div>
+                  <h1
+                    className="text-3xl font-black text-white leading-none"
+                    style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic' }}
+                  >
+                    {pokemon.name}
+                  </h1>
+                </div>
+
+                {/* Stat table */}
+                <StatTable pokemon={pokemon} t={t} />
+
+              </div>
+            </div>
+
+            {/* Abilities — full width bottom row */}
+            {data.abilities.length > 0 && (
+              <div className="px-5 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <p className="text-xs font-semibold text-gray-400 mb-2 font-mono">
+                  {t('pokemon.abilities')}
+                </p>
+                <div className="space-y-1">
+                  {data.abilities.map((ab: ChampionsAbilityDetail) => {
+                    const abName = (currentLocale === 'ja' && ab.nameJa) ? ab.nameJa : ab.nameEn;
+                    const abDesc = (currentLocale === 'ja' && ab.descriptionJa) ? ab.descriptionJa : ab.descriptionEn;
+                    return (
+                      <div
+                        key={ab.identifier}
+                        onClick={() => router.push(`/data/abilities/${ab.identifier}`)}
+                        className="group flex items-start gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150"
+                        style={{ border: '1px solid rgba(128,128,128,0.15)' }}
+                        onMouseEnter={e => {
+                          const el = e.currentTarget;
+                          el.style.background = 'rgba(59,130,246,0.15)';
+                          el.style.border = '1px solid rgba(99,160,255,1)';
+                          el.style.boxShadow = '0 0 0 1px rgba(99,160,255,0.4), 0 4px 20px rgba(59,130,246,0.2)';
+                          el.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={e => {
+                          const el = e.currentTarget;
+                          el.style.background = '';
+                          el.style.border = '1px solid rgba(128,128,128,0.15)';
+                          el.style.boxShadow = '';
+                          el.style.transform = '';
+                        }}
+                      >
+                        <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
+                          <span
+                            className="inline-block px-2.5 py-0.5 rounded text-sm font-bold text-white"
+                            style={{ background: accentColor }}
+                          >
+                            {abName}
+                          </span>
+                          <svg className="w-3 h-3 text-blue-400 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                        <div className="text-gray-700 dark:text-gray-200 leading-snug text-sm">{abDesc ?? '—'}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Moves (if available) */}
-          {pokemon.details?.movesByGeneration && pokemon.details.movesByGeneration.length > 0 && (
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-6 mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('pokemon.detail.moves')}</h2>
-              <MovesDisplay movesByGeneration={pokemon.details.movesByGeneration} t={t} />
-            </div>
-          )}
-
-          {/* Evolution Chain */}
-          {pokemon.details?.evolutionChain && (
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg p-6 mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('pokemon.detail.evolutionChain')}</h2>
-              <div className="overflow-x-auto">
-                <EvolutionChainDisplay evolutionChain={pokemon.details.evolutionChain} />
+          {/* Alternate Forms */}
+          {data.forms.length > 0 && (
+            <div className="rounded-xl p-4" style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}>
+              <h2 className="text-xs font-semibold text-gray-400 mb-3 font-mono">
+                {t('pokemon.detail.forms')}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {data.forms.map((form) => (
+                  <FormCard
+                    key={form.id}
+                    form={form}
+                    basePokemon={pokemon}
+                    onClick={() => (form as any).nameLower && router.push(`/pokemon/${(form as any).nameLower}`)}
+                  />
+                ))}
               </div>
             </div>
           )}
+
+          {/* Moves */}
+          {data.moves.length > 0 && (() => {
+            const moveTypes = Array.from(new Set(data.moves.map(m => m.type))).sort();
+            const moveCategories: string[] = ['physical', 'special', 'status'];
+            const filteredMoves = data.moves.filter(m =>
+              (!moveTypeFilter || m.type === moveTypeFilter) &&
+              (!moveCategoryFilter || m.category === moveCategoryFilter)
+            );
+            const categoryColors: Record<string, string> = {
+              physical: '#ef4444',
+              special:  '#818cf8',
+              status:   '#9ca3af',
+            };
+            return (
+              <div className="rounded-xl overflow-hidden" style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}>
+                {/* Header */}
+                <div className="px-4 py-3 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                  <h2 className="text-xs font-semibold text-gray-400 font-mono">
+                    {t('pokemon.detail.moves')}
+                  </h2>
+                  <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full text-gray-500" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                    {filteredMoves.length}{moveTypeFilter || moveCategoryFilter ? `/${data.moves.length}` : ''}
+                  </span>
+                </div>
+
+                {/* Filters */}
+                <div className="px-4 py-3 flex flex-col gap-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-semibold text-gray-400 font-mono w-20 shrink-0">{t('pokemon.type')}</span>
+                    {moveTypes.map(type => {
+                      const color = getTypeHex(type);
+                      const active = moveTypeFilter === type;
+                      return (
+                        <button
+                          key={type}
+                          onClick={() => setMoveTypeFilter(active ? null : type)}
+                          className="transition-all duration-150 rounded-full"
+                          style={{
+                            outline: active ? `2px solid ${color}` : '2px solid transparent',
+                            outlineOffset: '2px',
+                            opacity: !moveTypeFilter || active ? 1 : 0.45,
+                          }}
+                        >
+                          <TypeIcon type={type} size="sm" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-gray-400 font-mono w-20 shrink-0">{t('pokemon.detail.category')}</span>
+                    {moveCategories.map(cat => {
+                      const color = categoryColors[cat];
+                      const active = moveCategoryFilter === cat;
+                      return (
+                        <button
+                          key={cat}
+                          onClick={() => setMoveCategoryFilter(active ? null : cat)}
+                          className="px-3 py-1 rounded-full text-xs font-bold capitalize transition-all duration-150 flex items-center gap-1.5"
+                          style={active
+                            ? { background: 'rgba(37,99,235,0.25)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.4)' }
+                            : { background: `${color}18`, color, border: '1px solid transparent', opacity: !moveCategoryFilter ? 1 : 0.45 }
+                          }
+                        >
+                          <MoveCategoryIcon category={cat as MoveCategory} />
+                          {cat}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Display options */}
+                <div className="px-4 py-2 flex items-center gap-2" style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.02)' }}>
+                  <span className="text-xs font-semibold text-gray-400 font-mono">{t('pokemon.detail.display')}</span>
+                  <button
+                    onClick={() => setShowMoveEffects(v => !v)}
+                    className="px-3 py-1 rounded-full text-xs font-bold transition-all duration-150 flex items-center gap-1.5"
+                    style={showMoveEffects
+                      ? { background: 'rgba(37,99,235,0.25)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.4)' }
+                      : { background: 'rgba(255,255,255,0.05)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }
+                    }
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                    {t('moves.table.battleEffect')}
+                  </button>
+                </div>
+
+                {/* Header + Rows */}
+                <div className="overflow-x-auto">
+                  <div className="min-w-[480px]">
+                    <div className="grid px-3 py-2 text-xs font-semibold text-gray-400 font-mono"
+                      style={{ gridTemplateColumns: '2fr 1fr 1fr 3rem 3rem 3rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                      <span>{t('pokemon.detail.move')}</span>
+                      <span>{t('pokemon.type')}</span>
+                      <span>{t('pokemon.detail.category')}</span>
+                      <span className="text-center">{t('pokemon.detail.power')}</span>
+                      <span className="text-center">{t('pokemon.detail.accuracy')}</span>
+                      <span className="text-center">PP</span>
+                    </div>
+                    <div className="space-y-1 p-1" style={{ background: 'var(--color-bg-primary)' }}>
+                      {filteredMoves.length > 0 ? filteredMoves.map((move) => (
+                        <MoveRow key={move.identifier} move={move} onClick={() => router.push(`/data/moves/${move.identifier}`)} showEffect={showMoveEffects} />
+                      )) : (
+                        <div className="px-4 py-8 text-center text-sm text-gray-600 font-mono">
+                          No moves match the selected filters.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
         </div>
       </div>
     </Layout>
   );
 }
 
-// Pokemon Form Display Component
-interface PokemonFormDisplayProps {
-  pokemon: PokemonFull;
-  selectedFormIndex: number;
-  t: any;
-}
+export const getStaticPaths: GetStaticPaths = async () => ({
+  paths: [],
+  fallback: 'blocking',
+});
 
-function PokemonFormDisplay({ pokemon, selectedFormIndex, t }: PokemonFormDisplayProps) {
-  // Determine which form to display
-  const isBaseForm = selectedFormIndex === -1;
-  const selectedForm = isBaseForm ? null : pokemon.details?.forms?.[selectedFormIndex];
-
-  // Get display data based on selected form
-  const displayData = {
-    name: isBaseForm ? pokemon.name : selectedForm?.formName || pokemon.name,
-    imageUrl: isBaseForm ? pokemon.imageUrl : selectedForm?.imageUrl || pokemon.imageUrl,
-    types: isBaseForm ? pokemon.types : selectedForm?.types || pokemon.types,
-    abilities: isBaseForm
-      ? [pokemon.ability1, pokemon.ability2, pokemon.abilityHidden].filter(Boolean)
-      : selectedForm?.abilities || [pokemon.ability1, pokemon.ability2, pokemon.abilityHidden].filter(Boolean),
-    stats: isBaseForm
-      ? {
-          hp: { base: pokemon.details?.hpBase, max: pokemon.hpMax },
-          attack: { base: pokemon.details?.attackBase, max: pokemon.attackMax },
-          defense: { base: pokemon.details?.defenseBase, max: pokemon.defenseMax },
-          spAtk: { base: pokemon.details?.spAtkBase, max: pokemon.spAtkMax },
-          spDef: { base: pokemon.details?.spDefBase, max: pokemon.spDefMax },
-          speed: { base: pokemon.details?.speedBase, max: pokemon.speedMax },
-          total: pokemon.statTotal,
-        }
-      : {
-          hp: selectedForm?.baseStats?.hp || { base: pokemon.details?.hpBase, max: pokemon.hpMax },
-          attack: selectedForm?.baseStats?.attack || { base: pokemon.details?.attackBase, max: pokemon.attackMax },
-          defense: selectedForm?.baseStats?.defense || { base: pokemon.details?.defenseBase, max: pokemon.defenseMax },
-          spAtk: selectedForm?.baseStats?.spAtk || { base: pokemon.details?.spAtkBase, max: pokemon.spAtkMax },
-          spDef: selectedForm?.baseStats?.spDef || { base: pokemon.details?.spDefBase, max: pokemon.spDefMax },
-          speed: selectedForm?.baseStats?.speed || { base: pokemon.details?.speedBase, max: pokemon.speedMax },
-          total: selectedForm?.baseStats?.total || pokemon.statTotal,
-        },
-  };
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Left Column: Image and Basic Info */}
-      <div>
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Pokemon Image */}
-          <div className="flex-shrink-0">
-            {displayData.imageUrl && (
-              <img
-                src={displayData.imageUrl}
-                alt={displayData.name}
-                className="w-48 h-48 object-contain mx-auto"
-              />
-            )}
-          </div>
-
-          {/* Basic Info */}
-          <div className="flex-1">
-            <div className="mb-4">
-              <span className="text-xl text-gray-500 dark:text-dark-text-tertiary">#{pokemon.nationalNumber}</span>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">{displayData.name}</h1>
-            </div>
-
-            {/* Types */}
-            <div className="mb-4">
-              <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.type')}:</span>
-              <div className="inline-flex gap-2">
-                {displayData.types.map((type, idx) => (
-                  <TypeIcon key={idx} type={type} size="md" />
-                ))}
-              </div>
-            </div>
-
-            {/* Abilities */}
-            <div className="mb-4">
-              <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.abilities')}:</span>
-              <span className="text-gray-900 dark:text-dark-text-primary">
-                {displayData.abilities.map((ability, idx) => (
-                  <span key={idx}>
-                    {idx > 0 && ', '}
-                    <Link
-                      href={`/data/abilities/${ability?.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
-                    >
-                      {ability}
-                    </Link>
-                  </span>
-                ))}
-              </span>
-            </div>
-
-            {/* Species, Height, Weight (only for base form) */}
-            {isBaseForm && pokemon.details && (
-              <>
-                {pokemon.details.species && (
-                  <div className="mb-2">
-                    <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.detail.species')}:</span>
-                    <span className="text-gray-900 dark:text-dark-text-primary">{pokemon.details.species}</span>
-                  </div>
-                )}
-                {pokemon.details.height && (
-                  <div className="mb-2">
-                    <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.detail.height')}:</span>
-                    <span className="text-gray-900 dark:text-dark-text-primary">{pokemon.details.height}</span>
-                  </div>
-                )}
-                {pokemon.details.weight && (
-                  <div className="mb-2">
-                    <span className="text-sm font-semibold text-gray-600 dark:text-dark-text-secondary mr-2">{t('pokemon.detail.weight')}:</span>
-                    <span className="text-gray-900 dark:text-dark-text-primary">{pokemon.details.weight}</span>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Right Column: Base Stats */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary mb-4">{t('pokemon.detail.baseStats')}</h2>
-        <div className="space-y-3">
-          {[
-            { label: t('pokemon.stats.hp'), stat: displayData.stats.hp },
-            { label: t('pokemon.stats.attack'), stat: displayData.stats.attack },
-            { label: t('pokemon.stats.defense'), stat: displayData.stats.defense },
-            { label: t('pokemon.stats.spAtk'), stat: displayData.stats.spAtk },
-            { label: t('pokemon.stats.spDef'), stat: displayData.stats.spDef },
-            { label: t('pokemon.stats.speed'), stat: displayData.stats.speed },
-          ].map((item, idx) => (
-            <div key={idx} className="flex items-center gap-3">
-              <div className="w-20 text-sm font-semibold text-gray-600 dark:text-dark-text-secondary">{item.label}</div>
-              <div className="w-12 text-right font-bold text-gray-900 dark:text-dark-text-primary">{item.stat.base}</div>
-              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                <div
-                  className="bg-blue-600 h-3 rounded-full transition-all"
-                  style={{ width: `${Math.min(((item.stat.base || 0) / 255) * 100, 100)}%` }}
-                ></div>
-              </div>
-              <div className="w-14 text-xs text-gray-500 dark:text-dark-text-tertiary">Max: {item.stat.max}</div>
-            </div>
-          ))}
-          <div className="pt-3 border-t border-gray-200 dark:border-dark-border">
-            <div className="flex items-center gap-3">
-              <div className="w-20 text-sm font-bold text-gray-700 dark:text-dark-text-secondary">{t('pokemon.stats.total')}</div>
-              <div className="flex-1 text-right font-bold text-blue-600 dark:text-primary-400 text-xl">{displayData.stats.total}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Moves Display Component
-interface MovesDisplayProps {
-  movesByGeneration: any[];
-  t: any;
-}
-
-function MovesDisplay({ movesByGeneration, t }: MovesDisplayProps) {
-  // Helper function to check if a game version has any moves
-  const hasMovesData = (gameVersion: any) => {
-    const moves = gameVersion.movesByMethod;
-    return (
-      (moves.moves && moves.moves.length > 0) ||
-      (moves.tmMoves && moves.tmMoves.length > 0) ||
-      (moves.eggMoves && moves.eggMoves.length > 0) ||
-      (moves.evolutionMoves && moves.evolutionMoves.length > 0) ||
-      (moves.hmMoves && moves.hmMoves.length > 0)
-    );
-  };
-
-  // Filter generations that have at least one game version with moves
-  const generationsWithMoves = movesByGeneration
-    .map((gen, originalIndex) => ({
-      ...gen,
-      originalIndex,
-      gameVersions: gen.gameVersions
-        .map((gv: any, gvOriginalIndex: number) => ({
-          ...gv,
-          originalIndex: gvOriginalIndex
-        }))
-        .filter((gv: any) => hasMovesData(gv))
-    }))
-    .filter((gen) => gen.gameVersions.length > 0);
-
-  // State for selected generation and game version
-  const [selectedGenerationIndex, setSelectedGenerationIndex] = useState(generationsWithMoves.length - 1);
-  const [selectedGameVersionIndex, setSelectedGameVersionIndex] = useState(0);
-  const [selectedTypeFilters, setSelectedTypeFilters] = useState<string[]>([]);
-  const [selectedCategoryFilters, setSelectedCategoryFilters] = useState<string[]>([]);
-
-  // Get the selected generation
-  const selectedGeneration = generationsWithMoves[selectedGenerationIndex];
-
-  // Update game version index when generation changes
-  useEffect(() => {
-    if (selectedGeneration?.gameVersions) {
-      // Default to the latest game version in the selected generation
-      setSelectedGameVersionIndex(selectedGeneration.gameVersions.length - 1);
-      // Reset filters when generation changes
-      setSelectedTypeFilters([]);
-      setSelectedCategoryFilters([]);
-    }
-  }, [selectedGenerationIndex]);
-
-  // Reset filters when game version changes
-  useEffect(() => {
-    setSelectedTypeFilters([]);
-    setSelectedCategoryFilters([]);
-  }, [selectedGameVersionIndex]);
-
-  if (!generationsWithMoves || generationsWithMoves.length === 0) {
-    return <p className="text-gray-500 dark:text-dark-text-secondary">{t('pokemon.detail.noMoves')}</p>;
-  }
-
-  if (!selectedGeneration || !selectedGeneration.gameVersions || selectedGeneration.gameVersions.length === 0) {
-    return <p className="text-gray-500 dark:text-dark-text-secondary">{t('pokemon.detail.noMoves')}</p>;
-  }
-
-  const selectedGameVersion = selectedGeneration.gameVersions[selectedGameVersionIndex];
-
-  if (!selectedGameVersion) {
-    return <p className="text-gray-500 dark:text-dark-text-secondary">{t('pokemon.detail.noMoves')}</p>;
-  }
-
-  const movesByMethod = selectedGameVersion.movesByMethod;
-  const gameVersion = selectedGameVersion.gameVersion || selectedGameVersion.version;
-
-  // Get all unique types from current moves
-  const allMoveTypes = Array.from(
-    new Set([
-      ...(movesByMethod.moves || []).map((m: any) => m.type),
-      ...(movesByMethod.tmMoves || []).map((m: any) => m.type),
-      ...(movesByMethod.hmMoves || []).map((m: any) => m.type),
-      ...(movesByMethod.eggMoves || []).map((m: any) => m.type),
-      ...(movesByMethod.evolutionMoves || []).map((m: any) => m.type),
-    ])
-  ).filter(Boolean).sort();
-
-  // Get all unique categories from current moves
-  const allMoveCategories = Array.from(
-    new Set([
-      ...(movesByMethod.moves || []).map((m: any) => m.category?.toLowerCase()),
-      ...(movesByMethod.tmMoves || []).map((m: any) => m.category?.toLowerCase()),
-      ...(movesByMethod.hmMoves || []).map((m: any) => m.category?.toLowerCase()),
-      ...(movesByMethod.eggMoves || []).map((m: any) => m.category?.toLowerCase()),
-      ...(movesByMethod.evolutionMoves || []).map((m: any) => m.category?.toLowerCase()),
-    ])
-  ).filter(Boolean).sort();
-
-  // Filter moves by type and category (multiple with OR logic within each filter type)
-  const filterMoves = (moves: any[]) => {
-    if (!moves) return moves;
-
-    let filtered = moves;
-
-    // Apply type filter
-    if (selectedTypeFilters.length > 0) {
-      filtered = filtered.filter((m: any) => selectedTypeFilters.includes(m.type));
-    }
-
-    // Apply category filter
-    if (selectedCategoryFilters.length > 0) {
-      filtered = filtered.filter((m: any) =>
-        selectedCategoryFilters.includes(m.category?.toLowerCase())
-      );
-    }
-
-    return filtered;
-  };
-
-  // Toggle type filter selection
-  const toggleTypeFilter = (type: string) => {
-    setSelectedTypeFilters(prev =>
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
-  };
-
-  // Toggle category filter selection
-  const toggleCategoryFilter = (category: string) => {
-    setSelectedCategoryFilters(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
-  };
-
-  const filteredMovesByMethod = {
-    moves: filterMoves(movesByMethod.moves),
-    tmMoves: filterMoves(movesByMethod.tmMoves),
-    hmMoves: filterMoves(movesByMethod.hmMoves),
-    eggMoves: filterMoves(movesByMethod.eggMoves),
-    evolutionMoves: filterMoves(movesByMethod.evolutionMoves),
-  };
-
-  return (
-    <div>
-      {/* Generation and Game Version Selectors */}
-      <div className="mb-6 p-4 bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Generation Selector */}
-          <div>
-            <label htmlFor="generation-select" className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
-              {t('pokemon.detail.selectGeneration')}
-            </label>
-            <select
-              id="generation-select"
-              value={selectedGenerationIndex}
-              onChange={(e) => setSelectedGenerationIndex(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-bg-primary text-gray-900 dark:text-dark-text-primary"
-            >
-              {generationsWithMoves.map((gen, index) => (
-                <option key={index} value={index}>
-                  {gen.generation}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Game Version Selector */}
-          <div>
-            <label htmlFor="game-version-select" className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
-              {t('pokemon.detail.selectGameVersion')}
-            </label>
-            <select
-              id="game-version-select"
-              value={selectedGameVersionIndex}
-              onChange={(e) => setSelectedGameVersionIndex(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-bg-primary text-gray-900 dark:text-dark-text-primary"
-            >
-              {selectedGeneration.gameVersions.map((gv: any, index: number) => (
-                <option key={index} value={index}>
-                  {gv.gameVersion || gv.version}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Type Filter Buttons */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
-            {t('pokemon.detail.filterByType') || 'Filter by Type'}
-            {selectedTypeFilters.length > 0 && (
-              <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
-                ({selectedTypeFilters.length} selected)
-              </span>
-            )}
-          </label>
-          <TypeFilterGrid selectedTypes={selectedTypeFilters} onToggle={toggleTypeFilter} types={allMoveTypes} />
-        </div>
-
-        {/* Category Filter Buttons */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
-            {t('moves.filterByCategory') || 'Filter by Category'}
-            {selectedCategoryFilters.length > 0 && (
-              <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
-                ({selectedCategoryFilters.length} selected)
-              </span>
-            )}
-          </label>
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setSelectedCategoryFilters([])}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategoryFilters.length === 0
-                  ? 'bg-gray-800 dark:bg-gray-700 text-white'
-                  : 'bg-gray-200 dark:bg-dark-bg-primary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('moves.all') || 'All'}
-            </button>
-            {allMoveCategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => toggleCategoryFilter(category)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  selectedCategoryFilters.includes(category)
-                    ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2'
-                    : 'bg-gray-200 dark:bg-dark-bg-primary text-gray-700 dark:text-dark-text-primary hover:bg-gray-300 dark:hover:bg-gray-600'
-                }`}
-              >
-                <MoveCategoryIcon
-                  category={category as 'physical' | 'special' | 'status'}
-                  size={20}
-                />
-                <span className="capitalize">{t(`moves.categories.${category}`) || category}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Level Up Moves */}
-      {filteredMovesByMethod.moves && filteredMovesByMethod.moves.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 dark:text-dark-text-primary mb-3">{t('pokemon.detail.levelUpMoves')}</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
-              <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.level')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.move')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.type')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.category')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.power')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.accuracy')}</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
-                {filteredMovesByMethod.moves.map((move: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
-                    <td className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-dark-text-primary">{move.level}</td>
-                    <td className="px-4 py-2 text-sm">
-                      <Link
-                        href={`/data/moves/${moveNameToIdentifier(move.name)}`}
-                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
-                      >
-                        {move.name}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      <TypeIcon type={move.type} size="sm" />
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      <MoveCategoryIcon category={move.category as 'physical' | 'special' | 'status'} size={24} />
-                    </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.power}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.accuracy}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* TM Moves */}
-      {filteredMovesByMethod.tmMoves && filteredMovesByMethod.tmMoves.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 dark:text-dark-text-primary mb-3">{t('pokemon.detail.tmMoves')}</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
-              <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">TM</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.move')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.type')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.category')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.power')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.accuracy')}</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
-                {filteredMovesByMethod.tmMoves.map((move: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
-                    <td className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-dark-text-primary">{move.tm}</td>
-                    <td className="px-4 py-2 text-sm">
-                      <Link
-                        href={`/data/moves/${moveNameToIdentifier(move.name)}`}
-                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
-                      >
-                        {move.name}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      <TypeIcon type={move.type} size="sm" />
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      <MoveCategoryIcon category={move.category as 'physical' | 'special' | 'status'} size={24} />
-                    </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.power}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.accuracy}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Egg Moves */}
-      {filteredMovesByMethod.eggMoves && filteredMovesByMethod.eggMoves.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 dark:text-dark-text-primary mb-3">{t('pokemon.detail.eggMoves')}</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
-              <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.move')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.type')}</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.category')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.power')}</th>
-                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-dark-text-tertiary uppercase">{t('pokemon.detail.accuracy')}</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
-                {filteredMovesByMethod.eggMoves.map((move: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary">
-                    <td className="px-4 py-2 text-sm">
-                      <Link
-                        href={`/data/moves/${moveNameToIdentifier(move.name)}`}
-                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline"
-                      >
-                        {move.name}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      <TypeIcon type={move.type} size="sm" />
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      <MoveCategoryIcon category={move.category as 'physical' | 'special' | 'status'} size={24} />
-                    </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.power}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-900 dark:text-dark-text-primary">{move.accuracy}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Evolution Chain Component
-interface EvolutionNode {
-  nationalNumber: string;
-  name: string;
-  types: string[];
-  imageUrl: string;
-  evolvesTo?: Array<{
-    pokemon: EvolutionNode;
-    condition: string;
-  }>;
-}
-
-interface EvolutionChainProps {
-  evolutionChain: {
-    baseForm: EvolutionNode;
-  };
-}
-
-function EvolutionChainDisplay({ evolutionChain }: EvolutionChainProps) {
-  const router = useRouter();
-
-  const handlePokemonClick = (nationalNumber: string) => {
-    // Extract just the number from format like "#0025"
-    const cleanNumber = nationalNumber.replace('#', '');
-    window.open(`/pokemon/${cleanNumber}`, '_blank');
-  };
-
-  const renderEvolutionNode = (node: EvolutionNode, depth: number = 0) => {
-    return (
-      <div key={`${node.nationalNumber}-${depth}`} className="flex items-center gap-4">
-        {/* Pokemon Card */}
-        <div
-          className="flex flex-col items-center min-w-[180px] p-4 border-2 border-gray-200 dark:border-dark-border rounded-lg bg-gray-50 dark:bg-dark-bg-tertiary cursor-pointer hover:border-blue-500 dark:hover:border-primary-400 hover:shadow-lg transition-all"
-          onClick={() => handlePokemonClick(node.nationalNumber)}
-        >
-          <div className="text-sm text-gray-500 dark:text-dark-text-tertiary mb-1">#{node.nationalNumber}</div>
-          {node.imageUrl && (
-            <img src={node.imageUrl} alt={node.name} className="w-24 h-24 object-contain mb-2" />
-          )}
-          <div className="font-bold text-center mb-2 dark:text-dark-text-primary">{node.name}</div>
-          <div className="flex gap-1">
-            {node.types.map((type, idx) => (
-              <TypeIcon key={idx} type={type} size="xs" />
-            ))}
-          </div>
-        </div>
-
-        {/* Evolution Arrows */}
-        {node.evolvesTo && node.evolvesTo.length > 0 && (
-          <div className="flex flex-col gap-4">
-            {node.evolvesTo.map((evolution, idx) => (
-              <div key={idx} className="flex items-center gap-4">
-                {/* Arrow with condition */}
-                <div className="flex flex-col items-center min-w-[120px]">
-                  <svg className="w-12 h-12 text-blue-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                  <div className="text-xs text-center text-gray-600 dark:text-dark-text-secondary mt-1 max-w-[120px]">
-                    {evolution.condition}
-                  </div>
-                </div>
-
-                {/* Next Pokemon */}
-                {renderEvolutionNode(evolution.pokemon, depth + 1)}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  return (
-    <div className="flex items-start">
-      {renderEvolutionNode(evolutionChain.baseForm)}
-    </div>
-  );
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking',
-  };
-};
-
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale || 'en', ['common'])),
-    },
-  };
-};
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale || 'en', ['common'])),
+  },
+  revalidate: 3600,
+});

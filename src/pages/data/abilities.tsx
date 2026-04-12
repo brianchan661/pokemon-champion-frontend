@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Layout } from '@/components/Layout/Layout';
@@ -6,286 +6,245 @@ import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { getApiBaseUrl } from '@/config/api';
+import { useTheme } from '@/hooks/useTheme';
+import Head from 'next/head';
 
 const API_URL = getApiBaseUrl();
 
-interface Ability {
-  id: number;
+interface ChampionsAbility {
   identifier: string;
   name: string;
-  description?: string;
-  shortEffect?: string;
-  isHidden?: boolean;
-  pokemonCount?: number;
+  name_en: string;
+  description: string;
 }
 
-export default function AbilitiesPage() {
+type SortKey = 'name';
+
+export default function ChampionsAbilitiesPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof Ability;
-    direction: 'asc' | 'desc';
-  } | null>({ key: 'name', direction: 'asc' });
+  const { theme, setTheme } = useTheme();
+  const [search, setSearch] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
-  // Fetch all abilities once with caching
+  useEffect(() => {
+    const prev = theme;
+    setTheme('dark');
+    return () => setTheme(prev);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { data: allAbilities, isLoading, error, refetch } = useQuery({
-    queryKey: ['all-abilities', router.locale || 'en'],
-    queryFn: async (): Promise<Ability[]> => {
-      const response = await axios.get(
-        `${API_URL}/abilities?lang=${router.locale || 'en'}`
-      );
-      return response.data.data;
+    queryKey: ['champions-abilities', router.locale || 'en'],
+    queryFn: async (): Promise<ChampionsAbility[]> => {
+      const res = await axios.get(`${API_URL}/champions/abilities?lang=${router.locale || 'en'}`);
+      return res.data.data;
     },
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
-    retry: 2,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 
-  // Client-side filtering and sorting with useMemo for performance
-  const abilities = useMemo((): Ability[] => {
+  const abilities = useMemo((): ChampionsAbility[] => {
     if (!allAbilities) return [];
-
     let result = [...allAbilities];
-
-    // Filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter((ability: Ability) =>
-        (ability.name?.toLowerCase() || '').includes(query) ||
-        (ability.identifier?.toLowerCase() || '').includes(query)
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(a =>
+        a.name?.toLowerCase().includes(q) ||
+        a.name_en?.toLowerCase().includes(q) ||
+        a.identifier?.toLowerCase().includes(q) ||
+        a.description?.toLowerCase().includes(q)
       );
     }
-
-    // Sort
-    if (sortConfig) {
-      result.sort((a, b) => {
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
-
-        // For description column, use shortEffect if available to match display
-        if (sortConfig.key === 'description') {
-          const aText = a.shortEffect || a.description || '';
-          const bText = b.shortEffect || b.description || '';
-          return sortConfig.direction === 'asc'
-            ? aText.localeCompare(bText, router.locale || 'en')
-            : bText.localeCompare(aText, router.locale || 'en');
-        }
-
-        if (aValue === undefined || aValue === null) return 1;
-        if (bValue === undefined || bValue === null) return -1;
-
-        if (sortConfig.key === 'name') {
-          return sortConfig.direction === 'asc'
-            ? String(aValue).localeCompare(String(bValue), router.locale || 'en')
-            : String(bValue).localeCompare(String(aValue), router.locale || 'en');
-        }
-
-        if (aValue < bValue) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
+    result.sort((a, b) => {
+      const av = a.name;
+      const bv = b.name;
+      const cmp = (av || '').localeCompare(bv || '', router.locale || 'en');
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
     return result;
-  }, [allAbilities, searchQuery, sortConfig, router.locale]);
+  }, [allAbilities, search, sortKey, sortDir, router.locale]);
 
-  const requestSort = (key: keyof Ability) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === 'asc'
-    ) {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
   };
 
-  const getSortIcon = (key: keyof Ability) => {
-    if (!sortConfig || sortConfig.key !== key) {
-      return (
-        <svg className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-        </svg>
-      );
-    }
-    return sortConfig.direction === 'asc' ? (
-      <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  const total = allAbilities?.length ?? 0;
+  const filtered = abilities.length;
+  const isFiltered = search.length > 0;
+
+  const SortIcon = ({ col }: { col: SortKey }) => {
+    if (sortKey !== col) return (
+      <svg className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+      </svg>
+    );
+    return sortDir === 'asc' ? (
+      <svg className="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
       </svg>
     ) : (
-      <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     );
   };
 
-  const totalCount = allAbilities?.length ?? 0;
-  const filteredCount = abilities.length;
-
   return (
-    <Layout>
-      <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">
-              {t('abilities.title', 'Abilities')}
-            </h1>
-            <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-gray-600 dark:text-dark-text-secondary">
-                {t('abilities.description', 'Browse all Pokemon abilities with their descriptions')}
-              </p>
-              {totalCount > 0 && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300">
-                  {searchQuery
-                    ? t('abilities.filteredCount', `${filteredCount} of ${totalCount} abilities`, { filtered: filteredCount, total: totalCount })
-                    : t('abilities.totalCount', `${totalCount} abilities`, { count: totalCount })}
-                </span>
+    <>
+      <Head>
+        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+      </Head>
+      <Layout>
+        <div className="min-h-screen bg-dark-bg-primary">
+
+          {/* Hero */}
+          <div
+            className="relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(160deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 50%, var(--color-bg-tertiary) 100%)',
+              borderBottom: '1px solid var(--color-border)',
+            }}
+          >
+            <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
+              style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,1) 2px, rgba(255,255,255,1) 3px)' }}
+            />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 pointer-events-none"
+              style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.1) 0%, transparent 70%)' }}
+            />
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-400/70 mb-2">Champions</p>
+              <h1 className="text-5xl sm:text-6xl font-bold text-dark-text-primary leading-none mb-2"
+                style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: '-0.01em' }}>
+                {t('abilities.title')}
+              </h1>
+              {total > 0 && (
+                <p className="text-sm text-gray-500">
+                  {isFiltered ? t('abilities.filteredCount', { filtered, total }) : t('abilities.totalCount', { count: total })}
+                </p>
               )}
             </div>
           </div>
 
           {/* Search */}
-          <div className="mb-6 flex gap-2">
-            <div className="relative flex-1 max-w-md">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                </svg>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder={t('abilities.searchPlaceholder')}
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-xl text-sm text-dark-text-primary placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                  style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}
+                />
               </div>
-              <input
-                type="text"
-                placeholder={t('abilities.searchPlaceholder', 'Search by name or identifier...')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg-tertiary dark:text-dark-text-primary"
-              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 transition-colors hover:text-white whitespace-nowrap"
+                  style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
+                >
+                  {t('abilities.clearSearch')}
+                </button>
+              )}
             </div>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="px-4 py-2 bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-dark-bg-secondary transition-colors text-sm font-medium whitespace-nowrap"
-              >
-                {t('abilities.clearSearch', 'Clear')}
-              </button>
-            )}
           </div>
 
-          {/* Loading State */}
-          {isLoading ? (
-            <div className="text-center py-12" role="status" aria-live="polite">
-              <div
-                className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-primary-600 dark:border-t-primary-400"
-                aria-hidden="true"
-              ></div>
-              <p className="mt-4 text-gray-600 dark:text-dark-text-secondary">{t('abilities.loading', 'Loading abilities...')}</p>
-              <span className="sr-only">Loading abilities data</span>
-            </div>
-          ) : error ? (
-            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p className="text-red-700 dark:text-red-300 mb-3">
-                {t('abilities.error', 'Error loading abilities. Please try again.')}
-              </p>
-              <button
-                onClick={() => refetch()}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-              >
-                {t('abilities.retry', 'Retry')}
-              </button>
-            </div>
-          ) : abilities && abilities.length > 0 ? (
-            <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
-                  <thead className="bg-gray-50 dark:bg-dark-bg-tertiary">
-                    <tr>
-                      <th
-                        className="group px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-secondary transition-colors select-none"
-                        onClick={() => requestSort('name')}
-                      >
-                        <div className="flex items-center gap-1">
-                          {t('abilities.table.name', 'Name')}
-                          {getSortIcon('name')}
-                        </div>
-                      </th>
-                      <th
-                        className="group px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-secondary transition-colors select-none"
-                        onClick={() => requestSort('pokemonCount')}
-                      >
-                        <div className="flex items-center gap-1">
-                          {t('abilities.table.pokemonCount', '# Pokemon')}
-                          {getSortIcon('pokemonCount')}
-                        </div>
-                      </th>
-                      <th
-                        className="group px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-secondary transition-colors select-none"
-                        onClick={() => requestSort('description')}
-                      >
-                        <div className="flex items-center gap-1">
-                          {t('abilities.table.description', 'Description')}
-                          {getSortIcon('description')}
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-dark-bg-secondary divide-y divide-gray-200 dark:divide-dark-border">
-                    {abilities.map((ability) => (
-                      <tr key={ability.id} className="relative hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary cursor-pointer">
-                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <Link
-                              href={`/data/abilities/${ability.identifier}`}
-                              className="group/link flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-primary-400 after:absolute after:inset-0"
-                            >
-                              {ability.name}
-                              <svg className="w-3 h-3 opacity-0 group-hover/link:opacity-100 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            </Link>
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-700 dark:text-dark-text-primary">
-                            {ability.pokemonCount ?? 0}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 sm:px-6 sm:py-4">
-                          <div
-                            className="text-sm text-gray-700 dark:text-dark-text-primary line-clamp-2"
-                            title={ability.shortEffect || ability.description || ''}
-                          >
-                            {ability.shortEffect || ability.description || '-'}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          {/* Table */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+            {isLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="h-11 rounded-xl animate-pulse"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', animationDelay: `${i * 60}ms` }} />
+                ))}
               </div>
-            </div>
-          ) : abilities && abilities.length === 0 && !isLoading ? (
-            <div className="text-center py-20 bg-white dark:bg-dark-bg-secondary rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
-              <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
-                <circle cx="50" cy="50" r="44" />
-                <line x1="6" y1="50" x2="94" y2="50" />
-                <circle cx="50" cy="50" r="12" fill="white" stroke="currentColor" strokeWidth="3" />
-                <circle cx="50" cy="50" r="6" fill="currentColor" />
-              </svg>
-              <p className="text-gray-600 dark:text-dark-text-secondary font-medium">{t('abilities.noResults', 'No abilities found.')}</p>
-              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Try adjusting your search</p>
-            </div>
-          ) : null}
+            ) : error ? (
+              <div className="rounded-xl p-4 text-red-400" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                <p className="mb-3">{t('abilities.error')}</p>
+                <button onClick={() => refetch()} className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ background: 'rgba(239,68,68,0.3)' }}>
+                  {t('abilities.retry')}
+                </button>
+              </div>
+            ) : abilities.length > 0 ? (
+              <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
+                {/* Header */}
+                <div className="grid px-3 sm:px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] select-none"
+                  style={{ background: 'var(--color-bg-secondary)', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', gridTemplateColumns: '200px 1fr' }}>
+                  <button onClick={() => handleSort('name')} className="group flex items-center gap-1 whitespace-nowrap hover:text-white transition-colors text-left">
+                    {t('abilities.table.name')}<SortIcon col="name" />
+                  </button>
+                  <span>{t('abilities.table.description')}</span>
+                </div>
+                {/* Rows */}
+                <div className="space-y-1 p-1" style={{ background: 'var(--color-bg-primary)' }}>
+                  {abilities.map(ability => (
+                    <div
+                      key={ability.identifier}
+                      onClick={() => router.push(`/data/abilities/${ability.identifier}`)}
+                      className="group grid items-center px-3 sm:px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-150"
+                      style={{
+                        gridTemplateColumns: '200px 1fr',
+                        background: 'rgba(255,255,255,0.03)',
+                        border: '1px solid rgba(255,255,255,0.07)',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                      }}
+                      onMouseEnter={e => {
+                        const el = e.currentTarget;
+                        el.style.background = 'rgba(59,130,246,0.15)';
+                        el.style.border = '1px solid rgba(99,160,255,1)';
+                        el.style.boxShadow = '0 0 0 1px rgba(99,160,255,0.5), 0 8px 32px rgba(59,130,246,0.3)';
+                        el.style.transform = 'translateY(-4px)';
+                      }}
+                      onMouseLeave={e => {
+                        const el = e.currentTarget;
+                        el.style.background = 'rgba(255,255,255,0.03)';
+                        el.style.border = '1px solid rgba(255,255,255,0.07)';
+                        el.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
+                        el.style.transform = '';
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="text-sm font-semibold text-dark-text-primary group-hover:text-blue-300 transition-colors truncate">{ability.name}</span>
+                        <svg className="w-3 h-3 shrink-0 text-blue-400 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <div className="text-sm text-gray-400 min-w-0">
+                        {ability.description || <span className="text-gray-600">—</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl p-16 text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <svg className="w-16 h-16 mx-auto mb-4 opacity-20 text-gray-400" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+                  <circle cx="50" cy="50" r="44" /><line x1="6" y1="50" x2="94" y2="50" />
+                  <circle cx="50" cy="50" r="12" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="3" />
+                  <circle cx="50" cy="50" r="6" fill="currentColor" />
+                </svg>
+                <p className="text-gray-500 font-medium">{t('abilities.noResults')}</p>
+                {isFiltered && (
+                  <button onClick={() => setSearch('')} className="mt-3 text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                    {t('abilities.clearSearch')}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </Layout>
+      </Layout>
+    </>
   );
 }
 
