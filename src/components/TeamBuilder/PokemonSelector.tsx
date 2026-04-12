@@ -4,7 +4,7 @@ import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import { useTranslation } from 'next-i18next';
 import { LoadingSpinner } from '@/components/UI/LoadingSpinner';
 import { ErrorMessage } from '@/components/UI/ErrorMessage';
-import { TypeIcon } from '@/components/UI';
+import { TypeIcon, TypeFilterGrid } from '@/components/UI';
 
 interface PokemonSelectorProps {
   onSelect: (pokemon: Pokemon) => void;
@@ -22,7 +22,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('');
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'name' | 'national_number' | 'stat_total'>('national_number');
 
   // Fetch Pokemon list
@@ -33,7 +33,6 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
 
       const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
       const result = await pokemonBuilderService.getPokemonList({
-        type: typeFilter || undefined,
         sortBy,
         order: 'asc',
         lang: currentLang,
@@ -49,30 +48,39 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
     }
 
     fetchPokemon();
-  }, [typeFilter, sortBy, i18n.language]);
+  }, [sortBy, i18n.language]);
 
-  // Filter Pokemon by search query
+  // Filter Pokemon by search query and type
   const filteredPokemon = useMemo(() => {
-    if (!searchQuery.trim()) return pokemon;
+    let result = pokemon;
 
-    const query = searchQuery.toLowerCase();
-    return pokemon.filter((p) =>
-      p.name.toLowerCase().includes(query) ||
-      p.nationalNumber.toString().includes(query)
-    );
-  }, [pokemon, searchQuery]);
+    if (selectedTypes.length > 0) {
+      result = result.filter((p) =>
+        selectedTypes.some((t) => p.types.some((pt) => pt.toLowerCase() === t.toLowerCase()))
+      );
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((p) =>
+        p.name.toLowerCase().includes(query) ||
+        p.nationalNumber.toString().includes(query)
+      );
+    }
+
+    return result;
+  }, [pokemon, searchQuery, selectedTypes]);
 
   // Handle Pokemon selection
   const handleSelect = useCallback((p: Pokemon) => {
     onSelect(p);
   }, [onSelect]);
 
-  // Type options
-  const typeOptions = [
-    'Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice',
-    'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug',
-    'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'
-  ];
+  const toggleType = useCallback((type: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  }, []);
 
   if (loading) {
     return (
@@ -110,28 +118,8 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
         </div>
 
         {/* Type Filter */}
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          <button
-            onClick={() => setTypeFilter('')}
-            className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${typeFilter === ''
-              ? 'bg-primary-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
-              }`}
-          >
-            {t('teamBuilder.allTypes', 'All')}
-          </button>
-          {typeOptions.map((type) => (
-            <button
-              key={type}
-              onClick={() => setTypeFilter(type)}
-              className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${typeFilter === type
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-bg-tertiary dark:text-dark-text-primary dark:hover:bg-dark-bg-secondary'
-                }`}
-            >
-              {type}
-            </button>
-          ))}
+        <div>
+          <TypeFilterGrid selectedTypes={selectedTypes} onToggle={toggleType} />
         </div>
 
         {/* Sort Options */}
