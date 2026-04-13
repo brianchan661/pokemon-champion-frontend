@@ -173,10 +173,6 @@ export default function TeamDetailPage() {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={team.name} />
         <meta name="twitter:description" content={team.description || team.strategy || `Check out this Pokemon team by ${team.authorUsername}`} />
-        {/* Rajdhani font for headings */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
       </Head>
 
       <Layout>

@@ -16,7 +16,6 @@ import { PokemonConfigurator } from '@/components/TeamBuilder/PokemonConfigurato
 
 import { MentionTextarea } from '@/components/Strategy/MentionTextarea';
 import { TeamTypeAnalysis } from '@/components/TeamBuilder/TeamTypeAnalysis';
-import { pokemonBuilderService } from '@/services/pokemonBuilderService';
 import axios from 'axios';
 import { getApiBaseUrl } from '@/config/api';
 
@@ -152,34 +151,35 @@ export default function TeamBuilderPage() {
   const handleConfigSave = async (config: TeamPokemon) => {
     if (activeSlot === undefined || !configuringPokemon) return;
 
-    // Load full Pokemon data
-    const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
-    const pokemonResult = await pokemonBuilderService.getPokemonByNationalNumber(
-      configuringPokemon.nationalNumber,
-      currentLang
-    );
-
-    if (pokemonResult.success && pokemonResult.data) {
-      const newTeam = [...team];
-      newTeam[activeSlot] = {
-        ...newTeam[activeSlot], // Preserve ID
-        pokemon: {
-          ...config,
-          pokemonData: {
-            id: pokemonResult.data.id,
-            nationalNumber: pokemonResult.data.nationalNumber,
-            name: pokemonResult.data.name,
-            imageUrl: pokemonResult.data.imageUrl,
-            types: pokemonResult.data.types,
-          },
+    // Use the already-selected configuringPokemon data (no extra fetch needed)
+    const newTeam = [...team];
+    newTeam[activeSlot] = {
+      ...newTeam[activeSlot], // Preserve ID
+      pokemon: {
+        ...config,
+        pokemonData: {
+          id: configuringPokemon.id,
+          nationalNumber: configuringPokemon.nationalNumber,
+          name: configuringPokemon.name,
+          nameLower: configuringPokemon.nameLower,
+          imageUrl: configuringPokemon.imageUrl,
+          types: configuringPokemon.types,
+          baseStats: configuringPokemon.hpBase != null ? {
+            hp: configuringPokemon.hpBase,
+            attack: configuringPokemon.attackBase!,
+            defense: configuringPokemon.defenseBase!,
+            specialAttack: configuringPokemon.spAtkBase!,
+            specialDefense: configuringPokemon.spDefBase!,
+            speed: configuringPokemon.speedBase!,
+          } : undefined,
         },
-      };
-      setTeam(newTeam);
-      setConfiguringPokemon(null);
-      setActiveSlot(undefined);
-      setSuccessMessage('Pokemon configured successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
-    }
+      },
+    };
+    setTeam(newTeam);
+    setConfiguringPokemon(null);
+    setActiveSlot(undefined);
+    setSuccessMessage('Pokemon configured successfully!');
+    setTimeout(() => setSuccessMessage(''), 3000);
   };
 
   // Handle Pokemon removal
@@ -199,8 +199,15 @@ export default function TeamBuilderPage() {
         id: pokemonData.id,
         nationalNumber: pokemonData.nationalNumber,
         name: pokemonData.name,
+        nameLower: pokemonData.nameLower,
         types: pokemonData.types,
         imageUrl: pokemonData.imageUrl,
+        hpBase: pokemonData.baseStats?.hp,
+        attackBase: pokemonData.baseStats?.attack,
+        defenseBase: pokemonData.baseStats?.defense,
+        spAtkBase: pokemonData.baseStats?.specialAttack,
+        spDefBase: pokemonData.baseStats?.specialDefense,
+        speedBase: pokemonData.baseStats?.speed,
       } as Pokemon);
     } else {
       // Add new Pokemon
@@ -251,12 +258,10 @@ export default function TeamBuilderPage() {
       const missingFields: string[] = [];
 
       if (!pokemon.pokemonId) missingFields.push('pokemonId');
-      if (!pokemon.level) missingFields.push('level');
       if (!pokemon.abilityIdentifier) missingFields.push('ability');
       if (!pokemon.moves || pokemon.moves.length === 0) missingFields.push('moves');
       if (pokemon.natureId === undefined || pokemon.natureId === null) missingFields.push('nature');
       if (!pokemon.evs) missingFields.push('EVs');
-      if (!pokemon.ivs) missingFields.push('IVs');
 
       if (missingFields.length > 0) {
         setError(`Pokemon at position ${i + 1} is missing required fields: ${missingFields.join(', ')}`);
@@ -293,14 +298,12 @@ export default function TeamBuilderPage() {
       const transformedPokemon = teamPokemon.map(p => {
         return {
           pokemonId: p.pokemonId,
-          level: p.level,
           abilityIdentifier: p.abilityIdentifier,
           moves: p.moves,
           natureId: p.natureId,
           itemId: p.itemId,
           teraType: p.teraType,
           evs: p.evs || undefined,
-          ivs: p.ivs || undefined,
         };
       });
 
@@ -634,7 +637,7 @@ export default function TeamBuilderPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
               <PokemonConfigurator
-                pokemonNationalNumber={configuringPokemon.nationalNumber}
+                pokemonNameLower={configuringPokemon.nameLower || configuringPokemon.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}
                 existingConfig={team[activeSlot]?.pokemon}
                 onSave={handleConfigSave}
                 onCancel={() => {

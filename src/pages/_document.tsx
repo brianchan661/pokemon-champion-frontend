@@ -26,7 +26,7 @@ export default function Document() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Rajdhani:wght@600;700&family=Instrument+Serif:ital@0;1&display=swap"
           rel="stylesheet"
         />
         <meta name="description" content="Pokemon Champion - The ultimate Pokemon battle experience" />

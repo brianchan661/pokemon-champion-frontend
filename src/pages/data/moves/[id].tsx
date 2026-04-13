@@ -14,15 +14,15 @@ import { getTypeHex, getCardHeaderStyle } from '@/utils/typeColors';
 const API_URL = getApiBaseUrl();
 
 interface PokemonWithMove {
-  id: number;
-  nationalNumber: string;
+  national_number: string;
+  name_lower: string;
   name: string;
-  types: string[];
-  imageUrl: string;
+  type_1: string;
+  type_2: string | null;
+  image_url: string;
 }
 
 interface MoveDetail {
-  id: number;
   identifier: string;
   name: string;
   type: string;
@@ -30,8 +30,8 @@ interface MoveDetail {
   power?: number;
   accuracy?: number;
   pp?: number;
-  priority?: number;
-  description?: string;
+  speed_priority?: number;
+  effect_battle?: string;
   pokemon: PokemonWithMove[];
 }
 
@@ -41,11 +41,11 @@ export default function MoveDetailPage() {
   const { id } = router.query;
 
   const { data: move, isLoading, error } = useQuery({
-    queryKey: ['move', id, router.locale],
+    queryKey: ['champions-move', id, router.locale],
     queryFn: async () => {
       if (!id) return null;
       const response = await axios.get(
-        `${API_URL}/moves/${id}/pokemon?lang=${router.locale || 'en'}`
+        `${API_URL}/champions/moves/${id}?lang=${router.locale || 'en'}`
       );
       return response.data.data as MoveDetail;
     },
@@ -134,16 +134,16 @@ export default function MoveDetailPage() {
                 <div className="bg-gray-50 dark:bg-dark-bg-tertiary rounded-lg p-4">
                   <div className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-1">{t('moves.detail.priority')}</div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">
-                    {move.priority !== undefined ? (move.priority > 0 ? `+${move.priority}` : move.priority) : '0'}
+                    {move.speed_priority !== undefined ? (move.speed_priority > 0 ? `+${move.speed_priority}` : move.speed_priority) : '0'}
                   </div>
                 </div>
               </div>
 
               {/* Description */}
-              {move.description && (
+              {move.effect_battle && (
                 <div className="mt-6 border-l-4 pl-4" style={{ borderColor: getTypeHex(move.type) }}>
                   <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-text-tertiary mb-1">{t('moves.detail.description')}</h2>
-                  <p className="text-gray-900 dark:text-dark-text-primary leading-relaxed">{move.description}</p>
+                  <p className="text-gray-900 dark:text-dark-text-primary leading-relaxed">{move.effect_battle}</p>
                 </div>
               )}
             </div>
@@ -163,44 +163,44 @@ export default function MoveDetailPage() {
             {move.pokemon.length > 0 ? (
               <div className="p-6">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {move.pokemon.map((pokemon) => (
-                    <Link
-                      key={pokemon.id}
-                      href={`/pokemon/${pokemon.nationalNumber}`}
-                      className="group"
-                    >
-                      <div className="bg-white dark:bg-dark-bg-tertiary rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
-                        {/* Type-colored header bar */}
-                        <div className="h-1.5 w-full" style={getCardHeaderStyle(pokemon.types)} />
-                        <div className="p-2">
-                          {/* Pokemon Image */}
-                          <div className="relative w-full h-20 mb-1">
-                            {pokemon.imageUrl && (
-                              <img
-                                src={pokemon.imageUrl}
-                                alt={pokemon.name}
-                                className="w-full h-full object-contain"
-                              />
-                            )}
-                          </div>
-                          {/* Pokemon Info */}
-                          <div className="space-y-1">
-                            <div className="text-xs text-gray-500 dark:text-dark-text-tertiary text-center">
-                              #{pokemon.nationalNumber}
+                  {move.pokemon.map((pokemon) => {
+                    const types = [pokemon.type_1, pokemon.type_2].filter(Boolean) as string[];
+                    return (
+                      <Link
+                        key={pokemon.name_lower}
+                        href={`/pokemon/${pokemon.name_lower}`}
+                        className="group"
+                      >
+                        <div className="bg-white dark:bg-dark-bg-tertiary rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
+                          <div className="h-1.5 w-full" style={getCardHeaderStyle(types)} />
+                          <div className="p-2">
+                            <div className="relative w-full h-20 mb-1">
+                              {pokemon.image_url && (
+                                <img
+                                  src={pokemon.image_url}
+                                  alt={pokemon.name}
+                                  className="w-full h-full object-contain"
+                                />
+                              )}
                             </div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-dark-text-primary text-center truncate group-hover:text-primary-600 dark:group-hover:text-primary-400">
-                              {pokemon.name}
-                            </div>
-                            <div className="flex gap-1 justify-center">
-                              {pokemon.types.map((type, idx) => (
-                                <TypeIcon key={idx} type={type} size="sm" />
-                              ))}
+                            <div className="space-y-1">
+                              <div className="text-xs text-gray-500 dark:text-dark-text-tertiary text-center">
+                                #{pokemon.national_number}
+                              </div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-dark-text-primary text-center truncate group-hover:text-primary-600 dark:group-hover:text-primary-400">
+                                {pokemon.name}
+                              </div>
+                              <div className="flex gap-1 justify-center">
+                                {types.map((type, idx) => (
+                                  <TypeIcon key={idx} type={type} size="sm" />
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             ) : (

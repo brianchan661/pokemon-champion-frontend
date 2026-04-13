@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
-import { TeamPokemon, PokemonFull, StatSpread } from '@brianchan661/pokemon-champion-shared';
-import { pokemonBuilderService } from '@/services/pokemonBuilderService';
+import { TeamPokemon, StatSpread } from '@brianchan661/pokemon-champion-shared';
+import { pokemonBuilderService, ChampionsPokemonDetail } from '@/services/pokemonBuilderService';
 import { naturesService, Nature } from '@/services/naturesService';
 import { teraTypesService, TeraType } from '@/services/teraTypesService';
 import { TeraTypeIcon } from '@/components/UI/TeraTypeIcon';
 import { itemsService, Item } from '@/services/itemsService';
 import { movesService } from '@/services/movesService';
-import { getDefaultIVs, getDefaultEVs, validateEVs } from '@/utils/calculateStats';
+import { getDefaultEVs, validateEVs } from '@/utils/calculateStats';
 import { EVInputs } from './EVInputs';
 import { MoveSelector } from './MoveSelector';
 import { NaturePickerModal } from './NaturePickerModal';
@@ -15,7 +15,7 @@ import { LoadingSpinner } from '@/components/UI/LoadingSpinner';
 import { TypeIcon } from '@/components/UI';
 
 interface PokemonConfiguratorProps {
-  pokemonNationalNumber: string | number;
+  pokemonNameLower: string;
   existingConfig?: Partial<TeamPokemon>;
   onSave: (config: TeamPokemon) => void;
   onCancel: () => void;
@@ -26,11 +26,11 @@ interface PokemonConfiguratorProps {
  * Multi-section Pokemon configuration panel
  * Handles all Pokemon customization options
  */
-export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onSave, onCancel, className = '' }: PokemonConfiguratorProps) {
+export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, onCancel, className = '' }: PokemonConfiguratorProps) {
   const { t, i18n } = useTranslation('common');
 
   // Pokemon data
-  const [pokemon, setPokemon] = useState<PokemonFull | null>(null);
+  const [pokemon, setPokemon] = useState<ChampionsPokemonDetail | null>(null);
   const [abilities, setAbilities] = useState<any[]>([]);
   const [natures, setNatures] = useState<Nature[]>([]);
   const [teraTypes, setTeraTypes] = useState<TeraType[]>([]);
@@ -38,12 +38,10 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
   const [loading, setLoading] = useState(true);
 
   // Configuration state
-  const [level, setLevel] = useState(existingConfig?.level || 100);
   const [abilityIdentifier, setAbilityIdentifier] = useState(existingConfig?.abilityIdentifier || '');
   const [moves, setMoves] = useState<number[]>(existingConfig?.moves || []);
   const [selectedMovesData, setSelectedMovesData] = useState<any[]>(existingConfig?.movesData || []);
   const [natureId, setNatureId] = useState<number>(existingConfig?.natureId || 0);
-  const [ivs, setIvs] = useState<StatSpread>(existingConfig?.ivs || getDefaultIVs());
   const [evs, setEvs] = useState<StatSpread>(existingConfig?.evs || getDefaultEVs());
   const [teraType, setTeraType] = useState<string | undefined>(existingConfig?.teraType);
 
@@ -75,54 +73,28 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
       const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
 
-      // Load Pokemon details
-      const pokemonResult = await pokemonBuilderService.getPokemonByNationalNumber(pokemonNationalNumber, currentLang);
+      // Load Pokemon details from champions API
+      const pokemonResult = await pokemonBuilderService.getPokemonBySlug(pokemonNameLower, currentLang);
+      if (!pokemonResult.success || !pokemonResult.data) {
+        setError(`Failed to load Pokemon data for "${pokemonNameLower}"`);
+        setLoading(false);
+        return;
+      }
       if (pokemonResult.success && pokemonResult.data) {
         setPokemon(pokemonResult.data);
 
-        // Extract available move identifiers from latest generation only
-        const moveIdentifiers = new Set<string>();
-        if (pokemonResult.data.details?.movesByGeneration && pokemonResult.data.details.movesByGeneration.length > 0) {
-          // Get the first generation (newest/latest generation)
-          const latestGen = pokemonResult.data.details.movesByGeneration[0];
+        // Extract available move identifiers directly from champions moves array
+        const moveIdentifiers = (pokemonResult.data.moves ?? []).map(m => m.identifier);
+        setAvailableMoveIdentifiers(moveIdentifiers);
 
-          // Get the latest game version from that generation
-          if (latestGen.gameVersions && latestGen.gameVersions.length > 0) {
-            const latestVersion = latestGen.gameVersions[0];
-            const methods = latestVersion.movesByMethod || {};
-
-            // Extract moves from all learn methods (level-up, TM, egg, etc.)
-            Object.values(methods).forEach((moveList: any) => {
-              if (Array.isArray(moveList)) {
-                moveList.forEach((move: any) => {
-                  // The API details usually return English names in 'name' property (e.g. "Thunder Shock")
-                  // But our Move List (from movesService) uses kebab-case identifiers (e.g. "thunder-shock") matched with localized names
-                  // To properly filter moves across all languages, we must normalize the English name to an identifier.
-                  if (move.name) {
-                    const identifier = move.name
-                      .toLowerCase()
-                      // Replace apostrophes and special chars (except space)
-                      .replace(/['\u2019]/g, '')
-                      // Replace spaces and remaining non-alphanumeric chars with dashes
-                      .replace(/[\s\W]+/g, '-')
-                      // Remove leading/trailing dashes
-                      .replace(/^-+|-+$/g, '');
-
-                    moveIdentifiers.add(identifier);
-                  }
-                });
-              }
-            });
-          }
-        }
-        setAvailableMoveIdentifiers(Array.from(moveIdentifiers));
-
-        // Load abilities
-        const abilitiesResult = await pokemonBuilderService.getPokemonAbilities(pokemonResult.data.id, currentLang);
-        if (abilitiesResult.success && abilitiesResult.data) {
-          setAbilities(abilitiesResult.data);
-          setAbilityIdentifier((prev) => prev || abilitiesResult.data![0]?.identifier || '');
-        }
+        // Abilities come embedded in the champions detail response
+        const mappedAbilities = (pokemonResult.data.abilities ?? []).map(a => ({
+          identifier: a.identifier,
+          name: currentLang === 'ja' ? (a.nameJa || a.nameEn) : a.nameEn,
+          description: currentLang === 'ja' ? (a.descriptionJa || a.descriptionEn) : a.descriptionEn,
+        }));
+        setAbilities(mappedAbilities);
+        setAbilityIdentifier((prev) => prev || mappedAbilities[0]?.identifier || '');
       }
 
       // Load natures
@@ -149,7 +121,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
     }
 
     loadData();
-  }, [pokemonNationalNumber, i18n.language]);
+  }, [pokemonNameLower, i18n.language]);
 
   // Close item selector when clicking outside
   useEffect(() => {
@@ -203,13 +175,11 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
     const selectedItem = items.find(i => i.id === itemId);
 
     const config: TeamPokemon = {
-      pokemonId: pokemon.id,
-      level,
+      pokemonId: pokemon.base.id,
       abilityIdentifier,
       moves,
       natureId,
       evs,
-      ivs,
       teraType,
       itemId,
       // Include enriched data for display
@@ -235,7 +205,7 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
     onSave(config);
   };
 
-  if (loading || !pokemon) {
+  if (loading || !pokemon || !pokemon.base) {
     return (
       <div className="flex items-center justify-center py-12">
         <LoadingSpinner />
@@ -245,14 +215,14 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
 
   const selectedNature = natures.find((n) => n.id === natureId) || null;
 
-  // Get base stats from pokemon details
+  // Get base stats from champions API base object
   const baseStats: StatSpread = {
-    hp: pokemon.details?.hpBase || 0,
-    attack: pokemon.details?.attackBase || 0,
-    defense: pokemon.details?.defenseBase || 0,
-    specialAttack: pokemon.details?.spAtkBase || 0,
-    specialDefense: pokemon.details?.spDefBase || 0,
-    speed: pokemon.details?.speedBase || 0,
+    hp: pokemon.base.hpBase || 0,
+    attack: pokemon.base.attackBase || 0,
+    defense: pokemon.base.defenseBase || 0,
+    specialAttack: pokemon.base.spAtkBase || 0,
+    specialDefense: pokemon.base.spDefBase || 0,
+    speed: pokemon.base.speedBase || 0,
   };
 
   return (
@@ -260,17 +230,17 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
       {/* Header */}
       <div className="p-6 border-b border-gray-200 dark:border-dark-border flex-shrink-0">
         <div className="flex items-center gap-4">
-          {pokemon.imageUrl && (
-            <img src={pokemon.imageUrl} alt={pokemon.name} className="w-20 h-20 object-contain" />
+          {pokemon.base.imageUrl && (
+            <img src={pokemon.base.imageUrl} alt={pokemon.base.name} className="w-20 h-20 object-contain" />
           )}
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">
-              {pokemon.name}
+              {pokemon.base.name}
             </h2>
             <div className="flex items-center gap-2">
-              <p className="text-sm text-gray-600 dark:text-dark-text-secondary">#{pokemon.nationalNumber}</p>
+              <p className="text-sm text-gray-600 dark:text-dark-text-secondary">#{pokemon.base.nationalNumber}</p>
               <div className="flex gap-1">
-                {pokemon.types.map((type) => (
+                {pokemon.base.types.map((type) => (
                   <TypeIcon key={type} type={type} size="xs" />
                 ))}
               </div>
@@ -288,42 +258,6 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               {t('teamBuilder.basic', 'Basic Info')}
             </h3>
 
-            {/* Level */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-dark-text-primary">
-                  {t('teamBuilder.level', 'Level')}
-                </span>
-                <span className="text-sm font-bold tabular-nums text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-2 py-0.5 rounded-md">
-                  {level}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-gray-400 dark:text-dark-text-tertiary w-3 flex-shrink-0 tabular-nums">1</span>
-                <div className="relative flex-1 h-3 flex items-center">
-                  {/* Track background */}
-                  <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-600" />
-                  {/* Fill */}
-                  <div
-                    className="absolute left-0 top-0 bottom-0 rounded-full transition-all duration-150"
-                    style={{
-                      width: `${((level - 1) / 99) * 100}%`,
-                      backgroundColor: '#6366f1',
-                    }}
-                  />
-                  {/* Native range input (transparent, on top) */}
-                  <input
-                    type="range"
-                    min={1}
-                    max={100}
-                    value={level}
-                    onChange={(e) => setLevel(parseInt(e.target.value))}
-                    className="absolute inset-0 w-full opacity-0 cursor-pointer h-full"
-                  />
-                </div>
-                <span className="text-[10px] text-gray-400 dark:text-dark-text-tertiary w-5 text-right flex-shrink-0 tabular-nums">100</span>
-              </div>
-            </div>
 
             {/* Ability */}
             <div>
@@ -552,8 +486,6 @@ export function PokemonConfigurator({ pokemonNationalNumber, existingConfig, onS
               evs={evs}
               onChange={setEvs}
               baseStats={baseStats}
-              ivs={ivs}
-              level={level}
               nature={selectedNature}
             />
           </div>

@@ -27,8 +27,17 @@ export interface TeamSlot {
       id: number;
       nationalNumber: number;
       name: string;
+      nameLower?: string;
       imageUrl?: string;
       types: string[];
+      baseStats?: {
+        hp: number;
+        attack: number;
+        defense: number;
+        specialAttack: number;
+        specialDefense: number;
+        speed: number;
+      };
     };
   };
 }

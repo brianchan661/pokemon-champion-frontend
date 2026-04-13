@@ -16,7 +16,6 @@ interface StatSpread {
 
 interface PokemonCardProps {
   pokemon?: {
-    level?: number;
     pokemonId?: number;
     pokemonData?: {
       name?: string;
@@ -51,7 +50,6 @@ interface PokemonCardProps {
     natureId?: number;
     teraType?: string;
     evs?: StatSpread;
-    ivs?: StatSpread;
   };
   onRemove?: (e: React.MouseEvent) => void;
   showRemoveButton?: boolean;
@@ -82,19 +80,16 @@ function calcStat(
   key: keyof StatSpread,
   base: number,
   ev: number,
-  iv: number,
-  level: number,
   increasedStat?: string,
   decreasedStat?: string,
 ): number {
-  const statVal = Math.floor((2 * base + iv + Math.floor(ev / 4)) * level / 100);
   if (key === 'hp') {
-    return statVal + level + 10;
+    return base + 75 + ev;
   }
   let natureMod = 1;
   if (increasedStat && NATURE_STAT_KEY[increasedStat] === key) natureMod = 1.1;
   if (decreasedStat && NATURE_STAT_KEY[decreasedStat] === key) natureMod = 0.9;
-  return Math.floor((statVal + 5) * natureMod);
+  return Math.floor((base + 20 + ev) * natureMod);
 }
 
 
@@ -243,14 +238,8 @@ export function PokemonCard({
               </div>
             </div>
 
-            {/* Right: level + nature (fills the empty right space) */}
+            {/* Right: nature */}
             <div className="shrink-0 flex flex-col items-end justify-center gap-1">
-              <span
-                className="px-2 py-0.5 rounded text-[11px] font-bold text-white leading-none"
-                style={{ background: 'rgba(0,0,0,0.3)', fontFamily: "'Rajdhani', sans-serif" }}
-              >
-                Lv.{pokemon?.level ?? 50}
-              </span>
               <span className="text-[11px] text-white/80 font-medium text-right">{nature?.name ?? '—'}</span>
             </div>
           </div>
@@ -309,10 +298,8 @@ export function PokemonCard({
             {STAT_LABELS.map(({ key, label, color }) => {
               const base = pokemon?.pokemonData?.baseStats?.[key];
               const ev = (evs ?? defaultEv)[key];
-              const iv = pokemon?.ivs?.[key] ?? 31;
-              const level = pokemon?.level ?? 50;
               const calc = base != null
-                ? calcStat(key, base, ev, iv, level, nature?.increasedStat, nature?.decreasedStat)
+                ? calcStat(key, base, ev, nature?.increasedStat, nature?.decreasedStat)
                 : null;
               const isUp = nature?.increasedStat && NATURE_STAT_KEY[nature.increasedStat] === key;
               const isDown = nature?.decreasedStat && NATURE_STAT_KEY[nature.decreasedStat] === key;
@@ -331,7 +318,7 @@ export function PokemonCard({
                     {calc ?? '—'}
                   </span>
                   <span className="text-[9px] font-mono font-semibold w-7 text-right leading-none" style={{ color: 'rgba(251,191,36,0.8)' }}>
-                    {ev > 0 ? `+${ev}` : ''}
+                    {ev > 0 ? `(+${ev})` : ''}
                   </span>
                 </div>
               );

@@ -5,7 +5,6 @@ import { Layout } from '@/components/Layout/Layout';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
-import Head from 'next/head';
 import { useAuth } from '@/contexts/AuthContext';
 import { teamService } from '@/services/teamService';
 import { MyTeamCard } from '@/components/Teams/MyTeamCard';
@@ -66,11 +65,6 @@ export default function MyTeamsPage() {
 
   return (
     <>
-      <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
-      </Head>
       <Layout>
         <div className="min-h-screen bg-dark-bg-primary py-8 px-4">
           <div className="max-w-5xl mx-auto">

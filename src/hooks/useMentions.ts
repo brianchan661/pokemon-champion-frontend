@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import { pokemonBuilderService } from '@/services/pokemonBuilderService';
-import { movesService } from '@/services/movesService';
 import { itemsService } from '@/services/itemsService';
-import { abilitiesService } from '@/services/abilitiesService';
+import { getApiBaseUrl } from '@/config/api';
+
+const API_BASE = getApiBaseUrl();
 
 export type MentionType = 'pokemon' | 'move' | 'item' | 'ability';
 
@@ -46,9 +48,9 @@ export function useMentions(opts: UseMentionsOptions = {}): UseMentionsResult {
       try {
         const [pokemonRes, movesRes, itemsRes, abilitiesRes] = await Promise.all([
           pokemonBuilderService.getPokemonList(),
-          movesService.getMoves({ pageSize: 1000 }),
+          axios.get(`${API_BASE}/champions/moves?lang=en`),
           itemsService.getItems(),
-          abilitiesService.getAbilities(),
+          axios.get(`${API_BASE}/champions/abilities?lang=en`),
         ]);
 
         const options: MentionOption[] = [];
@@ -67,13 +69,13 @@ export function useMentions(opts: UseMentionsOptions = {}): UseMentionsResult {
           });
         }
 
-        // Moves - handle paginated response
-        if (movesRes.success && movesRes.data && movesRes.data.moves) {
-          movesRes.data.moves.forEach((m) => {
+        // Moves - champions API returns flat array
+        if (movesRes.data?.success && Array.isArray(movesRes.data?.data)) {
+          movesRes.data.data.forEach((m: any) => {
             options.push({
               type: 'move',
-              id: m.id,
-              name: m.name,
+              id: m.identifier, // use identifier as id for mentions
+              name: m.name || m.name_en,
               meta: `${m.type} | ${m.category}`,
               moveType: m.type,
               moveCategory: m.category,
@@ -94,13 +96,13 @@ export function useMentions(opts: UseMentionsOptions = {}): UseMentionsResult {
           });
         }
 
-        // Abilities
-        if (abilitiesRes.success && abilitiesRes.data) {
-          abilitiesRes.data.forEach((a) => {
+        // Abilities - champions API returns flat array
+        if (abilitiesRes.data?.success && Array.isArray(abilitiesRes.data?.data)) {
+          abilitiesRes.data.data.forEach((a: any) => {
             options.push({
               type: 'ability',
-              id: a.id,
-              name: a.name,
+              id: a.identifier,
+              name: a.name || a.name_en,
               meta: 'Ability',
             });
           });

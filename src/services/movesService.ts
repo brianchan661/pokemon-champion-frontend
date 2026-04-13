@@ -34,51 +34,92 @@ export interface PaginatedMovesResponse {
   totalPages: number;
 }
 
+// Map champions API move shape to the Move interface used by the team builder.
+// The champions API does not use numeric IDs; we use a stable hash of the identifier
+// as a surrogate numeric id so existing components that key on move.id still work.
+function identifierToId(identifier: string): number {
+  let hash = 0;
+  for (let i = 0; i < identifier.length; i++) {
+    hash = (hash * 31 + identifier.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function mapChampionsMove(m: any): Move {
+  return {
+    id: identifierToId(m.identifier),
+    identifier: m.identifier,
+    name: m.name || m.name_en,
+    type: m.type,
+    category: m.category as Move['category'],
+    power: m.power ?? undefined,
+    accuracy: m.accuracy ?? undefined,
+    pp: m.pp ?? 0,
+    priority: m.speed_priority ?? undefined,
+    description: m.effect_battle || undefined,
+  };
+}
+
 class MovesService {
+  private moveCache: Map<number, Move> = new Map();
+
   /**
-   * Get all moves with optional filters (paginated)
+   * Get all moves with optional filters.
+   * Returns a paginated-shaped response for backwards compatibility with MoveSelector.
    */
   async getMoves(filters: MovesFilters = {}): Promise<ApiResponse<PaginatedMovesResponse>> {
     try {
       const params = new URLSearchParams();
-
-      if (filters.search) params.append('search', filters.search);
+      if (filters.lang) params.append('lang', filters.lang);
       if (filters.type) params.append('type', filters.type);
       if (filters.category) params.append('category', filters.category);
-      if (filters.lang) params.append('lang', filters.lang);
-      if (filters.page) params.append('page', filters.page.toString());
-      if (filters.pageSize) params.append('pageSize', filters.pageSize.toString());
+      if (filters.search) params.append('search', filters.search);
 
-      const response = await axios.get<ApiResponse<PaginatedMovesResponse>>(
-        `${API_BASE}/moves?${params.toString()}`
-      );
-      return response.data;
+      const response = await axios.get(`${API_BASE}/champions/moves?${params.toString()}`);
+      const raw: any[] = response.data?.data ?? [];
+      const moves = raw.map(mapChampionsMove);
+
+      // Populate cache
+      moves.forEach(m => this.moveCache.set(m.id, m));
+
+      return {
+        success: true,
+        data: {
+          moves,
+          total: moves.length,
+          page: 1,
+          pageSize: moves.length,
+          totalPages: 1,
+        },
+      };
     } catch (error: any) {
       return {
         success: false,
-        error: error.response?.data?.error || 'Failed to fetch moves'
+        error: error.response?.data?.error || 'Failed to fetch moves',
       };
     }
   }
 
   /**
-   * Get single move by ID
+   * Get single move by surrogate numeric id (populated after getMoves is called).
+   * Falls back to fetching all moves if cache is empty.
    */
   async getMoveById(
     id: number,
     lang: 'en' | 'ja' | 'zh-CN' | 'zh-TW' = 'en'
   ): Promise<ApiResponse<Move>> {
-    try {
-      const response = await axios.get<ApiResponse<Move>>(
-        `${API_BASE}/moves/${id}?lang=${lang}`
-      );
-      return response.data;
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.response?.data?.error || 'Failed to fetch move'
-      };
+    // Try cache first
+    if (this.moveCache.has(id)) {
+      return { success: true, data: this.moveCache.get(id)! };
     }
+
+    // Populate cache then retry
+    await this.getMoves({ lang });
+    if (this.moveCache.has(id)) {
+      return { success: true, data: this.moveCache.get(id)! };
+    }
+
+    return { success: false, error: 'Move not found' };
   }
 }
 

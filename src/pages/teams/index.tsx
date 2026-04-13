@@ -90,9 +90,6 @@ export default function TeamsListPage() {
         <title>{t('teams.title')} | Pokemon Champion</title>
         <meta name="description" content={t('teams.description', 'Browse and discover competitive Pokemon teams shared by the community')} />
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || ''}/teams`} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
       </Head>
 
       <Layout>

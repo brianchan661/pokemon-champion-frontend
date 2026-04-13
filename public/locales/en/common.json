@@ -350,7 +350,9 @@
       "statColNoSP": "0 SP",
       "statColMaxSP": "Max SP",
       "statColBoosted": "Boosted",
-      "statColLowered": "Lowered"
+      "statColLowered": "Lowered",
+      "showCalcStats": "Show Calc Stats",
+      "hideCalcStats": "Hide Calc Stats"
     },
     "searchPlaceholder": "Search by name, number or ability...",
     "filters": "Filters",

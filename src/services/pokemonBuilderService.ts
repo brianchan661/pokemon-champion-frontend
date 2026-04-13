@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, Pokemon, PokemonFull } from '@brianchan661/pokemon-champion-shared';
+import { ApiResponse, Pokemon } from '@brianchan661/pokemon-champion-shared';
 import { getApiBaseUrl } from '@/config/api';
 
 const API_BASE = getApiBaseUrl();
@@ -11,13 +11,36 @@ interface PokemonFilters {
   lang?: 'en' | 'ja' | 'zh-CN' | 'zh-TW';
 }
 
-interface PokemonAbility {
-  id: number;
+export interface ChampionsMoveEntry {
   identifier: string;
-  name: string;
-  description?: string;
-  slot: number;
-  isHidden: boolean;
+  nameEn: string;
+  nameJa: string | null;
+  type: string;
+  category: string;
+  power: number | null;
+  accuracy: number | null;
+  pp: number | null;
+  effectPct: string | null;
+  description: string | null;
+}
+
+export interface ChampionsAbilityDetail {
+  identifier: string;
+  nameEn: string;
+  nameJa: string | null;
+  descriptionEn: string | null;
+  descriptionJa: string | null;
+}
+
+export interface ChampionsPokemonDetail {
+  base: Pokemon;
+  forms: Pokemon[];
+  moves: ChampionsMoveEntry[];
+  abilities: ChampionsAbilityDetail[];
+  species: string | null;
+  height: string | null;
+  weight: string | null;
+  genderRatio: string | null;
 }
 
 class PokemonBuilderService {
@@ -46,58 +69,22 @@ class PokemonBuilderService {
   }
 
   /**
-   * Get full Pokemon details by national number
+   * Get full Pokemon details by name_lower slug (e.g. "venusaur", "mega-charizard-x")
+   * Returns base stats, forms, moves, and abilities — all in one response.
    */
-  async getPokemonByNationalNumber(
-    nationalNumber: string | number,
-    lang: 'en' | 'ja' = 'en'
-  ): Promise<ApiResponse<PokemonFull>> {
+  async getPokemonBySlug(
+    nameLower: string,
+    lang: 'en' | 'ja' | 'zh-CN' | 'zh-TW' = 'en'
+  ): Promise<ApiResponse<ChampionsPokemonDetail>> {
     try {
-      const response = await axios.get<ApiResponse<PokemonFull>>(
-        `${API_BASE}/pokemon/${nationalNumber}?lang=${lang}`
+      const response = await axios.get<ApiResponse<ChampionsPokemonDetail>>(
+        `${API_BASE}/champions/pokemon/${nameLower}?lang=${lang}`
       );
       return response.data;
     } catch (error: any) {
       return {
         success: false,
         error: error.response?.data?.error || 'Failed to fetch Pokemon details'
-      };
-    }
-  }
-
-  /**
-   * Get available moves for a Pokemon
-   */
-  async getPokemonMoves(pokemonId: number): Promise<ApiResponse<any>> {
-    try {
-      const response = await axios.get<ApiResponse<any>>(
-        `${API_BASE}/pokemon/${pokemonId}/moves`
-      );
-      return response.data;
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.response?.data?.error || 'Failed to fetch Pokemon moves'
-      };
-    }
-  }
-
-  /**
-   * Get available abilities for a Pokemon
-   */
-  async getPokemonAbilities(
-    pokemonId: number,
-    lang: 'en' | 'ja' | 'zh-CN' | 'zh-TW' = 'en'
-  ): Promise<ApiResponse<PokemonAbility[]>> {
-    try {
-      const response = await axios.get<ApiResponse<PokemonAbility[]>>(
-        `${API_BASE}/pokemon/${pokemonId}/abilities?lang=${lang}`
-      );
-      return response.data;
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.response?.data?.error || 'Failed to fetch Pokemon abilities'
       };
     }
   }

@@ -1,36 +1,37 @@
 /**
- * Pokemon stat calculation utilities
- * Based on official Pokemon stat formulas
+ * Pokemon Champion stat calculation utilities
+ * Level 50, IVs fixed at 31, SPs 0-32 per stat, 66 total.
+ * Matches the formula used in pokemon/[id].tsx calcStat().
  */
 
 import { StatSpread } from '@brianchan661/pokemon-champion-shared';
 
-/**
- * Calculate HP stat
- * Formula: floor(((2 * Base + IV + floor(EV / 4)) * Level) / 100) + Level + 10
- */
-export function calculateHP(
-  base: number,
-  iv: number,
-  ev: number,
-  level: number
-): number {
-  return Math.floor(((2 * base + iv + Math.floor(ev / 4)) * level) / 100) + level + 10;
-}
+const FIXED_LEVEL = 50;
+
+// Pokemon Champions EV limits: 0-32 per stat, 66 total
+export const EV_MAX_PER_STAT = 32;
+export const EV_MAX_TOTAL = 66;
 
 /**
- * Calculate other stats (Attack, Defense, Sp. Atk, Sp. Def, Speed)
- * Formula: floor((floor(((2 * Base + IV + floor(EV / 4)) * Level) / 100) + 5) * Nature)
+ * Calculate a single stat (Attack, Defense, SpAtk, SpDef, Speed)
+ * Formula: floor((floor((2 * base + 31) * 50 / 100) + 5 + ev) * natureMod)
  */
 export function calculateStat(
   base: number,
-  iv: number,
   ev: number,
-  level: number,
   natureModifier: number = 1.0
 ): number {
-  const baseStat = Math.floor(((2 * base + iv + Math.floor(ev / 4)) * level) / 100) + 5;
-  return Math.floor(baseStat * natureModifier);
+  const inner = Math.floor((2 * base + 31) * FIXED_LEVEL / 100);
+  return Math.floor((inner + 5 + ev) * natureModifier);
+}
+
+/**
+ * Calculate HP stat
+ * Formula: floor((2 * base + 31) * 50 / 100) + 50 + 10 + ev
+ */
+export function calculateHP(base: number, ev: number): number {
+  const inner = Math.floor((2 * base + 31) * FIXED_LEVEL / 100);
+  return inner + FIXED_LEVEL + 10 + ev;
 }
 
 /**
@@ -38,9 +39,7 @@ export function calculateStat(
  */
 export function calculateAllStats(
   baseStats: StatSpread,
-  ivs: StatSpread,
   evs: StatSpread,
-  level: number,
   natureModifiers: {
     attack: number;
     defense: number;
@@ -50,18 +49,14 @@ export function calculateAllStats(
   }
 ): StatSpread {
   return {
-    hp: calculateHP(baseStats.hp, ivs.hp, evs.hp, level),
-    attack: calculateStat(baseStats.attack, ivs.attack, evs.attack, level, natureModifiers.attack),
-    defense: calculateStat(baseStats.defense, ivs.defense, evs.defense, level, natureModifiers.defense),
-    specialAttack: calculateStat(baseStats.specialAttack, ivs.specialAttack, evs.specialAttack, level, natureModifiers.specialAttack),
-    specialDefense: calculateStat(baseStats.specialDefense, ivs.specialDefense, evs.specialDefense, level, natureModifiers.specialDefense),
-    speed: calculateStat(baseStats.speed, ivs.speed, evs.speed, level, natureModifiers.speed),
+    hp: calculateHP(baseStats.hp, evs.hp),
+    attack: calculateStat(baseStats.attack, evs.attack, natureModifiers.attack),
+    defense: calculateStat(baseStats.defense, evs.defense, natureModifiers.defense),
+    specialAttack: calculateStat(baseStats.specialAttack, evs.specialAttack, natureModifiers.specialAttack),
+    specialDefense: calculateStat(baseStats.specialDefense, evs.specialDefense, natureModifiers.specialDefense),
+    speed: calculateStat(baseStats.speed, evs.speed, natureModifiers.speed),
   };
 }
-
-// Pokemon Champions EV limits: 0-32 per stat, 66 total
-export const EV_MAX_PER_STAT = 32;
-export const EV_MAX_TOTAL = 66;
 
 /**
  * Validate EV spread
@@ -70,56 +65,18 @@ export const EV_MAX_TOTAL = 66;
 export function validateEVs(evs: StatSpread): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
-  // Check individual stat limits
   Object.entries(evs).forEach(([stat, value]) => {
     if (value < 0 || value > EV_MAX_PER_STAT) {
       errors.push(`${stat}: Must be between 0 and ${EV_MAX_PER_STAT} (current: ${value})`);
     }
   });
 
-  // Check total limit
   const total = Object.values(evs).reduce((sum, val) => sum + val, 0);
   if (total > EV_MAX_TOTAL) {
     errors.push(`Total EVs: ${total}/${EV_MAX_TOTAL} (exceeds maximum)`);
   }
 
-  return {
-    valid: errors.length === 0,
-    errors,
-  };
-}
-
-/**
- * Validate IV spread
- * Rule: Each stat 0-31
- */
-export function validateIVs(ivs: StatSpread): { valid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  Object.entries(ivs).forEach(([stat, value]) => {
-    if (value < 0 || value > 31) {
-      errors.push(`${stat}: Must be between 0 and 31 (current: ${value})`);
-    }
-  });
-
-  return {
-    valid: errors.length === 0,
-    errors,
-  };
-}
-
-/**
- * Get default IV spread (all 31s - perfect)
- */
-export function getDefaultIVs(): StatSpread {
-  return {
-    hp: 31,
-    attack: 31,
-    defense: 31,
-    specialAttack: 31,
-    specialDefense: 31,
-    speed: 31,
-  };
+  return { valid: errors.length === 0, errors };
 }
 
 /**

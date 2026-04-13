@@ -9,8 +9,6 @@ interface EVInputsProps {
   evs: StatSpread;
   onChange: (evs: StatSpread) => void;
   baseStats: StatSpread;
-  ivs: StatSpread;
-  level: number;
   nature: Nature | null;
   className?: string;
 }
@@ -35,7 +33,7 @@ const NATURE_STAT_MAP: Record<string, string> = {
 
 const STATS: Array<keyof StatSpread> = ['hp', 'attack', 'defense', 'specialAttack', 'specialDefense', 'speed'];
 
-export function EVInputs({ evs, onChange, baseStats, ivs, level, nature, className = '' }: EVInputsProps) {
+export function EVInputs({ evs, onChange, baseStats, nature, className = '' }: EVInputsProps) {
   const { t } = useTranslation('common');
 
   const totalEVs = Object.values(evs).reduce((sum, val) => sum + val, 0);
@@ -50,7 +48,7 @@ export function EVInputs({ evs, onChange, baseStats, ivs, level, nature, classNa
     speed:          nature?.increasedStat === 'speed'   ? 1.1 : nature?.decreasedStat === 'speed'   ? 0.9 : 1.0,
   };
 
-  const finalStats = calculateAllStats(baseStats, ivs, evs, level, natureModifiers);
+  const finalStats = calculateAllStats(baseStats, evs, natureModifiers);
 
   const setEV = (stat: keyof StatSpread, value: number) => {
     const clamped = Math.max(0, Math.min(EV_MAX_PER_STAT, value));
@@ -79,6 +77,17 @@ export function EVInputs({ evs, onChange, baseStats, ivs, level, nature, classNa
         </span>
       </div>
 
+      {/* Column headers */}
+      <div className="flex items-center gap-2">
+        <div className="w-16 flex-shrink-0" />
+        <span className="w-7 text-[10px] text-gray-400 dark:text-dark-text-tertiary text-right flex-shrink-0 tabular-nums">
+          {t('teamBuilder.base', 'Base')}
+        </span>
+        <span className="w-9 text-[10px] text-gray-400 dark:text-dark-text-tertiary text-right flex-shrink-0 tabular-nums">
+          {t('teamBuilder.stat', 'Stat')}
+        </span>
+      </div>
+
       {/* Stat rows */}
       <div className="space-y-2">
         {STATS.map((stat) => {
@@ -91,7 +100,7 @@ export function EVInputs({ evs, onChange, baseStats, ivs, level, nature, classNa
 
           return (
             <div key={stat} className="space-y-1">
-              {/* Top row: name + final stat + ev counter */}
+              {/* Top row: name + base stat + final stat + ev counter */}
               <div className="flex items-center gap-2">
                 {/* Stat name */}
                 <div className="w-16 flex items-center gap-0.5 flex-shrink-0">
@@ -105,6 +114,14 @@ export function EVInputs({ evs, onChange, baseStats, ivs, level, nature, classNa
                   {isIncreased && <ArrowUp className="w-3 h-3 text-red-500 flex-shrink-0" />}
                   {isDecreased && <ArrowDown className="w-3 h-3 text-blue-500 flex-shrink-0" />}
                 </div>
+
+                {/* Base stat value */}
+                <span
+                  className="w-7 text-xs tabular-nums text-right flex-shrink-0 text-gray-400 dark:text-dark-text-tertiary"
+                  title="Base stat"
+                >
+                  {baseStats[stat]}
+                </span>
 
                 {/* Final stat value */}
                 <span className={`w-9 text-sm font-bold tabular-nums text-right flex-shrink-0 ${

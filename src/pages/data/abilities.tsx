@@ -8,7 +8,6 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { getApiBaseUrl } from '@/config/api';
 import { useTheme } from '@/hooks/useTheme';
-import Head from 'next/head';
 
 const API_URL = getApiBaseUrl();
 
@@ -95,9 +94,6 @@ export default function ChampionsAbilitiesPage() {
 
   return (
     <>
-      <Head>
-        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
-      </Head>
       <Layout>
         <div className="min-h-screen bg-dark-bg-primary">
 

@@ -30,11 +30,6 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
 
   // Calculate team stats
   const teamSize = team.filter((slot) => slot.pokemon).length;
-  const avgLevel = teamSize > 0
-    ? Math.round(team
-        .filter((slot) => slot.pokemon)
-        .reduce((sum, slot) => sum + slot.pokemon!.level, 0) / teamSize)
-    : 0;
 
   return (
     <div className={`bg-white dark:bg-dark-bg-primary rounded-lg shadow-sm ${className}`}>
@@ -62,10 +57,7 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
             <span className="font-semibold text-gray-900 dark:text-dark-text-primary">{teamSize} / 6</span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-bg-secondary rounded-lg">
-            <span className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('teamBuilder.avgLevel', 'Average Level')}</span>
-            <span className="font-semibold text-gray-900 dark:text-dark-text-primary">Lv. {avgLevel}</span>
-          </div>
+
         </div>
 
         {/* Type Distribution */}
@@ -121,8 +113,6 @@ export function TeamSummary({ team, teamName, teamDescription, className = '' }:
                         {pokemon.pokemonData.name}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-dark-text-secondary">
-                        <span>Lv. {pokemon.level}</span>
-                        <span>•</span>
                         <div className="flex gap-1">
                           {pokemon.pokemonData.types.map((type) => (
                             <TypeIcon key={type} type={type} size="xs" />

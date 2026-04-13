@@ -95,22 +95,22 @@ function StatTable({ pokemon, t }: { pokemon: PokemonBase; t: (key: string) => s
       <thead>
         <tr>
           <th className="pb-2 text-left w-12" />
-          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-sky-500 dark:text-sky-400">
+          <th className="pb-2 pr-4 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400 border-r-[3px] border-gray-300 dark:border-white/40">
+            {t('pokemon.detail.statColBase')}
+          </th>
+          <th className="pb-2 pl-4 text-right text-sm font-semibold tracking-wide text-sky-500 dark:text-sky-400 w-[18%]">
             <span className="inline-flex items-center gap-1">
               {t('pokemon.detail.statColLowered')}
               <span title="0 SP, ×0.9 nature" className="cursor-help text-[10px] font-bold leading-none w-3.5 h-3.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-500 dark:text-sky-400 inline-flex items-center justify-center">?</span>
             </span>
           </th>
-          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
-            {t('pokemon.detail.statColBase')}
-          </th>
-          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400 w-[18%]">
             {t('pokemon.detail.statColNoSP')}
           </th>
-          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400 w-[18%]">
             {t('pokemon.detail.statColMaxSP')}
           </th>
-          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-orange-500 dark:text-orange-400">
+          <th className="pb-2 text-right text-sm font-semibold tracking-wide text-orange-500 dark:text-orange-400 w-[18%]">
             <span className="inline-flex items-center gap-1">
               {t('pokemon.detail.statColBoosted')}
               <span title="32 SP, ×1.1 nature" className="cursor-help text-[10px] font-bold leading-none w-3.5 h-3.5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-500 dark:text-orange-400 inline-flex items-center justify-center">?</span>
@@ -139,8 +139,8 @@ function StatTable({ pokemon, t }: { pokemon: PokemonBase; t: (key: string) => s
                   <span className="font-semibold text-sm text-gray-600 dark:text-gray-200">{label}</span>
                 </span>
               </td>
-              <td className="py-1.5 text-right tabular-nums font-bold text-sky-600 dark:text-sky-400">{isHp ? v0 : vDown}</td>
-              <td className="py-1.5 text-right tabular-nums text-sm text-gray-600 dark:text-gray-300">{base}</td>
+              <td className="py-1.5 pr-4 text-right tabular-nums text-sm text-gray-600 dark:text-gray-300 border-r-[3px] border-gray-300 dark:border-white/40">{base}</td>
+              <td className="py-1.5 pl-4 text-right tabular-nums font-bold text-sky-600 dark:text-sky-400">{isHp ? v0 : vDown}</td>
               <td className="py-1.5 text-right tabular-nums text-gray-700 dark:text-gray-300">{v0}</td>
               <td className="py-1.5 text-right tabular-nums text-gray-700 dark:text-gray-300">{v32}</td>
               <td className="py-1.5 text-right tabular-nums font-bold text-orange-600 dark:text-orange-400">{isHp ? v32 : vToku}</td>
@@ -156,9 +156,8 @@ function StatTable({ pokemon, t }: { pokemon: PokemonBase; t: (key: string) => s
           <td className="py-1.5">
             <span className="font-semibold text-sm text-gray-600 dark:text-gray-200 pl-4">Total</span>
           </td>
-          <td />
-          <td className="py-1.5 text-right tabular-nums text-sm font-bold text-gray-700 dark:text-gray-300">{pokemon.statTotal}</td>
-          <td /><td /><td />
+          <td className="py-1.5 pr-4 text-right tabular-nums text-sm font-bold text-gray-700 dark:text-gray-300 border-r-[3px] border-gray-300 dark:border-white/40">{pokemon.statTotal}</td>
+          <td /><td /><td /><td />
         </tr>
       </tbody>
     </table>
@@ -166,62 +165,126 @@ function StatTable({ pokemon, t }: { pokemon: PokemonBase; t: (key: string) => s
 }
 
 function FormCard({ form, basePokemon, onClick }: { form: PokemonBase; basePokemon?: PokemonBase; onClick: () => void }) {
+  const [showFullStats, setShowFullStats] = useState(false);
   const primaryType = form.types[0]?.toLowerCase() ?? 'normal';
   const accent = getTypeHex(primaryType);
+
   return (
-    <button
-      onClick={onClick}
-      className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-all duration-200"
+    <div
+      className="w-full text-left flex flex-col p-3 rounded-xl border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-all duration-200"
       style={{ background: `${accent}05` }}
     >
-      <div
-        className="w-14 h-14 rounded-xl shrink-0 flex items-center justify-center"
-        style={{ background: `radial-gradient(circle, ${accent}25, ${accent}05)` }}
-      >
-        {form.imageUrl && (
-          <img src={form.imageUrl} alt={form.name} className="w-12 h-12 object-contain drop-shadow" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight">{form.name}</p>
-        <div className="flex gap-1 mt-1">
-          {form.types.map((type: string) => <TypeIcon key={type} type={type} size="xs" />)}
+      {/* Clickable Header Area with Compact Stats */}
+      <div className="flex items-center gap-3 cursor-pointer group" onClick={onClick}>
+        <div
+          className="w-14 h-14 rounded-xl shrink-0 flex items-center justify-center"
+          style={{ background: `radial-gradient(circle, ${accent}25, ${accent}05)` }}
+        >
+          {form.imageUrl && (
+            <img src={form.imageUrl} alt={form.name} className="w-12 h-12 object-contain drop-shadow" />
+          )}
         </div>
-        <div className="flex flex-wrap gap-x-2 mt-1">
-          {[form.ability1, form.ability2, (form as any).abilityHidden].filter(Boolean).map((ab: string) => (
-            <span key={ab} className="text-xs text-gray-500 dark:text-gray-400">{ab}</span>
-          ))}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight group-hover:text-blue-500 transition-colors">{form.name}</p>
+          <div className="flex gap-1 mt-1">
+            {form.types.map((type: string) => <TypeIcon key={type} type={type} size="xs" />)}
+          </div>
+          <div className="flex flex-wrap gap-x-2 mt-1">
+            {[form.ability1, form.ability2, (form as any).abilityHidden].filter(Boolean).map((ab: string) => (
+              <span key={ab} className="text-[11px] text-gray-500 dark:text-gray-400">{ab}</span>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="shrink-0 text-right">
-        <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400">{form.statTotal} BST</span>
-        <table className="mt-1 font-mono text-xs border-collapse">
-          <tbody>
-            {STAT_CONFIG.map(({ key, label, color }) => {
-              const val = (form[key as keyof PokemonBase] as number) ?? 0;
-              const baseVal = basePokemon ? (basePokemon[key as keyof PokemonBase] as number) ?? 0 : null;
-              const diff = baseVal !== null ? val - baseVal : null;
-              return (
-                <tr key={key}>
-                  <td className="pr-2 py-0.5">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                      <span className="text-gray-400 dark:text-gray-500">{label}</span>
-                    </span>
-                  </td>
-                  <td className="text-right tabular-nums text-gray-700 dark:text-gray-300 pr-2">{val}</td>
-                  {diff !== null && (
-                    <td className={`text-right tabular-nums text-xs w-8 ${diff > 0 ? 'text-green-500' : diff < 0 ? 'text-red-400' : 'text-gray-300 dark:text-gray-600'}`}>
-                      {diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : '—'}
+        
+        {/* Compact Base Stats */}
+        <div className="shrink-0 text-right">
+          <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400">{form.statTotal} BST</span>
+          <table className="mt-1 font-mono text-[10px] sm:text-xs border-collapse">
+            <tbody>
+              {STAT_CONFIG.map(({ key, label, color }) => {
+                const val = (form[key as keyof PokemonBase] as number) ?? 0;
+                const baseVal = basePokemon ? (basePokemon[key as keyof PokemonBase] as number) ?? 0 : null;
+                const diff = baseVal !== null ? val - baseVal : null;
+                const isBuff = diff !== null && diff > 0;
+                const isNerf = diff !== null && diff < 0;
+                return (
+                  <tr key={key}>
+                    <td className="pr-1.5 sm:pr-2 py-0.5">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                        <span className="hidden sm:inline text-gray-400 dark:text-gray-500">{label}</span>
+                      </span>
                     </td>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    <td className="text-right tabular-nums text-gray-700 dark:text-gray-300 pr-1.5 sm:pr-2">{val}</td>
+                    {diff !== null && (
+                      <td className={`text-right tabular-nums w-6 sm:w-8 ${isBuff ? 'text-green-500/90' : isNerf ? 'text-red-400/90' : 'text-gray-300 dark:text-gray-600'}`}>
+                        {isBuff ? `+${diff}` : isNerf ? `${diff}` : '—'}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </button>
+      
+      {/* Toggle Action */}
+      <div className="flex justify-center mt-2.5">
+        <button 
+          onClick={(e) => { e.stopPropagation(); setShowFullStats(!showFullStats); }}
+          className="text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-black/5 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/5 transition-colors flex items-center gap-1"
+        >
+          {showFullStats ? 'Hide Calc Stats' : 'Show Calc Stats'}
+          <svg className={`w-3 h-3 transition-transform ${showFullStats ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Expanded Table */}
+      {showFullStats && (
+        <div className="w-full overflow-x-auto mt-2 pt-3 border-t border-gray-200/50 dark:border-white/5">
+          <table className="w-full text-[11px] font-mono border-collapse">
+            <thead>
+              <tr className="border-b border-gray-200/50 dark:border-white/5 text-gray-400">
+                <th className="pb-1 text-left w-6"></th>
+                <th className="pb-1 pr-2 text-right">Base</th>
+                <th className="pb-1 pl-2 text-right text-sky-500/80">Low</th>
+                <th className="pb-1 text-right">NoSP</th>
+                <th className="pb-1 text-right">MaxSP</th>
+                <th className="pb-1 text-right text-orange-500/80">Boost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {STAT_CONFIG.map(({ key, label, color, idx }) => {
+                const base = (form[key as keyof PokemonBase] as number) ?? 0;
+                const isHp = idx === 0;
+                const v0    = calcStat(base, 0,           1,   isHp);
+                const v32   = calcStat(base, EV_STAT_MAX, 1,   isHp);
+                const vToku = calcStat(base, EV_STAT_MAX, isHp ? 1 : 1.1, isHp);
+                const vDown = calcStat(base, 0,           isHp ? 1 : 0.9, isHp);
+                return (
+                  <tr key={key} className="border-b border-white/[0.02] last:border-0 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
+                    <td className="py-1 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="font-semibold text-[10px] text-gray-500 dark:text-gray-400">{label}</span>
+                    </td>
+                    <td className="py-1 pr-2 text-right tabular-nums border-r border-gray-200/50 dark:border-white/5">
+                      <span className="text-gray-700 dark:text-gray-300 font-medium">{base}</span>
+                    </td>
+                    <td className="py-1 pl-2 text-right tabular-nums text-sky-600 dark:text-sky-400/80">{isHp ? v0 : vDown}</td>
+                    <td className="py-1 text-right tabular-nums text-gray-500 dark:text-gray-400">{v0}</td>
+                    <td className="py-1 text-right tabular-nums text-gray-500 dark:text-gray-400">{v32}</td>
+                    <td className="py-1 text-right tabular-nums font-bold text-orange-600 dark:text-orange-400/90">{isHp ? v32 : vToku}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -348,13 +411,6 @@ export default function ChampionsPokemonDetailPage() {
 
   return (
     <Layout>
-      <Head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-
       <div className="min-h-screen bg-dark-bg-primary py-6 px-4">
         <div className="max-w-5xl mx-auto space-y-4">
 
@@ -439,7 +495,7 @@ export default function ChampionsPokemonDetailPage() {
                       <div
                         key={ab.identifier}
                         onClick={() => router.push(`/data/abilities/${ab.identifier}`)}
-                        className="group flex items-start gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150"
+                        className="group flex flex-col sm:flex-row items-start gap-2 sm:gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150"
                         style={{ border: '1px solid rgba(128,128,128,0.15)' }}
                         onMouseEnter={e => {
                           const el = e.currentTarget;
@@ -456,7 +512,7 @@ export default function ChampionsPokemonDetailPage() {
                           el.style.transform = '';
                         }}
                       >
-                        <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
+                        <div className="flex items-center gap-1.5 shrink-0 sm:pt-0.5 w-full sm:w-32 lg:w-40">
                           <span
                             className="inline-block px-2.5 py-0.5 rounded text-sm font-bold text-white"
                             style={{ background: accentColor }}
