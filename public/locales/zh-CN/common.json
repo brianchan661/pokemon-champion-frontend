@@ -1,7 +1,8 @@
 {
   "common": {
     "loading": "加载中...",
-    "cancel": "取消"
+    "cancel": "取消",
+    "remove": "删除"
   },
   "comingSoon": {
     "status": "準備中"
@@ -19,7 +20,43 @@
     "news": "新闻",
     "more": "更多",
     "openMenu": "打开菜单",
-    "closeMenu": "关闭菜单"
+    "closeMenu": "关闭菜单",
+    "battleReference": "对战参考",
+    "tools": "工具"
+  },
+  "battleReference": {
+    "pageTitle": "对战参考",
+    "title": "对战参考",
+    "subtitle": "设置你的队伍，分析与对手的对战。",
+    "myTeam": "我的队伍",
+    "importTeam": "从已保存队伍导入",
+    "addPokemon": "添加宝可梦",
+    "noTeams": "未找到已保存的队伍。",
+    "opponents": "对手",
+    "addOpponent": "添加对手",
+    "noOpponents": "添加对手宝可梦以开始。",
+    "selectMyPokemon": "选择你的宝可梦",
+    "selectOpponent": "选择对手宝可梦",
+    "damagingMoves": "攻击技能",
+    "moveAnalysis": "技能分析",
+    "moveAnalysisHelp": "你选择的技能对各对手的属性相性。从侧边栏的队伍中选择技能。",
+    "myMove": "我的技能",
+    "searchMoves": "搜索技能...",
+    "selectMoves": "最多选择4个技能",
+    "noMoves": "未找到技能。",
+    "allPokemon": "全部",
+    "threatAnalysis": "威胁分析",
+    "threatAnalysisHelp": "对手可学的任意攻击技能对我队伍的最坏属性相性。安全分越高，威胁你的对手越少。",
+    "safety": "安全",
+    "speedComparison": "速度比较",
+    "speedComparisonHelp": "计算后的速度。下降=SP0×0.9。提升=SP32×1.1。",
+    "speedOrder": "速度排序",
+    "pokemon": "宝可梦",
+    "scenario": "情境",
+    "actual": "实际",
+    "addMoves": "+ 技能",
+    "editMoves": "编辑",
+    "removeOpponent": "删除对手"
   },
   "auth": {
     "login": "登录",
@@ -309,7 +346,9 @@
       "statColNoSP": "0努力值",
       "statColMaxSP": "最大单项",
       "statColBoosted": "强化性格",
-      "statColLowered": "削弱性格"
+      "statColLowered": "削弱性格",
+      "showCalcStats": "显示计算能力值",
+      "hideCalcStats": "隐藏计算能力值"
     },
     "searchPlaceholder": "Search by name, number or ability... [NEEDS_TRANSLATION]",
     "filters": "Filters [NEEDS_TRANSLATION]",

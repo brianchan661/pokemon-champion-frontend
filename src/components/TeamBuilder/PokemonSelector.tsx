@@ -56,7 +56,7 @@ export function PokemonSelector({ onSelect, selectedPokemonIds = [], className =
 
     if (selectedTypes.length > 0) {
       result = result.filter((p) =>
-        selectedTypes.some((t) => p.types.some((pt) => pt.toLowerCase() === t.toLowerCase()))
+        selectedTypes.every((t) => p.types.some((pt) => pt.toLowerCase() === t.toLowerCase()))
       );
     }
 

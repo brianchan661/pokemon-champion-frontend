@@ -165,6 +165,7 @@ function StatTable({ pokemon, t }: { pokemon: PokemonBase; t: (key: string) => s
 }
 
 function FormCard({ form, basePokemon, onClick }: { form: PokemonBase; basePokemon?: PokemonBase; onClick: () => void }) {
+  const { t } = useTranslation('common');
   const [showFullStats, setShowFullStats] = useState(false);
   const primaryType = form.types[0]?.toLowerCase() ?? 'normal';
   const accent = getTypeHex(primaryType);
@@ -235,7 +236,7 @@ function FormCard({ form, basePokemon, onClick }: { form: PokemonBase; basePokem
           onClick={(e) => { e.stopPropagation(); setShowFullStats(!showFullStats); }}
           className="text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-black/5 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/5 transition-colors flex items-center gap-1"
         >
-          {showFullStats ? 'Hide Calc Stats' : 'Show Calc Stats'}
+          {showFullStats ? t('pokemon.detail.hideCalcStats') : t('pokemon.detail.showCalcStats')}
           <svg className={`w-3 h-3 transition-transform ${showFullStats ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>

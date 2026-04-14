@@ -19,7 +19,7 @@ export function TypeFilterGrid({ selectedTypes, onToggle, types = DEFAULT_TYPES 
         <button
           key={type}
           onClick={() => onToggle(type)}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all whitespace-nowrap ${
             selectedTypes.includes(type)
               ? 'ring-2 ring-offset-1 ring-primary-500 dark:ring-offset-dark-bg-primary'
               : 'opacity-50 hover:opacity-100'

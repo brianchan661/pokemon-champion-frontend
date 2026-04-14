@@ -1,6 +1,6 @@
 /**
  * Pokemon Champion stat calculation utilities
- * Level 50, IVs fixed at 31, SPs 0-32 per stat, 66 total.
+ * IVs fixed at 31, SPs 0-32 per stat, 66 total.
  * Matches the formula used in pokemon/[id].tsx calcStat().
  */
 

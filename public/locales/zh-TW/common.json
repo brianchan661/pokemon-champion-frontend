@@ -1,7 +1,8 @@
 {
   "common": {
     "loading": "載入中...",
-    "cancel": "取消"
+    "cancel": "取消",
+    "remove": "刪除"
   },
   "comingSoon": {
     "status": "即將推出"
@@ -18,7 +19,43 @@
     "guides": "指南",
     "news": "新聞",
     "openMenu": "開啟選單",
-    "closeMenu": "關閉選單"
+    "closeMenu": "關閉選單",
+    "battleReference": "對戰參考",
+    "tools": "工具"
+  },
+  "battleReference": {
+    "pageTitle": "對戰參考",
+    "title": "對戰參考",
+    "subtitle": "設置你的隊伍，分析與對手的對戰。",
+    "myTeam": "我的隊伍",
+    "importTeam": "從已儲存隊伍匯入",
+    "addPokemon": "新增寶可夢",
+    "noTeams": "找不到已儲存的隊伍。",
+    "opponents": "對手",
+    "addOpponent": "新增對手",
+    "noOpponents": "新增對手寶可夢以開始。",
+    "selectMyPokemon": "選擇你的寶可夢",
+    "selectOpponent": "選擇對手寶可夢",
+    "damagingMoves": "攻擊技能",
+    "moveAnalysis": "技能分析",
+    "moveAnalysisHelp": "你選擇的技能對各對手的屬性相性。從側邊欄的隊伍中選擇技能。",
+    "myMove": "我的技能",
+    "searchMoves": "搜尋技能...",
+    "selectMoves": "最多選擇4個技能",
+    "noMoves": "找不到技能。",
+    "allPokemon": "全部",
+    "threatAnalysis": "威脅分析",
+    "threatAnalysisHelp": "對手可學的任意攻擊技能對我隊伍的最壞屬性相性。安全分越高，威脅你的對手越少。",
+    "safety": "安全",
+    "speedComparison": "速度比較",
+    "speedComparisonHelp": "計算後的速度。下降=SP0×0.9。提升=SP32×1.1。",
+    "speedOrder": "速度排序",
+    "pokemon": "寶可夢",
+    "scenario": "情境",
+    "actual": "實際",
+    "addMoves": "+ 技能",
+    "editMoves": "編輯",
+    "removeOpponent": "刪除對手"
   },
   "auth": {
     "login": "Login [NEEDS_TRANSLATION]",
@@ -257,7 +294,9 @@
       "statColNoSP": "0努力值",
       "statColMaxSP": "最大單項",
       "statColBoosted": "強化性格",
-      "statColLowered": "削弱性格"
+      "statColLowered": "削弱性格",
+      "showCalcStats": "顯示計算能力值",
+      "hideCalcStats": "隱藏計算能力值"
     },
     "searchPlaceholder": "Search by name, number or ability... [NEEDS_TRANSLATION]",
     "filters": "Filters [NEEDS_TRANSLATION]",
