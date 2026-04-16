@@ -55,8 +55,13 @@
     "scenario": "情境",
     "actual": "实际",
     "addMoves": "+ 技能",
-    "editMoves": "编辑",
-    "removeOpponent": "删除对手"
+    "editMoves": "编辑技能",
+    "removeOpponent": "删除对手",
+    "viewDetail": "查看全部技能与属性",
+    "stats": "属性与特性",
+    "baseStats": "种族值",
+    "abilities": "特性",
+    "moveName": "技能"
   },
   "auth": {
     "login": "登录",
@@ -487,31 +492,9 @@
     "filterByCategory": "按类别筛选",
     "allCategories": "所有类别",
     "categories": {
-      "held-items": "携带道具",
-      "choice": "选择系",
-      "mega-stones": "超级石",
-      "z-crystals": "Z纯晶",
-      "type-enhancement": "属性强化",
-      "type-protection": "属性防御",
-      "in-a-pinch": "危急树果",
-      "effort-drop": "努力值树果",
-      "healing": "治疗",
-      "revival": "复活",
-      "status-cures": "状态治疗",
-      "pp-recovery": "PP回复",
-      "vitamins": "营养饮料",
-      "stat-boosts": "能力提升",
-      "standard-balls": "标准精灵球",
-      "special-balls": "特殊精灵球",
-      "species-specific": "专属道具",
-      "plates": "石板",
-      "memories": "存储碟",
-      "bad-held-items": "负面道具",
-      "effort-training": "努力值训练",
-      "flutes": "笛子",
-      "spelunking": "探索",
-      "training": "训练",
-      "evolution": "进化"
+      "tool": "道具",
+      "berry": "树果",
+      "mega-stone": "超级石"
     },
     "table": {
       "sprite": "图标",
@@ -528,7 +511,15 @@
       "error": "道具未找到或加载错误。",
       "identifier": "标识符",
       "category": "类别"
-    }
+    },
+    "subcategories": {
+      "power-up": "威力提升",
+      "recovery": "回复",
+      "stat-boost": "能力提升",
+      "defense": "防御",
+      "other": "其他"
+    },
+    "filterBySubcategory": "按类型筛选"
   },
   "news": {
     "title": "新闻",

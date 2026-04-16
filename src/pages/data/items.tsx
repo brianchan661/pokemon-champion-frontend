@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
 import { api } from '@/utils/api';
-import { ITEM_CATEGORIES } from '@/constants/pokemon';
 import { ErrorMessage } from '@/components/UI/ErrorMessage';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -17,65 +16,68 @@ interface Item {
   identifier: string;
   name: string;
   category: string;
+  subcategory?: string;
   description?: string;
   spriteUrl?: string;
 }
+
+const CATEGORIES = ['tool', 'berry', 'mega-stone'] as const;
+const SUBCATEGORIES = ['power-up', 'recovery', 'stat-boost', 'defense', 'other'] as const;
 
 export default function ItemsPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [subcategoryFilter, setSubcategoryFilter] = useState<string>('');
 
-  // Debounce search query to improve performance
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // Fetch all items once with caching
   const {
     data: allItems,
     isLoading,
     error,
     refetch,
   } = useQuery({
-    queryKey: ['all-items', router.locale || 'en'],
-    queryFn: () => api.get<Item[]>('/items', { lang: router.locale || 'en' }),
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
+    queryKey: ['champions-items', router.locale || 'en'],
+    queryFn: () => api.get<Item[]>('/champions/items', { lang: router.locale || 'en' }),
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   }) as { data: Item[] | undefined; isLoading: boolean; error: Error | null; refetch: () => void };
 
-  // Client-side filtering with useMemo for performance
   const filteredItems = useMemo((): Item[] => {
     if (!allItems) return [];
+    let result = allItems;
 
-    let result: Item[] = allItems;
-
-    // Apply category filters (OR logic - match ANY selected category)
-    if (categoryFilters.length > 0) {
-      result = result.filter((item: Item) => categoryFilters.includes(item.category));
+    if (categoryFilter) {
+      result = result.filter((item) => item.category === categoryFilter);
     }
-
-    // Apply search filter (using debounced value)
+    if (subcategoryFilter) {
+      result = result.filter((item) => item.subcategory === subcategoryFilter);
+    }
     if (debouncedSearchQuery) {
       const query = debouncedSearchQuery.toLowerCase();
-      result = result.filter((item: Item) =>
+      result = result.filter((item) =>
         item.name.toLowerCase().includes(query) ||
         item.identifier.toLowerCase().includes(query)
       );
     }
 
     return result;
-  }, [allItems, categoryFilters, debouncedSearchQuery]);
+  }, [allItems, categoryFilter, subcategoryFilter, debouncedSearchQuery]);
 
   const totalCount = allItems?.length ?? 0;
   const filteredCount = filteredItems.length;
+  const isFiltered = !!(searchQuery || categoryFilter || subcategoryFilter);
 
-  // Toggle category filter
-  const toggleCategoryFilter = (category: string) => {
-    setCategoryFilters(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
+  const handleCategoryClick = (cat: string) => {
+    if (categoryFilter === cat) {
+      setCategoryFilter('');
+      setSubcategoryFilter('');
+    } else {
+      setCategoryFilter(cat);
+      setSubcategoryFilter('');
+    }
   };
 
   return (
@@ -87,12 +89,10 @@ export default function ItemsPage() {
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">{t('items.title')}</h1>
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-gray-600 dark:text-dark-text-secondary">
-                  {t('items.description')}
-                </p>
+                <p className="text-gray-600 dark:text-dark-text-secondary">{t('items.description')}</p>
                 {totalCount > 0 && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300">
-                    {searchQuery || categoryFilters.length > 0
+                    {isFiltered
                       ? t('items.filteredItems', { count: filteredCount })
                       : t('items.totalItems', { count: totalCount })}
                   </span>
@@ -127,34 +127,55 @@ export default function ItemsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
                   {t('items.filterByCategory')}
-                  {categoryFilters.length > 0 && (
-                    <span className="ml-2 text-xs text-gray-500 dark:text-dark-text-tertiary">
-                      ({categoryFilters.length} selected)
-                    </span>
-                  )}
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {ITEM_CATEGORIES.map((category) => (
+                  {CATEGORIES.map((cat) => (
                     <button
-                      key={category}
-                      onClick={() => toggleCategoryFilter(category)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${categoryFilters.includes(category)
-                        ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-dark-bg-secondary'
-                        : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
-                        }`}
+                      key={cat}
+                      onClick={() => handleCategoryClick(cat)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        categoryFilter === cat
+                          ? 'bg-primary-600 text-white ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-dark-bg-secondary'
+                          : 'bg-gray-200 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-secondary hover:bg-gray-300 dark:hover:bg-dark-bg-secondary'
+                      }`}
                     >
-                      {t(`items.categories.${category}`, { defaultValue: category })}
+                      {t(`items.categories.${cat}`, { defaultValue: cat })}
                     </button>
                   ))}
                 </div>
               </div>
 
+              {/* Subcategory Filter — only shown when tool is selected */}
+              {categoryFilter === 'tool' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
+                    {t('items.filterBySubcategory')}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {SUBCATEGORIES.map((sub) => (
+                      <button
+                        key={sub}
+                        onClick={() => setSubcategoryFilter(subcategoryFilter === sub ? '' : sub)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          subcategoryFilter === sub
+                            ? 'bg-secondary-600 text-white ring-2 ring-secondary-500 ring-offset-2 dark:ring-offset-dark-bg-secondary'
+                            : 'bg-gray-100 dark:bg-dark-bg-tertiary text-gray-600 dark:text-dark-text-secondary hover:bg-gray-200 dark:hover:bg-dark-bg-secondary'
+                        }`}
+                      >
+                        {t(`items.subcategories.${sub}`, { defaultValue: sub })}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Clear Filters */}
-              {(searchQuery || categoryFilters.length > 0) && (
+              {isFiltered && (
                 <button
                   onClick={() => {
                     setSearchQuery('');
-                    setCategoryFilters([]);
+                    setCategoryFilter('');
+                    setSubcategoryFilter('');
                   }}
                   className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
                 >
@@ -162,7 +183,6 @@ export default function ItemsPage() {
                 </button>
               )}
             </div>
-
 
             {/* Loading State */}
             {isLoading ? (
@@ -226,14 +246,13 @@ export default function ItemsPage() {
                           </td>
                           <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-dark-bg-tertiary text-gray-800 dark:text-dark-text-primary">
-                              {t(`items.categories.${item.category}`, { defaultValue: item.category })}
+                              {item.subcategory
+                                ? t(`items.subcategories.${item.subcategory}`, { defaultValue: item.subcategory })
+                                : t(`items.categories.${item.category}`, { defaultValue: item.category })}
                             </span>
                           </td>
                           <td className="px-3 py-2 sm:px-6 sm:py-4">
-                            <div
-                              className="text-sm text-gray-700 dark:text-dark-text-primary line-clamp-2 max-w-sm"
-                              title={item.description || ''}
-                            >
+                            <div className="text-sm text-gray-700 dark:text-dark-text-primary line-clamp-2 max-w-sm" title={item.description || ''}>
                               {item.description || '-'}
                             </div>
                           </td>
@@ -266,7 +285,9 @@ export default function ItemsPage() {
                           </td>
                           <td className="w-auto">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-dark-bg-tertiary text-gray-800 dark:text-dark-text-primary">
-                              {t(`items.categories.${item.category}`, { defaultValue: item.category })}
+                              {item.subcategory
+                                ? t(`items.subcategories.${item.subcategory}`, { defaultValue: item.subcategory })
+                                : t(`items.categories.${item.category}`, { defaultValue: item.category })}
                             </span>
                           </td>
                           <td className="w-full mt-1 text-sm text-gray-600 dark:text-dark-text-secondary line-clamp-2" title={item.description || ''}>

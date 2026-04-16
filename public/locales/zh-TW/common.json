@@ -54,8 +54,13 @@
     "scenario": "情境",
     "actual": "實際",
     "addMoves": "+ 技能",
-    "editMoves": "編輯",
-    "removeOpponent": "刪除對手"
+    "editMoves": "編輯技能",
+    "removeOpponent": "刪除對手",
+    "viewDetail": "查看全部技能與屬性",
+    "stats": "屬性與特性",
+    "baseStats": "種族值",
+    "abilities": "特性",
+    "moveName": "技能"
   },
   "auth": {
     "login": "Login [NEEDS_TRANSLATION]",
@@ -435,31 +440,9 @@
     "filterByCategory": "按類別篩選",
     "allCategories": "所有類別",
     "categories": {
-      "held-items": "攜帶道具",
-      "choice": "選擇系",
-      "mega-stones": "超級石",
-      "z-crystals": "Z純晶",
-      "type-enhancement": "屬性強化",
-      "type-protection": "屬性防禦",
-      "in-a-pinch": "危急樹果",
-      "effort-drop": "努力值樹果",
-      "healing": "治療",
-      "revival": "復活",
-      "status-cures": "狀態治療",
-      "pp-recovery": "PP回復",
-      "vitamins": "營養飲料",
-      "stat-boosts": "能力提升",
-      "standard-balls": "標準精靈球",
-      "special-balls": "特殊精靈球",
-      "species-specific": "專屬道具",
-      "plates": "石板",
-      "memories": "記憶碟",
-      "bad-held-items": "負面道具",
-      "effort-training": "努力值訓練",
-      "flutes": "笛子",
-      "spelunking": "探索",
-      "training": "訓練",
-      "evolution": "進化"
+      "tool": "道具",
+      "berry": "樹果",
+      "mega-stone": "超級石"
     },
     "table": {
       "sprite": "圖示",
@@ -476,7 +459,15 @@
       "error": "道具未找到或載入錯誤。",
       "identifier": "識別碼",
       "category": "類別"
-    }
+    },
+    "subcategories": {
+      "power-up": "威力提升",
+      "recovery": "回復",
+      "stat-boost": "能力提升",
+      "defense": "防禦",
+      "other": "其他"
+    },
+    "filterBySubcategory": "按類型篩選"
   },
   "news": {
     "title": "新聞",

@@ -16,6 +16,7 @@ interface ItemDetail {
   identifier: string;
   name: string;
   category: string;
+  subcategory?: string;
   description?: string;
   spriteUrl?: string;
 }
@@ -30,7 +31,7 @@ export default function ItemDetailPage() {
     queryFn: async () => {
       if (!id) return null;
       const response = await axios.get(
-        `${API_URL}/items/${id}?lang=${router.locale || 'en'}`
+        `${API_URL}/champions/items/${id}?lang=${router.locale || 'en'}`
       );
       return response.data.data as ItemDetail;
     },
@@ -104,10 +105,15 @@ export default function ItemDetailPage() {
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">{item.name}</h1>
 
                   {/* Category Badge */}
-                  <div className="mb-4">
+                  <div className="mb-4 flex gap-2 flex-wrap">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
                       {t(`items.categories.${item.category}`, { defaultValue: item.category })}
                     </span>
+                    {item.subcategory && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-dark-bg-tertiary text-gray-700 dark:text-dark-text-primary">
+                        {t(`items.subcategories.${item.subcategory}`, { defaultValue: item.subcategory })}
+                      </span>
+                    )}
                   </div>
 
                   {/* Description */}

@@ -64,8 +64,13 @@
     "scenario": "シナリオ",
     "actual": "実際",
     "addMoves": "+ 技",
-    "editMoves": "編集",
-    "removeOpponent": "相手を削除"
+    "editMoves": "技を編集",
+    "removeOpponent": "相手を削除",
+    "viewDetail": "全ての技・ステータスを見る",
+    "stats": "ステータス・特性",
+    "baseStats": "種族値",
+    "abilities": "特性",
+    "moveName": "技名"
   },
   "auth": {
     "login": "ログイン",
@@ -562,31 +567,9 @@
     "filterByCategory": "カテゴリーで絞り込む",
     "allCategories": "すべてのカテゴリー",
     "categories": {
-      "held-items": "持ち物",
-      "choice": "こだわり系",
-      "mega-stones": "メガストーン",
-      "z-crystals": "Zクリスタル",
-      "type-enhancement": "タイプ強化",
-      "type-protection": "タイプ防御",
-      "in-a-pinch": "ピンチベリー",
-      "effort-drop": "努力値下げ",
-      "healing": "回復",
-      "revival": "復活",
-      "status-cures": "状態異常治療",
-      "pp-recovery": "PP回復",
-      "vitamins": "栄養ドリンク",
-      "stat-boosts": "能力上昇",
-      "standard-balls": "標準ボール",
-      "special-balls": "特殊ボール",
-      "species-specific": "専用道具",
-      "plates": "プレート",
-      "memories": "メモリ",
-      "bad-held-items": "悪影響道具",
-      "effort-training": "努力値訓練",
-      "flutes": "フルート",
-      "spelunking": "探索",
-      "training": "トレーニング",
-      "evolution": "進化"
+      "tool": "どうぐ",
+      "berry": "きのみ",
+      "mega-stone": "メガストーン"
     },
     "table": {
       "sprite": "画像",
@@ -603,7 +586,15 @@
       "error": "道具が見つからないか、読み込みエラーが発生しました。",
       "identifier": "識別子",
       "category": "カテゴリー"
-    }
+    },
+    "subcategories": {
+      "power-up": "威力アップ",
+      "recovery": "回復",
+      "stat-boost": "能力アップ",
+      "defense": "防御",
+      "other": "その他"
+    },
+    "filterBySubcategory": "タイプで絞り込む"
   },
   "news": {
     "title": "ニュース",

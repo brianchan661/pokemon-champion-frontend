@@ -63,8 +63,13 @@
     "scenario": "Scenario",
     "actual": "Actual",
     "addMoves": "+ moves",
-    "editMoves": "edit",
-    "removeOpponent": "Remove opponent"
+    "editMoves": "Edit moves",
+    "removeOpponent": "Remove opponent",
+    "viewDetail": "View all moves & stats",
+    "stats": "Stats & Abilities",
+    "baseStats": "Base Stats",
+    "abilities": "Abilities",
+    "moveName": "Move"
   },
   "auth": {
     "login": "Login",
@@ -571,31 +576,9 @@
     "filterByCategory": "Filter by Category",
     "allCategories": "All Categories",
     "categories": {
-      "held-items": "Held Items",
-      "choice": "Choice Items",
-      "mega-stones": "Mega Stones",
-      "z-crystals": "Z-Crystals",
-      "type-enhancement": "Type Enhancement",
-      "type-protection": "Type Protection",
-      "in-a-pinch": "In-a-Pinch Berries",
-      "effort-drop": "EV Berries",
-      "healing": "Healing",
-      "revival": "Revival",
-      "status-cures": "Status Cures",
-      "pp-recovery": "PP Recovery",
-      "vitamins": "Vitamins",
-      "stat-boosts": "Stat Boosts",
-      "standard-balls": "Standard Balls",
-      "special-balls": "Special Balls",
-      "species-specific": "Species Specific",
-      "plates": "Plates",
-      "memories": "Memories",
-      "bad-held-items": "Bad Items",
-      "effort-training": "EV Training",
-      "flutes": "Flutes",
-      "spelunking": "Exploration",
-      "training": "Training",
-      "evolution": "Evolution"
+      "tool": "Tool",
+      "berry": "Berry",
+      "mega-stone": "Mega Stone"
     },
     "table": {
       "sprite": "Sprite",
@@ -612,7 +595,15 @@
       "error": "Item not found or error loading item details.",
       "identifier": "Identifier",
       "category": "Category"
-    }
+    },
+    "subcategories": {
+      "power-up": "Power Up",
+      "recovery": "Recovery",
+      "stat-boost": "Stat Boost",
+      "defense": "Defense",
+      "other": "Other"
+    },
+    "filterBySubcategory": "Filter by Type"
   },
   "news": {
     "title": "News",

@@ -15,6 +15,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'raw.githubusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.gamewith.jp',
+      },
     ],
     minimumCacheTTL: 14400, // 4 hours (new default in v16)
   },
