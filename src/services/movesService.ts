@@ -35,19 +35,9 @@ export interface PaginatedMovesResponse {
 }
 
 // Map champions API move shape to the Move interface used by the team builder.
-// The champions API does not use numeric IDs; we use a stable hash of the identifier
-// as a surrogate numeric id so existing components that key on move.id still work.
-function identifierToId(identifier: string): number {
-  let hash = 0;
-  for (let i = 0; i < identifier.length; i++) {
-    hash = (hash * 31 + identifier.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
 function mapChampionsMove(m: any): Move {
   return {
-    id: identifierToId(m.identifier),
+    id: m.id,
     identifier: m.identifier,
     name: m.name || m.name_en,
     type: m.type,
