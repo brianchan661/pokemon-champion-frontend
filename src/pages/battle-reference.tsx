@@ -350,7 +350,7 @@ function OpponentDetailModal({
                     {filteredMoves.map((move) => (
                       <div
                         key={move.identifier}
-                        className="px-4 py-2 grid gap-2 items-center hover:bg-gray-50 dark:hover:bg-white/3 transition-colors"
+                        className="px-4 py-2 grid gap-2 items-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                         style={{ gridTemplateColumns: '1fr 3rem 3.5rem 2.5rem 2.5rem' }}
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
