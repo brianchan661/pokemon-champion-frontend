@@ -6,6 +6,7 @@ import { TypeIcon } from '@/components/UI/TypeIcon';
 import { getTypeHex } from '@/utils/typeColors';
 import { getLocalizedMoveName } from '@/utils/localizedName';
 
+
 interface TeamCardProps {
   team: Team;
   showAuthor?: boolean;
@@ -211,7 +212,7 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
           </div>
         )}
 
-        {/* Desktop list layout: 6 pokemon columns side by side, more info per slot */}
+        {/* Desktop list layout: 6 pokemon columns side by side */}
         {layout === 'list' && (
           <div className="hidden md:flex gap-2">
             {Array.from({ length: 6 }).map((_, i) => {
@@ -222,59 +223,57 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
               return (
                 <div key={i} className="flex-1 min-w-0 rounded-xl overflow-hidden flex flex-col"
                   style={{ background: `linear-gradient(180deg, ${pColor}22 0%, var(--color-bg-tertiary) 100%)`, border: `1px solid ${pColor}44` }}>
-                  {/* Sprite area */}
-                  <div className="relative flex justify-center pt-2 pb-1" style={{ background: `${pColor}15` }}>
+
+                  {/* Sprite */}
+                  <div className="relative flex items-center justify-start py-1" style={{ background: `${pColor}15` }}>
                     {p.pokemonData?.imageUrl ? (
-                      <img src={p.pokemonData.imageUrl} alt={p.pokemonData.name || ''} className="w-16 h-16 object-contain"
+                      <img src={p.pokemonData.imageUrl} alt={p.pokemonData.name || ''} className="w-14 h-14 object-contain"
                         style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))' }} />
                     ) : (
-                      <div className="w-16 h-16 flex items-center justify-center text-gray-600">?</div>
+                      <div className="w-14 h-14 flex items-center justify-center text-gray-600">?</div>
                     )}
-                    {p.teraType && (
-                      <div className="absolute top-1 left-1 w-5 h-5 rotate-45 flex items-center justify-center rounded-sm"
-                        style={{ background: `${getTypeHex(p.teraType)}cc`, border: `1px solid ${getTypeHex(p.teraType)}` }}
-                        title={`Tera: ${p.teraType}`}>
-                        <div className="-rotate-45"><TypeIcon type={p.teraType} size="xs" /></div>
+                    {/* Type icons + tera top-right */}
+                    <div className="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end">
+                      <div className="flex flex-row gap-0.5">
+                        {(p.pokemonData?.types || []).map(type => (
+                          <TypeIcon key={type} type={type} size="sm" />
+                        ))}
                       </div>
-                    )}
+                      {p.teraType && (
+                        <div className="w-4 h-4 rotate-45 flex items-center justify-center rounded-sm"
+                          style={{ background: `${getTypeHex(p.teraType)}cc`, border: `1px solid ${getTypeHex(p.teraType)}` }}
+                          title={`Tera: ${p.teraType}`}>
+                          <div className="-rotate-45"><TypeIcon type={p.teraType} size="xs" /></div>
+                        </div>
+                      )}
+                    </div>
+                    {/* Ability + nature bottom-right */}
+                    <div className="absolute bottom-0.5 right-0.5 flex flex-col gap-0.5 items-end">
+                      {p.abilityData?.name && (
+                        <p className="text-[8px] font-semibold leading-none text-right" style={{ color: `${pColor}cc` }}>
+                          {p.abilityData.name}
+                        </p>
+                      )}
+                      {p.natureData?.name && (
+                        <p className="text-[8px] text-dark-text-secondary leading-none text-right">
+                          {p.natureData.name}
+                        </p>
+                      )}
+                    </div>
                     {p.itemData?.spriteUrl && (
                       <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
-                        className="absolute bottom-1 right-1 w-8 h-8 object-contain"
+                        className="absolute bottom-0 left-6 w-8 h-8 object-contain"
                         style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9))' }} />
                     )}
                   </div>
 
-                  {/* Info */}
+                  {/* Name, ability, nature, moves */}
                   <div className="flex flex-col gap-1 px-1.5 py-1.5 flex-1">
-                    {/* Name */}
                     <p className="text-[12px] font-extrabold text-dark-text-primary truncate leading-none text-center"
                       style={{ fontFamily: "'Rajdhani', sans-serif" }}>
                       {p.pokemonData?.name ?? '???'}
                     </p>
 
-                    {/* Types left, ability + nature right */}
-                    <div className="flex items-start justify-between gap-1 min-w-0">
-                      <div className="flex gap-0.5 flex-wrap shrink-0">
-                        {(p.pokemonData?.types || []).map(type => (
-                          <TypeIcon key={type} type={type} size="xs" />
-                        ))}
-                      </div>
-                      <div className="flex flex-col items-end gap-0.5 min-w-0">
-                        {p.abilityData?.name && (
-                          <p className="text-[9px] font-semibold truncate leading-none text-right"
-                            style={{ color: `${pColor}cc` }}>
-                            {p.abilityData.name}
-                          </p>
-                        )}
-                        {p.natureData?.name && (
-                          <p className="text-[9px] text-dark-text-secondary truncate leading-none text-right">
-                            {p.natureData.name}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Moves */}
                     <div className="flex flex-col gap-0.5">
                       {(p.movesData || []).slice(0, 4).map((move, mi) => {
                         const mColor = move.type ? getTypeHex(move.type) : '#6b7280';

@@ -1,10 +1,51 @@
 import Link from 'next/link';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'next-i18next';
 import { TypeIcon } from './TypeIcon';
 import { TeraTypeIcon } from './TeraTypeIcon';
 import { MoveCategoryIcon, MoveCategory } from './MoveCategoryIcon';
 import { getTypeHex } from '@/utils/typeColors';
 import { getLocalizedMoveName } from '@/utils/localizedName';
+
+function InfoTooltip({ text }: { text: string }) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  const show = () => {
+    const r = btnRef.current?.getBoundingClientRect();
+    if (r) setPos({ x: r.left + r.width / 2, y: r.top });
+  };
+
+  return (
+    <span className="inline-flex items-center shrink-0">
+      <button
+        ref={btnRef}
+        type="button"
+        onMouseEnter={show}
+        onMouseLeave={() => setPos(null)}
+        onClick={() => pos ? setPos(null) : show()}
+        className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] font-bold leading-none bg-white/20 text-white/60 hover:bg-white/40 hover:text-white transition-colors"
+      >
+        i
+      </button>
+      {pos && (
+        <span
+          className="fixed z-[9999] w-64 px-3 py-2.5 rounded-lg text-xs leading-relaxed text-white/90 pointer-events-none -translate-x-1/2"
+          style={{
+            left: pos.x,
+            top: pos.y - 8,
+            transform: 'translateX(-50%) translateY(-100%)',
+            background: 'rgba(15,15,20,0.97)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+          }}
+        >
+          {text}
+        </span>
+      )}
+    </span>
+  );
+}
 
 interface StatSpread {
   hp: number;
@@ -39,9 +80,11 @@ interface PokemonCardProps {
       accuracy?: number | null;
       pp?: number | null;
       category?: string;
+      description?: string | null;
     }>;
     abilityData?: {
       name?: string;
+      description?: string | null;
     };
     abilityIdentifier?: string;
     natureData?: {
@@ -59,6 +102,7 @@ interface PokemonCardProps {
   slotNumber?: number;
   variant?: 'compact' | 'detailed';
   enableLinks?: boolean;
+  forImage?: boolean;
   className?: string;
 }
 
@@ -106,6 +150,7 @@ export function PokemonCard({
   slotNumber,
   variant = 'compact',
   enableLinks = false,
+  forImage = false,
   className = '',
 }: PokemonCardProps) {
   const { t, i18n } = useTranslation('common');
@@ -146,7 +191,19 @@ export function PokemonCard({
         }}
       >
         {/* ── TOP SECTION: sprite left, info right ── */}
-        <div className="flex" style={{ background: getHeaderGradient() }}>
+        <div className="relative flex" style={{ background: getHeaderGradient() }}>
+          {/* Type icons top-right */}
+          <div className="absolute top-1.5 right-1.5 flex gap-0.5 z-10">
+            {pokemon?.pokemonData?.types?.map((type: string) => (
+              <TypeIcon key={type} type={type} size="sm" />
+            ))}
+          </div>
+          {/* Nature bottom-right */}
+          {nature?.name && (
+            <span className="absolute bottom-1.5 right-1.5 text-[10px] text-white/70 font-medium leading-none z-10">
+              {nature.name}
+            </span>
+          )}
           {/* Sprite */}
           <div className="relative shrink-0 flex items-end justify-center w-24 pb-1">
             {pokemon?.pokemonData?.imageUrl ? (
@@ -164,7 +221,7 @@ export function PokemonCard({
                 src={pokemon.itemData.spriteUrl}
                 alt={pokemon.itemData.name || ''}
                 title={pokemon.itemData.name}
-                className="absolute bottom-1 right-1 w-7 h-7 object-contain z-10"
+                className="absolute bottom-1 right-1 w-10 h-10 object-contain z-10"
                 style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.8))' }}
               />
             )}
@@ -186,17 +243,12 @@ export function PokemonCard({
                   </Link>
                 ) : (
                   <span
-                    className="font-extrabold text-base leading-tight text-white drop-shadow truncate"
+                    className={`font-extrabold text-base leading-tight text-white drop-shadow ${forImage ? '' : 'truncate'}`}
                     style={{ fontFamily: "'Rajdhani', sans-serif" }}
                   >
                     {pokemon?.pokemonData?.name || 'Unknown'}
                   </span>
                 )}
-                <div className="flex gap-0.5 shrink-0">
-                  {pokemon?.pokemonData?.types?.map((type: string) => (
-                    <TypeIcon key={type} type={type} size="xs" />
-                  ))}
-                </div>
               </div>
 
               {/* Ability */}
@@ -213,6 +265,9 @@ export function PokemonCard({
                   <span className="text-[11px] font-semibold text-white/90 truncate" title={pokemon?.abilityData?.name}>
                     {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || '—'}
                   </span>
+                )}
+                {!forImage && pokemon?.abilityData?.description && (
+                  <InfoTooltip text={pokemon.abilityData.description} />
                 )}
               </div>
 
@@ -234,9 +289,8 @@ export function PokemonCard({
               </div>
             </div>
 
-            {/* Right: nature + tera */}
+            {/* Right: tera */}
             <div className="shrink-0 flex flex-col items-end justify-center gap-1.5">
-              <span className="text-[11px] text-white/80 font-medium text-right leading-none">{nature?.name ?? '—'}</span>
               {pokemon?.teraType && (
                 <div
                   className="flex items-center gap-1.5 pl-1.5 pr-2 py-0.5 rounded-md"
@@ -289,7 +343,10 @@ export function PokemonCard({
                   }}
                 >
                   {move.type && <TypeIcon type={move.type} size="xs" />}
-                  {move.category && <MoveCategoryIcon category={move.category as MoveCategory} size={13} />}
+                  {move.category && (forImage
+                    ? <img src={`/images/moves/${move.category.toLowerCase()}.png`} alt={move.category} width={13} height={13} style={{ display: 'inline-block' }} />
+                    : <MoveCategoryIcon category={move.category as MoveCategory} size={13} />
+                  )}
                   {enableLinks && move.identifier ? (
                     <Link
                       href={`/data/moves/${move.identifier}`}
@@ -298,8 +355,9 @@ export function PokemonCard({
                       {getLocalizedMoveName(move, i18n.language)}
                     </Link>
                   ) : (
-                    <span className="flex-1 font-semibold text-dark-text-primary truncate text-[11px]">{getLocalizedMoveName(move, i18n.language)}</span>
+                    <span className={`flex-1 font-semibold text-dark-text-primary text-[11px] ${forImage ? '' : 'truncate'}`}>{getLocalizedMoveName(move, i18n.language)}</span>
                   )}
+                  {!forImage && move.description && <InfoTooltip text={move.description} />}
                 </div>
               );
             })}
@@ -308,7 +366,7 @@ export function PokemonCard({
           {/* Right: vertical stat column */}
           <div
             className="shrink-0 flex flex-col justify-between rounded-lg px-2.5 py-1.5"
-            style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)', width: '96px' }}
+            style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)', width: '118px' }}
           >
             {STAT_LABELS.map(({ key, label, color }) => {
               const base = pokemon?.pokemonData?.baseStats?.[key];
@@ -319,20 +377,17 @@ export function PokemonCard({
               const isUp = nature?.increasedStat && NATURE_STAT_KEY[nature.increasedStat] === key;
               const isDown = nature?.decreasedStat && NATURE_STAT_KEY[nature.decreasedStat] === key;
               return (
-                <div key={key} className="flex items-center gap-1">
-                  <span className="text-[9px] font-bold w-8 shrink-0 flex items-center gap-px" style={{ color }}>
-                    {isUp && <span style={{ color: '#16a34a', fontSize: '8px' }}>▲</span>}
-                    {isDown && <span style={{ color: '#dc2626', fontSize: '8px' }}>▼</span>}
-                    {!isUp && !isDown && <span style={{ fontSize: '8px', opacity: 0 }}>▲</span>}
-                    {label}
+                <div key={key} className="flex items-center">
+                  <span className="shrink-0 w-2.5 text-[8px] text-center">
+                    {isUp && <span style={{ color: '#16a34a' }}>▲</span>}
+                    {isDown && <span style={{ color: '#dc2626' }}>▼</span>}
                   </span>
-                  <span
-                    className="text-[11px] font-mono font-bold w-7 text-right"
-                    style={{ color: isUp ? '#16a34a' : isDown ? '#dc2626' : 'var(--color-text-primary)' }}
-                  >
+                  <span className="shrink-0 w-6 text-[9px] font-bold" style={{ color }}>{label}</span>
+                  <span className="shrink-0 w-7 text-[11px] font-mono font-bold text-right tabular-nums"
+                    style={{ color: isUp ? '#16a34a' : isDown ? '#dc2626' : 'var(--color-text-primary)' }}>
                     {calc ?? '—'}
                   </span>
-                  <span className="text-[9px] font-mono font-semibold w-7 text-right leading-none" style={{ color: 'rgba(251,191,36,0.8)' }}>
+                  <span className="shrink-0 w-9 text-[9px] font-mono text-right tabular-nums" style={{ color: 'rgba(251,191,36,0.8)' }}>
                     {ev > 0 ? `(+${ev})` : ''}
                   </span>
                 </div>

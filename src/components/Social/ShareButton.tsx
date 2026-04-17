@@ -38,22 +38,46 @@ export function ShareButton({ team }: ShareButtonProps) {
         setIsOpen(false);
     };
 
+    const toBase64 = async (url: string): Promise<string> => {
+        const res = await fetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
+        const blob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
+
     const handleDownloadImage = useCallback(async () => {
         if (!imageContainerRef.current) return;
 
         try {
             setIsGenerating(true);
 
-            // Give the DOM a moment to ensure images are loaded/rendered if they weren't visible
-            // Although they are in a fixed container, so they should be reachable.
-            // We might need a small delay or retry to ensure images load, but html-to-image handles some of this.
+            // Replace all external img src with base64 to avoid CORS issues in html-to-image
+            const imgs = imageContainerRef.current.querySelectorAll<HTMLImageElement>('img');
+            const origSrcs: string[] = [];
+            await Promise.all(Array.from(imgs).map(async (img, i) => {
+                origSrcs[i] = img.src;
+                if (img.src.startsWith('http')) {
+                    try {
+                        img.src = await toBase64(img.src);
+                    } catch {
+                        img.src = '';
+                    }
+                }
+            }));
 
             const dataUrl = await toPng(imageContainerRef.current, {
                 quality: 1.0,
-                pixelRatio: 2, // High resolution
-                backgroundColor: '#f3f4f6', // gray-100 equivalent for background
+                pixelRatio: 2,
+                backgroundColor: '#f3f4f6',
                 skipFonts: true,
             });
+
+            // Restore original srcs
+            Array.from(imgs).forEach((img, i) => { img.src = origSrcs[i]; });
 
             const link = document.createElement('a');
             link.download = `${team.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_team.png`;
@@ -133,7 +157,8 @@ export function ShareButton({ team }: ShareButtonProps) {
                             <PokemonCard
                                 pokemon={p}
                                 variant="detailed"
-                                enableLinks={false} // No links in image
+                                enableLinks={false}
+                                forImage={true}
                                 className="h-full shadow-md"
                             />
                         </div>
