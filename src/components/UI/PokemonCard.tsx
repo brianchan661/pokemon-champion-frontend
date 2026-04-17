@@ -147,12 +147,6 @@ export function PokemonCard({
         <div className="flex" style={{ background: getHeaderGradient() }}>
           {/* Sprite */}
           <div className="relative shrink-0 flex items-end justify-center w-24 pb-1">
-            {pokemon?.teraType && (
-              <div className="absolute top-1.5 left-1.5 flex flex-col items-center z-10">
-                <TeraTypeIcon type={pokemon.teraType} />
-                <span className="text-[8px] font-bold uppercase tracking-wider text-white/70 leading-none mt-0.5">Tera</span>
-              </div>
-            )}
             {pokemon?.pokemonData?.imageUrl ? (
               <img
                 src={pokemon.pokemonData.imageUrl}
@@ -238,9 +232,28 @@ export function PokemonCard({
               </div>
             </div>
 
-            {/* Right: nature */}
-            <div className="shrink-0 flex flex-col items-end justify-center gap-1">
-              <span className="text-[11px] text-white/80 font-medium text-right">{nature?.name ?? '—'}</span>
+            {/* Right: nature + tera */}
+            <div className="shrink-0 flex flex-col items-end justify-center gap-1.5">
+              <span className="text-[11px] text-white/80 font-medium text-right leading-none">{nature?.name ?? '—'}</span>
+              {pokemon?.teraType && (
+                <div
+                  className="flex items-center gap-1.5 pl-1.5 pr-2 py-0.5 rounded-md"
+                  style={{
+                    background: 'rgba(0,0,0,0.28)',
+                    border: `1px solid ${getTypeHex(pokemon.teraType)}99`,
+                    boxShadow: `0 0 10px ${getTypeHex(pokemon.teraType)}44`,
+                  }}
+                  title={`Tera Type: ${pokemon.teraType}`}
+                >
+                  <div className="scale-[0.55] -mx-1.5 -my-1"><TeraTypeIcon type={pokemon.teraType} /></div>
+                  <span
+                    className="text-[9px] font-extrabold uppercase tracking-[0.18em] leading-none"
+                    style={{ color: getTypeHex(pokemon.teraType), fontFamily: "'Rajdhani', sans-serif" }}
+                  >
+                    Tera
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

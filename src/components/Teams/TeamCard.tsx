@@ -125,6 +125,13 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                   ) : (
                     <div className="w-14 h-14 flex items-center justify-center text-gray-600 text-xs">?</div>
                   )}
+                  {p.teraType && (
+                    <div className="absolute top-0 left-0 w-4 h-4 rotate-45 flex items-center justify-center rounded-sm"
+                      style={{ background: `${getTypeHex(p.teraType)}cc`, border: `1px solid ${getTypeHex(p.teraType)}` }}
+                      title={`Tera: ${p.teraType}`}>
+                      <div className="-rotate-45"><TypeIcon type={p.teraType} size="xs" /></div>
+                    </div>
+                  )}
                   {p.itemData?.spriteUrl && (
                     <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
                       className="absolute bottom-0 right-0 w-4 h-4 object-contain"
@@ -157,6 +164,13 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                         style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
                     ) : (
                       <div className="w-10 h-10 flex items-center justify-center text-gray-600 text-xs">?</div>
+                    )}
+                    {p.teraType && (
+                      <div className="absolute top-0.5 left-0.5 w-3.5 h-3.5 rotate-45 flex items-center justify-center rounded-sm"
+                        style={{ background: `${getTypeHex(p.teraType)}cc`, border: `1px solid ${getTypeHex(p.teraType)}` }}
+                        title={`Tera: ${p.teraType}`}>
+                        <div className="-rotate-45"><TypeIcon type={p.teraType} size="xs" /></div>
+                      </div>
                     )}
                     {p.itemData?.spriteUrl && (
                       <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
@@ -214,6 +228,13 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                         style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))' }} />
                     ) : (
                       <div className="w-16 h-16 flex items-center justify-center text-gray-600">?</div>
+                    )}
+                    {p.teraType && (
+                      <div className="absolute top-1 left-1 w-5 h-5 rotate-45 flex items-center justify-center rounded-sm"
+                        style={{ background: `${getTypeHex(p.teraType)}cc`, border: `1px solid ${getTypeHex(p.teraType)}` }}
+                        title={`Tera: ${p.teraType}`}>
+                        <div className="-rotate-45"><TypeIcon type={p.teraType} size="xs" /></div>
+                      </div>
                     )}
                     {p.itemData?.spriteUrl && (
                       <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
