@@ -157,31 +157,18 @@ export default function ChampionsMovesPage() {
       <Layout>
         <div className="min-h-screen bg-dark-bg-primary">
 
-          {/* Hero */}
-          <div
-            className="relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(160deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 50%, var(--color-bg-tertiary) 100%)',
-              borderBottom: '1px solid var(--color-border)',
-            }}
-          >
-            <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
-              style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,1) 2px, rgba(255,255,255,1) 3px)' }}
-            />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 pointer-events-none"
-              style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.1) 0%, transparent 70%)' }}
-            />
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-400/70 mb-2">Champions</p>
-              <h1 className="text-5xl sm:text-6xl font-bold text-dark-text-primary leading-none mb-2"
-                style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: '-0.01em' }}>
-                {t('moves.title')}
-              </h1>
-              {total > 0 && (
-                <p className="text-sm text-gray-500">
-                  {hasFilter ? t('moves.filteredMoves', { count: filtered }) : t('moves.totalMoves', { count: total })}
-                </p>
-              )}
+          {/* Header */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-dark-text-primary mb-1">{t('moves.title')}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-dark-text-secondary text-sm">{t('moves.description', { defaultValue: 'All moves available in Pokemon Champions' })}</p>
+                {total > 0 && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300">
+                    {hasFilter ? t('moves.filteredMoves', { count: filtered }) : t('moves.totalMoves', { count: total })}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

@@ -95,65 +95,34 @@ export default function TeamsListPage() {
       <Layout>
         <div className="min-h-screen bg-dark-bg-primary">
 
-          {/* ── HERO ── */}
-          <div
-            className="relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(160deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 50%, var(--color-bg-tertiary) 100%)',
-              borderBottom: '1px solid var(--color-border)',
-            }}
-          >
-            {/* Decorative scanline texture */}
-            <div
-              className="absolute inset-0 pointer-events-none opacity-[0.03]"
-              style={{
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,1) 2px, rgba(255,255,255,1) 3px)',
-              }}
-            />
-            {/* Radial glow */}
-            <div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 pointer-events-none"
-              style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.1) 0%, transparent 70%)' }}
-            />
-
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-400/70 mb-2">
-                    Community
-                  </p>
-                  <h1
-                    className="text-5xl sm:text-6xl font-bold text-dark-text-primary leading-none"
-                    style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: '-0.01em' }}
-                  >
-                    {t('teams.title')}
-                  </h1>
+          {/* Header */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+              <div>
+                <h1 className="text-3xl font-bold text-dark-text-primary">{t('teams.title')}</h1>
+                <div className="flex items-center gap-2 flex-wrap mt-1">
+                  <p className="text-dark-text-secondary text-sm">{t('teams.description', { defaultValue: 'Browse competitive teams shared by the community' })}</p>
                   {totalTeams > 0 && (
-                    <p className="mt-2 text-sm text-gray-500">
-                      {totalTeams} {t('teams.teamsCount', { count: totalTeams, defaultValue: 'teams shared' })}
-                    </p>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300">
+                      {totalTeams} {t('teams.teamsCount', { count: totalTeams, defaultValue: 'teams' })}
+                    </span>
                   )}
                 </div>
-
-                <div className="flex gap-3 shrink-0">
-                  <Link
-                    href="/teams/my"
-                    className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                    style={{
-                      background: 'var(--color-bg-tertiary)',
-                      color: 'var(--color-text-secondary)',
-                      border: '1px solid var(--color-border)',
-                    }}
-                  >
-                    {t('teams.myTeams')}
-                  </Link>
-                  <Link
-                    href="/teams/create"
-                    className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary-600 dark:bg-primary-600/25 text-white dark:text-primary-400 border border-primary-600 dark:border-primary-600/40"
-                  >
-                    + {t('teams.createTeam')}
-                  </Link>
-                </div>
+              </div>
+              <div className="flex gap-3 shrink-0">
+                <Link
+                  href="/teams/my"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+                  style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }}
+                >
+                  {t('teams.myTeams')}
+                </Link>
+                <Link
+                  href="/teams/create"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-primary-600 dark:bg-primary-600/25 text-white dark:text-primary-400 border border-primary-600 dark:border-primary-600/40"
+                >
+                  + {t('teams.createTeam')}
+                </Link>
               </div>
             </div>
           </div>
