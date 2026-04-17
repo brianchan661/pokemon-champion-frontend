@@ -4,6 +4,7 @@ import { Team } from '@brianchan661/pokemon-champion-shared';
 import { useTranslation } from 'next-i18next';
 import { TypeIcon } from '@/components/UI/TypeIcon';
 import { getTypeHex } from '@/utils/typeColors';
+import { getLocalizedMoveName } from '@/utils/localizedName';
 
 interface TeamCardProps {
   team: Team;
@@ -14,7 +15,7 @@ interface TeamCardProps {
 }
 
 export const TeamCard = memo(({ team, showAuthor = true, className = '', index = 0, layout = 'grid' }: TeamCardProps) => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
 
   // Derive dominant type from first pokemon
   const firstType = team.pokemon[0]?.pokemonData?.types?.[0] || 'normal';
@@ -198,7 +199,7 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                           <div key={mi} className="flex items-center gap-0.5 truncate text-[7.5px] font-semibold px-1 py-px rounded leading-tight"
                             style={{ background: `${mColor}25`, color: mColor, border: `1px solid ${mColor}35` }}>
                             {move.type && <TypeIcon type={move.type} size="xs" />}
-                            <span className="truncate">{move.name}</span>
+                            <span className="truncate">{getLocalizedMoveName(move, i18n.language)}</span>
                           </div>
                         );
                       })}
@@ -281,7 +282,7 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                           <div key={mi} className="flex items-center gap-0.5 truncate text-[8.5px] font-semibold px-1 py-0.5 rounded leading-tight"
                             style={{ background: `${mColor}22`, color: mColor, border: `1px solid ${mColor}33` }}>
                             {move.type && <TypeIcon type={move.type} size="xs" />}
-                            <span className="truncate">{move.name}</span>
+                            <span className="truncate">{getLocalizedMoveName(move, i18n.language)}</span>
                           </div>
                         );
                       })}

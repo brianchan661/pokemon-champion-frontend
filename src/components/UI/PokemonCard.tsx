@@ -4,6 +4,7 @@ import { TypeIcon } from './TypeIcon';
 import { TeraTypeIcon } from './TeraTypeIcon';
 import { MoveCategoryIcon, MoveCategory } from './MoveCategoryIcon';
 import { getTypeHex } from '@/utils/typeColors';
+import { getLocalizedMoveName } from '@/utils/localizedName';
 
 interface StatSpread {
   hp: number;
@@ -30,7 +31,8 @@ interface PokemonCardProps {
       identifier?: string;
     };
     movesData?: Array<{
-      name?: string;
+      nameEn?: string;
+      nameJa?: string | null;
       type?: string;
       identifier?: string;
       power?: number | null;
@@ -106,7 +108,7 @@ export function PokemonCard({
   enableLinks = false,
   className = '',
 }: PokemonCardProps) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
 
   const getHeaderGradient = () => {
     const types = pokemon?.pokemonData?.types || [];
@@ -293,10 +295,10 @@ export function PokemonCard({
                       href={`/data/moves/${move.identifier}`}
                       className="flex-1 font-semibold text-dark-text-primary truncate hover:text-yellow-500 transition-colors text-[11px]"
                     >
-                      {move.name}
+                      {getLocalizedMoveName(move, i18n.language)}
                     </Link>
                   ) : (
-                    <span className="flex-1 font-semibold text-dark-text-primary truncate text-[11px]">{move.name}</span>
+                    <span className="flex-1 font-semibold text-dark-text-primary truncate text-[11px]">{getLocalizedMoveName(move, i18n.language)}</span>
                   )}
                 </div>
               );
@@ -402,11 +404,11 @@ export function PokemonCard({
           const move = pokemon?.movesData?.[index];
           return (
             <div key={index} className="flex items-center gap-1.5 text-xs bg-white dark:bg-dark-bg-primary px-2 py-1 rounded">
-              {move && move.type && move.name ? (
+              {move && move.type && move.nameEn ? (
                 <>
                   <TypeIcon type={move.type} size="xs" />
                   {move.category && <MoveCategoryIcon category={move.category as MoveCategory} size={16} />}
-                  <span className="font-medium truncate flex-1 text-gray-800 dark:text-dark-text-primary">{move.name}</span>
+                  <span className="font-medium truncate flex-1 text-gray-800 dark:text-dark-text-primary">{getLocalizedMoveName(move, i18n.language)}</span>
                 </>
               ) : (
                 <span className="text-gray-400 dark:text-gray-600 flex-1">-</span>

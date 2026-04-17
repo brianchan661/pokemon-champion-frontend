@@ -42,7 +42,6 @@ export default function TeamBuilderPage() {
   const [step, setStep] = useState<1 | 2>(1); // 1: Pokemon Selection, 2: Team Metadata
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const [showPokemonSelector, setShowPokemonSelector] = useState(false);
 
   // Redirect if not authenticated
@@ -178,8 +177,6 @@ export default function TeamBuilderPage() {
     setTeam(newTeam);
     setConfiguringPokemon(null);
     setActiveSlot(undefined);
-    setSuccessMessage('Pokemon configured successfully!');
-    setTimeout(() => setSuccessMessage(''), 3000);
   };
 
   // Handle Pokemon removal
@@ -232,7 +229,6 @@ export default function TeamBuilderPage() {
 
   const handleSaveTeam = async () => {
     setError('');
-    setSuccessMessage('');
 
     // Validation
     if (!teamName.trim()) {
@@ -329,7 +325,6 @@ export default function TeamBuilderPage() {
         // Invalidate myTeams query to ensure fresh data on redirect
         await queryClient.invalidateQueries({ queryKey: ['myTeams'] });
 
-        setSuccessMessage(teamId ? 'Team updated successfully!' : 'Team created successfully!');
         setTimeout(() => {
           router.push('/teams/my');
         }, 1500);
@@ -410,12 +405,6 @@ export default function TeamBuilderPage() {
             {error && (
               <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">
                 {error}
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-700 dark:text-green-400">
-                {successMessage}
               </div>
             )}
 

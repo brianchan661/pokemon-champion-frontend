@@ -12,6 +12,7 @@ interface PokemonFilters {
 }
 
 export interface ChampionsMoveEntry {
+  id: number;
   identifier: string;
   nameEn: string;
   nameJa: string | null;

@@ -6,10 +6,10 @@ import { naturesService, Nature } from '@/services/naturesService';
 import { teraTypesService, TeraType } from '@/services/teraTypesService';
 import { TeraTypeIcon } from '@/components/UI/TeraTypeIcon';
 import { itemsService, Item } from '@/services/itemsService';
-import { movesService } from '@/services/movesService';
 import { getDefaultEVs, validateEVs } from '@/utils/calculateStats';
+import { getLocalizedMoveName } from '@/utils/localizedName';
 import { EVInputs } from './EVInputs';
-import { MoveSelector } from './MoveSelector';
+import { MovePicker } from './MovePicker';
 import { NaturePickerModal } from './NaturePickerModal';
 import { LoadingSpinner } from '@/components/UI/LoadingSpinner';
 import { TypeIcon } from '@/components/UI';
@@ -48,16 +48,14 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
   const [itemId, setItemId] = useState<number | undefined>(existingConfig?.itemId);
   const [error, setError] = useState('');
 
-  // Extract available move identifiers from Pokemon data
-  const [availableMoveIdentifiers, setAvailableMoveIdentifiers] = useState<string[]>([]);
-
-
-
   // Ability description tooltip
   const [expandedAbility, setExpandedAbility] = useState<string | null>(null);
 
   // Nature picker visibility
   const [showNaturePicker, setShowNaturePicker] = useState(false);
+
+  // Move picker visibility
+  const [showMovePicker, setShowMovePicker] = useState(false);
 
   // Item selector visibility and search
   const [showItemSelector, setShowItemSelector] = useState(false);
@@ -82,10 +80,6 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
       }
       if (pokemonResult.success && pokemonResult.data) {
         setPokemon(pokemonResult.data);
-
-        // Extract available move identifiers directly from champions moves array
-        const moveIdentifiers = (pokemonResult.data.moves ?? []).map(m => m.identifier);
-        setAvailableMoveIdentifiers(moveIdentifiers);
 
         // Abilities come embedded in the champions detail response
         const mappedAbilities = (pokemonResult.data.abilities ?? []).map(a => ({
@@ -493,35 +487,84 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
           {/* Column 3: Moves */}
           <div className="space-y-6">
             <h3 className="text-md font-bold text-gray-900 dark:text-dark-text-primary border-b border-gray-100 dark:border-dark-border pb-2">
-              {t('teamBuilder.moves', 'Moves')}
+              {t('teamBuilder.moves', 'Moves')} ({moves.length}/4)
             </h3>
-            <MoveSelector
-              selectedMoveIds={moves}
-              onMoveSelect={async (moveId) => {
-                setMoves([...moves, moveId]);
-                // Fetch and store move data
-                const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
-                const moveResult = await movesService.getMoveById(moveId, currentLang);
-                if (moveResult.success && moveResult.data) {
-                  setSelectedMovesData([...selectedMovesData, {
-                    id: moveResult.data.id,
-                    identifier: moveResult.data.identifier,
-                    name: moveResult.data.name,
-                    type: moveResult.data.type,
-                    category: moveResult.data.category,
-                    power: moveResult.data.power,
-                    accuracy: moveResult.data.accuracy,
-                    pp: moveResult.data.pp,
-                  }]);
+
+            {/* 4-slot display */}
+            <div className="space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => {
+                const m = selectedMovesData[i];
+                if (!m) {
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setShowMovePicker(true)}
+                      className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-primary-500 hover:text-primary-600 transition-colors text-sm dark:border-dark-border dark:text-dark-text-tertiary dark:hover:border-primary-500 dark:hover:text-primary-400"
+                    >
+                      {moves.length === i ? t('teamBuilder.selectMove', 'Select Move') : '—'}
+                    </button>
+                  );
                 }
-              }}
-              onMoveRemove={(moveId) => {
-                setMoves(moves.filter((id) => id !== moveId));
-                setSelectedMovesData(selectedMovesData.filter((m) => m.id !== moveId));
-              }}
-              availableMoveIdentifiers={availableMoveIdentifiers}
-              initialMoves={selectedMovesData}
-            />
+                return (
+                  <div key={m.identifier} className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg bg-white dark:bg-dark-bg-tertiary dark:border-dark-border">
+                    <TypeIcon type={m.type} size="xs" />
+                    <span className="flex-1 text-sm font-medium text-gray-900 dark:text-dark-text-primary truncate">
+                      {getLocalizedMoveName(m, i18n.language)}
+                    </span>
+                    <span className="text-xs font-mono text-gray-400">{m.power ?? '—'}</span>
+                    <button
+                      onClick={() => {
+                        const moveId = pokemon?.moves?.find(mv => mv.identifier === m.identifier)?.id;
+                        setMoves(moves.filter((id) => id !== moveId));
+                        setSelectedMovesData(selectedMovesData.filter((s) => s.identifier !== m.identifier));
+                      }}
+                      className="text-red-400 hover:text-red-600 transition-colors ml-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                );
+              })}
+              {moves.length < 4 && (
+                <button
+                  onClick={() => setShowMovePicker(true)}
+                  className="w-full py-1.5 text-xs text-primary-500 hover:text-primary-400 transition-colors"
+                >
+                  + {t('teamBuilder.addMove', 'Add Move')}
+                </button>
+              )}
+            </div>
+
+            {showMovePicker && pokemon && (
+              <MovePicker
+                pokemonName={pokemon.base.name}
+                availableMoves={pokemon.moves ?? []}
+                selectedMoves={selectedMovesData}
+                lang={i18n.language}
+                onClose={() => setShowMovePicker(false)}
+                onToggleMove={(move) => {
+                  const already = selectedMovesData.some((s) => s.identifier === move.identifier);
+                  if (already) {
+                    setMoves(moves.filter((id) => id !== (pokemon?.moves?.find(mv => mv.identifier === move.identifier)?.id)));
+                    setSelectedMovesData(selectedMovesData.filter((s) => s.identifier !== move.identifier));
+                  } else if (moves.length < 4) {
+                    setMoves([...moves, move.id]);
+                    setSelectedMovesData([...selectedMovesData, {
+                      identifier: move.identifier,
+                      nameEn: move.nameEn,
+                      nameJa: move.nameJa ?? null,
+                      type: move.type,
+                      category: move.category,
+                      power: move.power,
+                      accuracy: move.accuracy,
+                      pp: move.pp,
+                    }]);
+                  }
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
