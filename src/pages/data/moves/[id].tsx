@@ -142,7 +142,7 @@ export default function MoveDetailPage() {
               {/* Description */}
               {move.effect_battle && (
                 <div className="mt-6 border-l-4 pl-4" style={{ borderColor: getTypeHex(move.type) }}>
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-text-tertiary mb-1">{t('moves.detail.description')}</h2>
+                  <h2 className="text-xs font-semibold text-gray-500 dark:text-dark-text-tertiary mb-1">{t('moves.detail.description')}</h2>
                   <p className="text-gray-900 dark:text-dark-text-primary leading-relaxed">{move.effect_battle}</p>
                 </div>
               )}

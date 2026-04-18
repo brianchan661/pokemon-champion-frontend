@@ -98,8 +98,8 @@ export default function ChampionsAbilitiesPage() {
         <div className="min-h-screen bg-dark-bg-primary">
 
           {/* Header */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
-            <div className="mb-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+            <div className="mb-4">
               <h1 className="text-3xl font-bold text-dark-text-primary mb-1">{t('abilities.title')}</h1>
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-dark-text-secondary text-sm">{t('abilities.description', { defaultValue: 'All abilities available in Pokemon Champions' })}</p>
@@ -110,40 +110,40 @@ export default function ChampionsAbilitiesPage() {
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Search */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                  </svg>
+            {/* Search */}
+            <div className="rounded-lg p-4 mb-2" style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={t('abilities.searchPlaceholder')}
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 rounded-xl text-sm text-dark-text-primary placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                    style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
+                  />
                 </div>
-                <input
-                  type="text"
-                  placeholder={t('abilities.searchPlaceholder')}
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl text-sm text-dark-text-primary placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
-                  style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}
-                />
+                {search && (
+                  <button
+                    onClick={() => setSearch('')}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 transition-colors hover:text-white whitespace-nowrap"
+                    style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
+                  >
+                    {t('abilities.clearSearch')}
+                  </button>
+                )}
               </div>
-              {search && (
-                <button
-                  onClick={() => setSearch('')}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 transition-colors hover:text-white whitespace-nowrap"
-                  style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
-                >
-                  {t('abilities.clearSearch')}
-                </button>
-              )}
             </div>
           </div>
 
           {/* Table */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-2">
             {isLoading ? (
               <div className="space-y-2">
                 {Array.from({ length: 8 }).map((_, i) => (

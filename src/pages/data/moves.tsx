@@ -158,8 +158,8 @@ export default function ChampionsMovesPage() {
         <div className="min-h-screen bg-dark-bg-primary">
 
           {/* Header */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
-            <div className="mb-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+            <div className="mb-4">
               <h1 className="text-3xl font-bold text-dark-text-primary mb-1">{t('moves.title')}</h1>
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-dark-text-secondary text-sm">{t('moves.description', { defaultValue: 'All moves available in Pokemon Champions' })}</p>
@@ -170,108 +170,108 @@ export default function ChampionsMovesPage() {
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Filters */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-            {/* Search + clear */}
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                  </svg>
+            {/* Filters */}
+            <div className="rounded-lg p-4 mb-2 space-y-4" style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}>
+              {/* Search + clear */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={t('moves.searchPlaceholder')}
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 rounded-xl text-sm text-dark-text-primary placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                    style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
+                  />
                 </div>
-                <input
-                  type="text"
-                  placeholder={t('moves.searchPlaceholder')}
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl text-sm text-dark-text-primary placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
-                  style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}
-                />
-              </div>
-              {hasFilter && (
-                <button
-                  onClick={() => { setSearch(''); setTypeFilters([]); setCatFilters([]); setFlagFilters([]); }}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 transition-colors hover:text-white whitespace-nowrap"
-                  style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
-                >
-                  {t('moves.clearFilters')}
-                </button>
-              )}
-            </div>
-
-            {/* Type filter */}
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
-                {t('moves.filterByType')}
-                {typeFilters.length > 0 && <span className="ml-2 text-blue-400">({typeFilters.length})</span>}
-              </label>
-              <TypeFilterGrid selectedTypes={typeFilters} onToggle={toggleType} />
-            </div>
-
-            {/* Category filter */}
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
-                {t('moves.filterByCategory', 'Category')}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {MOVE_CATEGORIES.map(cat => (
+                {hasFilter && (
                   <button
-                    key={cat}
-                    onClick={() => toggleCat(cat)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                    style={catFilters.includes(cat)
-                      ? { background: 'rgba(37,99,235,0.25)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.4)' }
-                      : { background: 'var(--color-bg-tertiary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
-                    }
+                    onClick={() => { setSearch(''); setTypeFilters([]); setCatFilters([]); setFlagFilters([]); }}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 transition-colors hover:text-white whitespace-nowrap"
+                    style={{ background: 'var(--color-bg-tertiary)', border: '1px solid var(--color-border)' }}
                   >
-                    <MoveCategoryIcon category={cat} size={20} />
-                    <span>{t(`moves.categories.${cat}`, cat)}</span>
+                    {t('moves.clearFilters')}
                   </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Advanced flag filters */}
-            <div>
-              <button
-                onClick={() => setShowAdvanced(v => !v)}
-                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                <svg className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-                {t('moves.advanced')}
-                {flagFilters.length > 0 && (
-                  <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-blue-600 text-white">
-                    {flagFilters.length}
-                  </span>
                 )}
-              </button>
-              {showAdvanced && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {FLAG_FILTER_KEYS.map(({ key, i18nKey }) => (
+              </div>
+
+              {/* Type filter */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-2">
+                  {t('moves.filterByType')}
+                  {typeFilters.length > 0 && <span className="ml-2 text-blue-400">({typeFilters.length})</span>}
+                </label>
+                <TypeFilterGrid selectedTypes={typeFilters} onToggle={toggleType} />
+              </div>
+
+              {/* Category filter */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-2">
+                  {t('moves.filterByCategory', 'Category')}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {MOVE_CATEGORIES.map(cat => (
                     <button
-                      key={key}
-                      onClick={() => toggleFlag(key as string)}
-                      className="px-3 py-1 rounded-full text-xs font-medium transition-all"
-                      style={flagFilters.includes(key as string)
+                      key={cat}
+                      onClick={() => toggleCat(cat)}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                      style={catFilters.includes(cat)
                         ? { background: 'rgba(37,99,235,0.25)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.4)' }
                         : { background: 'var(--color-bg-tertiary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
                       }
                     >
-                      {t(i18nKey)}
+                      <MoveCategoryIcon category={cat} size={20} />
+                      <span>{t(`moves.categories.${cat}`, cat)}</span>
                     </button>
                   ))}
                 </div>
-              )}
+              </div>
+
+              {/* Advanced flag filters */}
+              <div>
+                <button
+                  onClick={() => setShowAdvanced(v => !v)}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-gray-300 transition-colors"
+                >
+                  <svg className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  {t('moves.advanced')}
+                  {flagFilters.length > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-blue-600 text-white">
+                      {flagFilters.length}
+                    </span>
+                  )}
+                </button>
+                {showAdvanced && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {FLAG_FILTER_KEYS.map(({ key, i18nKey }) => (
+                      <button
+                        key={key}
+                        onClick={() => toggleFlag(key as string)}
+                        className="px-3 py-1 rounded-full text-xs font-medium transition-all"
+                        style={flagFilters.includes(key as string)
+                          ? { background: 'rgba(37,99,235,0.25)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.4)' }
+                          : { background: 'var(--color-bg-tertiary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
+                        }
+                      >
+                        {t(i18nKey)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Table */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-2">
             {isLoading ? (
               <div className="space-y-2">
                 {Array.from({ length: 8 }).map((_, i) => (
@@ -286,18 +286,18 @@ export default function ChampionsMovesPage() {
             ) : moves.length > 0 ? (
               <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
                 {/* Header row */}
-                <div className="grid gap-0 px-3 sm:px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] select-none"
-                  style={{ background: 'var(--color-bg-secondary)', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', gridTemplateColumns: '2fr 1fr 1fr 3rem 3rem 3rem 3rem 3fr' }}>
+                <div className="grid gap-0 px-3 sm:px-4 py-2.5 text-xs font-semibold select-none"
+                  style={{ background: 'var(--color-bg-secondary)', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', gridTemplateColumns: '2fr 5rem 5.5rem 4rem 4.5rem 3rem 3.5rem 4fr' }}>
                   {([
-                    { key: 'name' as SortKey, label: t('moves.table.name') },
-                    { key: 'type' as SortKey, label: t('moves.table.type') },
-                    { key: 'category' as SortKey, label: t('moves.table.category') },
-                    { key: 'power' as SortKey, label: t('moves.table.power') },
-                    { key: 'accuracy' as SortKey, label: t('moves.table.accuracy') },
-                    { key: 'pp' as SortKey, label: t('moves.table.pp') },
-                    { key: 'speed_priority' as SortKey, label: t('moves.table.priority') },
-                  ] as { key: SortKey; label: string }[]).map(({ key, label }) => (
-                    <button key={key} onClick={() => handleSort(key)} className="group flex items-center gap-1 whitespace-nowrap hover:text-white transition-colors text-left">
+                    { key: 'name' as SortKey, label: t('moves.table.name'), center: false },
+                    { key: 'type' as SortKey, label: t('moves.table.type'), center: false },
+                    { key: 'category' as SortKey, label: t('moves.table.category'), center: false },
+                    { key: 'power' as SortKey, label: t('moves.table.power'), center: true },
+                    { key: 'accuracy' as SortKey, label: t('moves.table.accuracy'), center: true },
+                    { key: 'pp' as SortKey, label: t('moves.table.pp'), center: true },
+                    { key: 'speed_priority' as SortKey, label: t('moves.table.priority'), center: true },
+                  ] as { key: SortKey; label: string; center: boolean }[]).map(({ key, label, center }) => (
+                    <button key={key} onClick={() => handleSort(key)} className={`group flex items-center gap-1 whitespace-nowrap hover:text-white transition-colors ${center ? 'justify-center' : 'text-left'}`}>
                       {label}<SortIcon col={key} />
                     </button>
                   ))}
@@ -311,7 +311,7 @@ export default function ChampionsMovesPage() {
                       onClick={() => router.push(`/data/moves/${move.identifier}`)}
                       className="group grid items-center gap-0 px-3 sm:px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-150"
                       style={{
-                        gridTemplateColumns: '2fr 1fr 1fr 3rem 3rem 3rem 3rem 3fr',
+                        gridTemplateColumns: '2fr 5rem 5.5rem 4rem 4.5rem 3rem 3.5rem 4fr',
                         background: 'rgba(255,255,255,0.03)',
                         border: '1px solid rgba(255,255,255,0.07)',
                         boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
