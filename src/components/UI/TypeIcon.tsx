@@ -23,15 +23,11 @@ export function TypeIcon({ type, size = 'md', className = '', showLabel = false 
   return (
     <span className={`inline-flex items-center gap-1 ${className}`}>
       <img
-        src={`/types/${typeLower}.svg`}
+        src={`/types/${typeLower}.png`}
         alt={typeLabel}
         title={typeLabel}
         className={`${sizeClass} object-contain`}
-        onError={(e) => {
-          console.error(`Failed to load type icon: ${type} (${typeLower})`);
-          // Fallback to showing text badge if image fails to load
-          e.currentTarget.style.display = 'none';
-        }}
+        onError={(e) => { e.currentTarget.style.display = 'none'; }}
       />
       {showLabel && <span className="text-sm font-medium text-gray-900 dark:text-dark-text-primary">{typeLabel}</span>}
     </span>
