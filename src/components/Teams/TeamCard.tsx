@@ -224,14 +224,39 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                 <div key={i} className="flex-1 min-w-0 rounded-xl overflow-hidden flex flex-col"
                   style={{ background: `linear-gradient(180deg, ${pColor}22 0%, var(--color-bg-tertiary) 100%)`, border: `1px solid ${pColor}44` }}>
 
-                  {/* Sprite */}
+                  {/* Sprite banner */}
                   <div className="relative flex items-center justify-start py-1" style={{ background: `${pColor}15` }}>
-                    {p.pokemonData?.imageUrl ? (
-                      <img src={p.pokemonData.imageUrl} alt={p.pokemonData.name || ''} className="w-14 h-14 object-contain"
-                        style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))' }} />
-                    ) : (
-                      <div className="w-14 h-14 flex items-center justify-center text-gray-600">?</div>
-                    )}
+                    {/* Image */}
+                    <div className="relative shrink-0">
+                      {p.pokemonData?.imageUrl ? (
+                        <img src={p.pokemonData.imageUrl} alt={p.pokemonData.name || ''} className="w-14 h-14 object-contain"
+                          style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))' }} />
+                      ) : (
+                        <div className="w-14 h-14 flex items-center justify-center text-gray-600">?</div>
+                      )}
+                      {p.itemData?.spriteUrl && (
+                        <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
+                          className="absolute bottom-0 right-0 w-5 h-5 object-contain"
+                          style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9))' }} />
+                      )}
+                    </div>
+                    {/* Name + ability + nature to the right of image */}
+                    <div className="flex flex-col gap-0.5 min-w-0 px-1 flex-1 self-start pt-1">
+                      <p className="text-[14px] font-extrabold text-dark-text-primary truncate leading-none"
+                        style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                        {p.pokemonData?.name ?? '???'}
+                      </p>
+                      {p.abilityData?.name && (
+                        <p className="text-[11px] font-semibold leading-none truncate" style={{ color: `${pColor}cc` }}>
+                          {p.abilityData.name}
+                        </p>
+                      )}
+                      {p.natureData?.name && (
+                        <p className="text-[11px] text-dark-text-secondary leading-none truncate">
+                          {p.natureData.name}
+                        </p>
+                      )}
+                    </div>
                     {/* Type icons + tera top-right */}
                     <div className="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end">
                       <div className="flex flex-row gap-0.5">
@@ -247,32 +272,10 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                         </div>
                       )}
                     </div>
-                    {/* Ability + nature bottom-right */}
-                    <div className="absolute bottom-0.5 right-0.5 flex flex-col gap-0.5 items-end">
-                      {p.abilityData?.name && (
-                        <p className="text-[8px] font-semibold leading-none text-right" style={{ color: `${pColor}cc` }}>
-                          {p.abilityData.name}
-                        </p>
-                      )}
-                      {p.natureData?.name && (
-                        <p className="text-[8px] text-dark-text-secondary leading-none text-right">
-                          {p.natureData.name}
-                        </p>
-                      )}
-                    </div>
-                    {p.itemData?.spriteUrl && (
-                      <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
-                        className="absolute bottom-0 left-6 w-8 h-8 object-contain"
-                        style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9))' }} />
-                    )}
                   </div>
 
-                  {/* Name, ability, nature, moves */}
+                  {/* Moves */}
                   <div className="flex flex-col gap-1 px-1.5 py-1.5 flex-1">
-                    <p className="text-[12px] font-extrabold text-dark-text-primary truncate leading-none text-center"
-                      style={{ fontFamily: "'Rajdhani', sans-serif" }}>
-                      {p.pokemonData?.name ?? '???'}
-                    </p>
 
                     <div className="flex flex-col gap-0.5">
                       {(p.movesData || []).slice(0, 4).map((move, mi) => {
