@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { Joyride, EventData, STATUS } from 'react-joyride';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
@@ -516,10 +517,11 @@ function OpponentMiniCard({ slot, lang, onRemove, expanded, onOpenDetail, onUpda
   );
 }
 
-function AddSlotButton({ onClick }: { onClick: () => void }) {
+function AddSlotButton({ onClick, ...rest }: { onClick: () => void } & React.HTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       onClick={onClick}
+      {...rest}
       className="flex flex-col items-center justify-center rounded-xl border border-dashed text-gray-600 hover:border-primary-500 hover:text-primary-400 transition-all duration-200"
       style={{ borderColor: 'rgba(255,255,255,0.15)', minHeight: 80 }}
     >
@@ -1311,6 +1313,20 @@ export default function BattleReferencePage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
+  // Tour
+  const [runTour, setRunTour] = useState(false);
+  useEffect(() => {
+    if (!localStorage.getItem('battleReferenceTourSeen')) {
+      setRunTour(true);
+    }
+  }, []);
+  const handleTourCallback = useCallback((data: EventData) => {
+    if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
+      localStorage.setItem('battleReferenceTourSeen', '1');
+      setRunTour(false);
+    }
+  }, []);
+
   // Natures
   const [natures, setNatures] = useState<Nature[]>([]);
   const [naturePickerFor, setNaturePickerFor] = useState<{ id: number; side: 'mine' | 'opp' } | null>(null);
@@ -1563,13 +1579,27 @@ export default function BattleReferencePage() {
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
 
-          <div>
-            <h1 className="text-2xl font-bold text-dark-text-primary mb-0.5" style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: '0.04em' }}>
-              {t('battleReference.title', 'Battle Reference')}
-            </h1>
-            <p className="text-sm text-dark-text-secondary">
-              {t('battleReference.subtitle', 'Set up your team and analyze matchups against opponents.')}
-            </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-dark-text-primary mb-0.5" style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: '0.04em' }}>
+                {t('battleReference.title', 'Battle Reference')}
+              </h1>
+              <p className="text-sm text-dark-text-secondary">
+                {t('battleReference.subtitle', 'Set up your team and analyze matchups against opponents.')}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem('battleReferenceTourSeen');
+                setRunTour(true);
+              }}
+              className="shrink-0 flex items-center gap-1.5 text-xs text-dark-text-secondary hover:text-primary-400 transition-colors mt-1"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {t('battleReference.tour.restart', 'How to use')}
+            </button>
           </div>
 
           {/* ── Teams panel ── */}
@@ -1598,6 +1628,7 @@ export default function BattleReferencePage() {
                 </div>
               </div>
               <button
+                data-tour="tour-collapse"
                 onClick={() => setTeamsExpanded((v) => !v)}
                 className="flex items-center gap-1 text-xs text-dark-text-secondary hover:text-dark-text-primary transition-colors"
               >
@@ -1654,7 +1685,7 @@ export default function BattleReferencePage() {
                       />
                     ))}
                     {myTeam.length < MAX_TEAM_SIZE && (
-                      <AddSlotButton onClick={() => setShowMySelector(true)} />
+                      <AddSlotButton data-tour="tour-add-my-pokemon" onClick={() => setShowMySelector(true)} />
                     )}
                   </div>
                 </div>
@@ -1676,7 +1707,7 @@ export default function BattleReferencePage() {
                       />
                     ))}
                     {opponents.length < MAX_TEAM_SIZE && (
-                      <AddSlotButton onClick={() => setShowOppSelector(true)} />
+                      <AddSlotButton data-tour="tour-add-opponent" onClick={() => setShowOppSelector(true)} />
                     )}
                   </div>
                 </div>
@@ -1747,45 +1778,48 @@ export default function BattleReferencePage() {
           </div>
 
           {/* ── Analysis sections ── */}
-          <div className="space-y-4">
+          <div className="space-y-4" data-tour="tour-analysis">
             {/* Threat Analysis */}
-            {myTeam.length > 0 && opponents.some((o) => o.detail) && (
-              <section>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-dark-text-secondary mb-3 flex items-center gap-2">
-                  {t('battleReference.threatAnalysis', 'Threat Analysis')}
-                  <span className="group relative cursor-help w-3.5 h-3.5 rounded-full bg-white/10 text-gray-400 inline-flex items-center justify-center text-[9px] font-bold flex-shrink-0">?<span className="pointer-events-none absolute left-0 bottom-full mb-1.5 w-56 rounded bg-gray-900 px-2 py-1.5 text-[11px] font-normal text-gray-200 leading-snug opacity-0 group-hover:opacity-100 transition-none z-50 whitespace-normal">{t('battleReference.threatAnalysisHelp', 'Worst-case type effectiveness of any damaging move each opponent can learn against your team.')}</span></span>
-                </h2>
-                <div className="rounded-xl border border-white/10 bg-dark-bg-secondary p-4">
-                  <ThreatTable myTeam={myTeam} opponents={opponents} />
-                </div>
-              </section>
-            )}
+            <section data-tour="tour-threat-analysis">
+              <h2 className="text-xs font-bold tracking-widest text-dark-text-secondary mb-3 flex items-center gap-2">
+                {t('battleReference.threatAnalysis', 'Threat Analysis')}
+                <span className="group relative cursor-help w-3.5 h-3.5 rounded-full bg-white/10 text-gray-400 inline-flex items-center justify-center text-[9px] font-bold flex-shrink-0">?<span className="pointer-events-none absolute left-0 bottom-full mb-1.5 w-56 rounded bg-gray-900 px-2 py-1.5 text-[11px] font-normal text-gray-200 leading-snug opacity-0 group-hover:opacity-100 transition-none z-50 whitespace-normal">{t('battleReference.threatAnalysisHelp', 'Worst-case type effectiveness of any damaging move each opponent can learn against your team.')}</span></span>
+              </h2>
+              <div className="rounded-xl border border-white/10 bg-dark-bg-secondary p-4">
+                {myTeam.length > 0 && opponents.some((o) => o.detail)
+                  ? <ThreatTable myTeam={myTeam} opponents={opponents} />
+                  : <p className="text-xs text-dark-text-secondary text-center py-2">{t('battleReference.addPokemonToSee', 'Add your team and opponents to see the analysis.')}</p>
+                }
+              </div>
+            </section>
 
             {/* Move Analysis */}
-            {myTeam.some((s) => s.selectedMoves.length > 0) && opponents.some((o) => o.detail) && (
-              <section>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-dark-text-secondary mb-3 flex items-center gap-2">
-                  {t('battleReference.moveAnalysis', 'Move Analysis')}
-                  <span className="group relative cursor-help w-3.5 h-3.5 rounded-full bg-white/10 text-gray-400 inline-flex items-center justify-center text-[9px] font-bold flex-shrink-0">?<span className="pointer-events-none absolute left-0 bottom-full mb-1.5 w-56 rounded bg-gray-900 px-2 py-1.5 text-[11px] font-normal text-gray-200 leading-snug opacity-0 group-hover:opacity-100 transition-none z-50 whitespace-normal">{t('battleReference.moveAnalysisHelp', 'Type effectiveness of your selected moves against each opponent.')}</span></span>
-                </h2>
-                <div className="rounded-xl border border-white/10 bg-dark-bg-secondary p-4">
-                  <MoveAnalysisTable myTeam={myTeam} opponents={opponents} lang={lang} />
-                </div>
-              </section>
-            )}
+            <section data-tour="tour-move-analysis">
+              <h2 className="text-xs font-bold tracking-widest text-dark-text-secondary mb-3 flex items-center gap-2">
+                {t('battleReference.moveAnalysis', 'Move Analysis')}
+                <span className="group relative cursor-help w-3.5 h-3.5 rounded-full bg-white/10 text-gray-400 inline-flex items-center justify-center text-[9px] font-bold flex-shrink-0">?<span className="pointer-events-none absolute left-0 bottom-full mb-1.5 w-56 rounded bg-gray-900 px-2 py-1.5 text-[11px] font-normal text-gray-200 leading-snug opacity-0 group-hover:opacity-100 transition-none z-50 whitespace-normal">{t('battleReference.moveAnalysisHelp', 'Type effectiveness of your selected moves against each opponent.')}</span></span>
+              </h2>
+              <div className="rounded-xl border border-white/10 bg-dark-bg-secondary p-4">
+                {myTeam.some((s) => s.selectedMoves.length > 0) && opponents.some((o) => o.detail)
+                  ? <MoveAnalysisTable myTeam={myTeam} opponents={opponents} lang={lang} />
+                  : <p className="text-xs text-dark-text-secondary text-center py-2">{t('battleReference.addMovesToSee', 'Add moves to your team Pokemon to see the analysis.')}</p>
+                }
+              </div>
+            </section>
 
             {/* Speed Comparison */}
-            {(myTeam.length > 0 || opponents.some((o) => o.detail)) && (
-              <section>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-dark-text-secondary mb-3 flex items-center gap-2">
-                  {t('battleReference.speedComparison', 'Speed Comparison')}
-                  <span className="group relative cursor-help w-3.5 h-3.5 rounded-full bg-white/10 text-gray-400 inline-flex items-center justify-center text-[9px] font-bold flex-shrink-0">?<span className="pointer-events-none absolute left-0 bottom-full mb-1.5 w-56 rounded bg-gray-900 px-2 py-1.5 text-[11px] font-normal text-gray-200 leading-snug opacity-0 group-hover:opacity-100 transition-none z-50 whitespace-normal">{t('battleReference.speedComparisonHelp', 'Calculated Speed stats. Lowered = 0 SP, ×0.9 nature. Boosted = 32 SP, ×1.1 nature.')}</span></span>
-                </h2>
-                <div className="rounded-xl border border-white/10 bg-dark-bg-secondary p-4">
-                  <SpeedTable myTeam={myTeam} opponents={opponents} />
-                </div>
-              </section>
-            )}
+            <section data-tour="tour-speed-comparison">
+              <h2 className="text-xs font-bold tracking-widest text-dark-text-secondary mb-3 flex items-center gap-2">
+                {t('battleReference.speedComparison', 'Speed Comparison')}
+                <span className="group relative cursor-help w-3.5 h-3.5 rounded-full bg-white/10 text-gray-400 inline-flex items-center justify-center text-[9px] font-bold flex-shrink-0">?<span className="pointer-events-none absolute left-0 bottom-full mb-1.5 w-56 rounded bg-gray-900 px-2 py-1.5 text-[11px] font-normal text-gray-200 leading-snug opacity-0 group-hover:opacity-100 transition-none z-50 whitespace-normal">{t('battleReference.speedComparisonHelp', 'Calculated Speed stats. Lowered = 0 SP, ×0.9 nature. Boosted = 32 SP, ×1.1 nature.')}</span></span>
+              </h2>
+              <div className="rounded-xl border border-white/10 bg-dark-bg-secondary p-4">
+                {myTeam.length > 0 || opponents.some((o) => o.detail)
+                  ? <SpeedTable myTeam={myTeam} opponents={opponents} />
+                  : <p className="text-xs text-dark-text-secondary text-center py-2">{t('battleReference.addPokemonToSee', 'Add your team and opponents to see the analysis.')}</p>
+                }
+              </div>
+            </section>
           </div>
         </div>
 
@@ -1925,6 +1959,70 @@ export default function BattleReferencePage() {
             </div>
           </div>
         )}
+      <Joyride
+        run={runTour}
+        onEvent={handleTourCallback}
+        continuous
+        options={{
+          primaryColor: '#60a5fa',
+          backgroundColor: '#1e2535',
+          textColor: '#e8eaf0',
+          arrowColor: '#1e2535',
+          zIndex: 10000,
+          showProgress: true,
+          skipBeacon: true,
+        }}
+        steps={[
+          {
+            target: '[data-tour="tour-add-my-pokemon"]',
+            title: t('battleReference.tour.step1Title', 'Add Your Pokemon'),
+            content: t('battleReference.tour.step1Desc', 'Click + to add your own Pokemon and build your team.'),
+            placement: 'right' as const,
+          },
+          {
+            target: '[data-tour="tour-add-opponent"]',
+            title: t('battleReference.tour.step2Title', 'Add Opponents'),
+            content: t('battleReference.tour.step2Desc', 'Click + to add the opponent Pokemon you will be facing.'),
+            placement: 'right' as const,
+          },
+          {
+            target: '[data-tour="tour-collapse"]',
+            title: t('battleReference.tour.step3Title', 'Collapse Team Panel'),
+            content: t('battleReference.tour.step3Desc', 'Collapse the team panel to give more space to the analysis sections below.'),
+            placement: 'bottom' as const,
+          },
+          {
+            target: '[data-tour="tour-threat-analysis"]',
+            title: t('battleReference.tour.step4Title', 'Threat Analysis'),
+            content: t('battleReference.tour.step4Desc', 'Shows the worst-case move type each opponent can use against each of your Pokemon, along with their weaknesses.'),
+            placement: 'top' as const,
+          },
+          {
+            target: '[data-tour="tour-move-analysis"]',
+            title: t('battleReference.tour.step5Title', 'Move Analysis'),
+            content: t('battleReference.tour.step5Desc', 'Shows how effective your selected moves are against each opponent. Select moves from your team cards.'),
+            placement: 'top' as const,
+          },
+          {
+            target: '[data-tour="tour-speed-comparison"]',
+            title: t('battleReference.tour.step6Title', 'Speed Comparison'),
+            content: t('battleReference.tour.step6Desc', 'Compare speed stats across all Pokemon under different scenarios like max SP, boosted nature, or your actual EVs.'),
+            placement: 'top' as const,
+          },
+        ]}
+        locale={{
+          back: t('battleReference.tour.back', 'Back'),
+          close: t('battleReference.tour.skip', 'Skip'),
+          last: t('battleReference.tour.finish', 'Finish'),
+          next: t('battleReference.tour.next', 'Next'),
+          skip: t('battleReference.tour.skip', 'Skip'),
+        }}
+        styles={{
+          buttonPrimary: { backgroundColor: '#60a5fa', color: '#fff', borderRadius: 6, fontSize: 13 },
+          buttonBack: { color: '#9aa3b8', fontSize: 13 },
+          buttonSkip: { color: '#6b7590', fontSize: 13 },
+        }}
+      />
       </Layout>
     </>
   );
