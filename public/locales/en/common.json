@@ -2,6 +2,10 @@
   "common": {
     "loading": "Loading...",
     "cancel": "Cancel",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "expand": "Expand",
     "remove": "Remove",
     "share": "Share",
     "download": "Download",
@@ -40,6 +44,7 @@
     "importTeam": "Import from Saved Team",
     "addPokemon": "Add Pokemon",
     "noTeams": "No saved teams found.",
+    "opponent": "Opponent",
     "opponents": "Opponents",
     "addOpponent": "Add Opponent",
     "noOpponents": "Add an opponent Pokemon to get started.",

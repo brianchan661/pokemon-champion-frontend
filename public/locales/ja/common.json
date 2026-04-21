@@ -2,6 +2,10 @@
   "common": {
     "loading": "読み込み中...",
     "cancel": "キャンセル",
+    "collapse": "閉じる",
+    "expand": "開く",
+    "collapse": "閉じる",
+    "expand": "開く",
     "remove": "削除",
     "save": "保存",
     "share": "共有",
@@ -41,6 +45,7 @@
     "importTeam": "保存済みチームからインポート",
     "addPokemon": "ポケモンを追加",
     "noTeams": "保存済みチームが見つかりません。",
+    "opponent": "相手",
     "opponents": "相手",
     "addOpponent": "相手を追加",
     "noOpponents": "相手のポケモンを追加して始めましょう。",

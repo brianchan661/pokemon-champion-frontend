@@ -1579,7 +1579,7 @@ export default function BattleReferencePage() {
             <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: teamsExpanded ? 'rgba(255,255,255,0.08)' : 'transparent' }}>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold tracking-widest" style={{ color: '#60a5fa' }}>My Team</span>
+                  <span className="text-xs font-bold tracking-widest" style={{ color: '#60a5fa' }}>{t('battleReference.myTeam', 'My Team')}</span>
                   <span className="text-xs text-dark-text-secondary">{myTeam.length}/{MAX_TEAM_SIZE}</span>
                   <button
                     onClick={handleLoadSavedTeams}
@@ -1593,7 +1593,7 @@ export default function BattleReferencePage() {
                 </div>
                 <span className="text-xs text-dark-text-tertiary">vs</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold tracking-widest" style={{ color: '#f87171' }}>Opponent</span>
+                  <span className="text-xs font-bold tracking-widest" style={{ color: '#f87171' }}>{t('battleReference.opponent', 'Opponent')}</span>
                   <span className="text-xs text-dark-text-secondary">{opponents.length}/{MAX_TEAM_SIZE}</span>
                 </div>
               </div>
@@ -1601,7 +1601,7 @@ export default function BattleReferencePage() {
                 onClick={() => setTeamsExpanded((v) => !v)}
                 className="flex items-center gap-1 text-xs text-dark-text-secondary hover:text-dark-text-primary transition-colors"
               >
-                {teamsExpanded ? 'Collapse' : 'Expand'}
+                {teamsExpanded ? t('common.collapse', 'Collapse') : t('common.expand', 'Expand')}
                 <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${teamsExpanded ? '' : '-rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
