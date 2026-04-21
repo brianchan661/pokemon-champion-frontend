@@ -69,7 +69,16 @@
     "stats": "Stats & Abilities",
     "baseStats": "Base Stats",
     "abilities": "Abilities",
-    "moveName": "Move"
+    "moveName": "Move",
+    "addItem": "Add item",
+    "removeItem": "Remove item",
+    "searchItems": "Search items...",
+    "noItemsFound": "No items found.",
+    "allCategories": "All",
+    "nature": "Nature",
+    "ability": "Ability",
+    "noMovesSelected": "No moves selected",
+    "loadingItems": "Loading..."
   },
   "auth": {
     "login": "Login",
