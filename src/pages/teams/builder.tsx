@@ -62,7 +62,6 @@ export default function TeamBuilderPage() {
   }, [teamId, isAuthenticated]);
 
   // Auto-save to localStorage
-  // Auto-save to localStorage
   useEffect(() => {
     // Allow auto-save for guests too
     if (team.some(s => s.pokemon) || teamName) {
@@ -150,13 +149,13 @@ export default function TeamBuilderPage() {
   const handleConfigSave = async (config: TeamPokemon) => {
     if (activeSlot === undefined || !configuringPokemon) return;
 
-    // Use the already-selected configuringPokemon data (no extra fetch needed)
     const newTeam = [...team];
     newTeam[activeSlot] = {
-      ...newTeam[activeSlot], // Preserve ID
+      ...newTeam[activeSlot],
       pokemon: {
         ...config,
-        pokemonData: {
+        // pokemonData comes from the configurator (reflects selected form)
+        pokemonData: config.pokemonData ?? {
           id: configuringPokemon.id,
           nationalNumber: configuringPokemon.nationalNumber,
           name: configuringPokemon.name,
@@ -190,7 +189,6 @@ export default function TeamBuilderPage() {
   const handleSlotClick = (index: number) => {
     setActiveSlot(index);
     if (team[index].pokemon) {
-      // Edit existing Pokemon
       const pokemonData = team[index].pokemon!.pokemonData;
       setConfiguringPokemon({
         id: pokemonData.id,
@@ -324,6 +322,9 @@ export default function TeamBuilderPage() {
         localStorage.removeItem('teamBuilder_autoSave');
         // Invalidate myTeams query to ensure fresh data on redirect
         await queryClient.invalidateQueries({ queryKey: ['myTeams'] });
+        if (teamId) {
+          await queryClient.invalidateQueries({ queryKey: ['team', teamId] });
+        }
 
         setTimeout(() => {
           router.push('/teams/my');

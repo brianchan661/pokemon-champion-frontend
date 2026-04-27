@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { memo } from 'react';
-import { Team } from '@brianchan661/pokemon-champion-shared';
+import { Team, STONE_TO_MEGA_FORM } from '@brianchan661/pokemon-champion-shared';
 import { useTranslation } from 'next-i18next';
 import { TypeIcon } from '@/components/UI/TypeIcon';
 import { getTypeHex } from '@/utils/typeColors';
@@ -136,10 +136,13 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                   )}
                   {p.itemData?.spriteUrl && (
                     <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
-                      className="absolute bottom-0 right-0 w-4 h-4 object-contain"
+                      className="absolute bottom-0 right-0 w-6 h-6 object-contain"
                       style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
                   )}
                 </div>
+                {p.itemData?.identifier && STONE_TO_MEGA_FORM[p.itemData.identifier] && (
+                  <img src="/images/shared/mega_evolution.png" alt="Mega" className="absolute bottom-1 right-1 w-6 h-6 object-contain select-none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' }} />
+                )}
                 <p className="text-[10px] font-bold text-dark-text-secondary truncate w-full text-center px-1 leading-tight">
                   {p.pokemonData?.name ?? '???'}
                 </p>
@@ -176,8 +179,11 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                     )}
                     {p.itemData?.spriteUrl && (
                       <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
-                        className="absolute bottom-0 right-0 w-4 h-4 object-contain"
+                        className="absolute bottom-0 right-0 w-6 h-6 object-contain"
                         style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
+                    )}
+                    {p.itemData?.identifier && STONE_TO_MEGA_FORM[p.itemData.identifier] && (
+                      <img src="/images/shared/mega_evolution.png" alt="Mega" className="absolute bottom-0 right-0 w-6 h-6 object-contain select-none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' }} />
                     )}
                   </div>
                   {/* Info */}
@@ -236,7 +242,7 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                       )}
                       {p.itemData?.spriteUrl && (
                         <img src={p.itemData.spriteUrl} alt="" title={p.itemData.name}
-                          className="absolute bottom-0 right-0 w-5 h-5 object-contain"
+                          className="absolute bottom-0 right-0 w-7 h-7 object-contain"
                           style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9))' }} />
                       )}
                     </div>
@@ -257,6 +263,9 @@ export const TeamCard = memo(({ team, showAuthor = true, className = '', index =
                         </p>
                       )}
                     </div>
+                    {p.itemData?.identifier && STONE_TO_MEGA_FORM[p.itemData.identifier] && (
+                      <img src="/images/shared/mega_evolution.png" alt="Mega" className="absolute bottom-1 right-1 w-7 h-7 object-contain select-none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' }} />
+                    )}
                     {/* Type icons + tera top-right */}
                     <div className="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end">
                       <div className="flex flex-row gap-0.5">

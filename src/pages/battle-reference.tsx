@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Joyride, EventData, STATUS } from 'react-joyride';
+import dynamic from 'next/dynamic';
+import type { Props as JoyrideProps, EventData } from 'react-joyride';
+const Joyride = dynamic<JoyrideProps>(() => import('react-joyride').then((m) => m.Joyride), { ssr: false });
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
@@ -22,9 +24,11 @@ import { teamService } from '@/services/teamService';
 import { naturesService, Nature } from '@/services/naturesService';
 import { itemsService, Item } from '@/services/itemsService';
 import { NaturePickerModal } from '@/components/TeamBuilder/NaturePickerModal';
+import { ItemPickerModal } from '@/components/TeamBuilder/ItemPickerModal';
 import { getEffectiveness, PokeType, TYPES } from '@/data/typeChart';
 import { getTypeHex } from '@/utils/typeColors';
 import { calculateStat, calculateHP } from '@/utils/calculateStats';
+import { MEGA_FORM_TO_STONE } from '@brianchan661/pokemon-champion-shared';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -82,6 +86,8 @@ function getMoveName(move: { nameEn: string; nameJa: string | null }, lang: stri
 
 interface TeamSlot {
   pokemon: Pokemon;
+  basePokemon: Pokemon;
+  selectedFormSlug?: string;
   evs: StatSpread;
   natureMods: typeof DEFAULT_NATURE_MODS;
   item?: { name: string; spriteUrl?: string };
@@ -94,6 +100,8 @@ interface TeamSlot {
 
 interface OpponentSlot {
   pokemon: Pokemon;
+  basePokemon: Pokemon;
+  selectedFormSlug?: string;
   evs: StatSpread;
   natureMods: typeof DEFAULT_NATURE_MODS;
   item?: { name: string; spriteUrl?: string };
@@ -151,119 +159,54 @@ function AbilityPickerModal({ abilities, selectedIdentifier, lang, onSelect, onC
 }
 
 
-function ItemPickerModal({ lang, selectedItem, onSelect, onClear, onClose }: {
-  lang: string;
-  selectedItem?: { name: string; spriteUrl?: string };
-  onSelect: (item: Item) => void;
-  onClear: () => void;
+
+function FormPickerModal({ basePokemon, forms, currentSlug, onSelect, onClose }: {
+  basePokemon: Pokemon;
+  forms: Pokemon[];
+  currentSlug?: string;
+  onSelect: (slug: string | undefined) => void;
   onClose: () => void;
 }) {
   const { t } = useTranslation('common');
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
-  const [allItems, setAllItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Load all items once on mount
-  React.useEffect(() => {
-    itemsService.getItems({ lang: lang as 'en' | 'ja' }).then((res) => {
-      if (res.success && res.data) setAllItems(res.data);
-      setLoading(false);
-    });
-  }, [lang]);
-
-  const categories = useMemo(() => {
-    const cats = Array.from(new Set(allItems.map((i) => i.category))).sort();
-    return cats;
-  }, [allItems]);
-
-  const filtered = useMemo(() => {
-    let items = allItems;
-    if (category) items = items.filter((i) => i.category === category);
-    if (search.trim()) {
-      const q = search.trim().toLowerCase();
-      items = items.filter((i) => i.name.toLowerCase().includes(q));
-    }
-    return items;
-  }, [allItems, category, search]);
-
+  // The API already includes the base form inside `forms` when viewing an alternate form,
+  // so deduplicate by id before prepending the explicit base entry.
+  const allOptions: { pokemon: Pokemon; slug: string | undefined }[] = [
+    { pokemon: basePokemon, slug: undefined },
+    ...forms.filter((f) => f.id !== basePokemon.id).map((f) => ({ pokemon: f, slug: f.nameLower })),
+  ];
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white dark:bg-dark-bg-secondary rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border w-full max-w-md flex flex-col overflow-hidden" style={{ maxHeight: '80vh' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg-tertiary shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-gray-800 dark:text-dark-text-primary">Item</span>
-            {selectedItem && (
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400">
-                {selectedItem.spriteUrl && <img src={selectedItem.spriteUrl} className="w-4 h-4 object-contain" alt="" />}
-                <span className="text-xs font-semibold">{selectedItem.name}</span>
-              </div>
-            )}
-          </div>
+      <div className="relative bg-white dark:bg-dark-bg-secondary rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border w-full max-w-xs overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg-tertiary">
+          <span className="text-sm font-bold text-gray-800 dark:text-dark-text-primary">{t('battleReference.changeForm', 'Change Form')}</span>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-dark-text-primary transition-colors text-lg leading-none">✕</button>
         </div>
-
-        {/* Search + category filters */}
-        <div className="px-4 pt-3 pb-2 border-b border-gray-200 dark:border-dark-border shrink-0 space-y-2">
-          <input
-            autoFocus
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('battleReference.searchItems', 'Search items...')}
-            className="w-full text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-dark-bg-tertiary text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary-400"
-          />
-          <div className="flex gap-1 flex-wrap">
-            <button
-              onClick={() => setCategory('')}
-              className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${!category ? 'bg-primary-600/20 border-primary-500/50 text-primary-400' : 'border-white/10 text-gray-500 hover:text-gray-300'}`}
-            >
-              {t('battleReference.allCategories', 'All')}
-            </button>
-            {categories.map((cat) => (
+        <div className="p-3 space-y-2">
+          {allOptions.map(({ pokemon, slug }) => {
+            const isSelected = slug === currentSlug;
+            return (
               <button
-                key={cat}
-                onClick={() => setCategory(category === cat ? '' : cat)}
-                className={`text-xs px-2 py-0.5 rounded-full border transition-colors capitalize ${category === cat ? 'bg-primary-600/20 border-primary-500/50 text-primary-400' : 'border-white/10 text-gray-500 hover:text-gray-300'}`}
+                key={slug ?? '__base__'}
+                onClick={() => { onSelect(slug); onClose(); }}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border transition-all ${
+                  isSelected
+                    ? 'bg-primary-600 border-primary-500 text-white'
+                    : 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-100 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20'
+                }`}
               >
-                {cat.replace(/-/g, ' ')}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* List */}
-        <div className="flex-1 overflow-y-auto">
-          {selectedItem && (
-            <button
-              onClick={() => { onClear(); onClose(); }}
-              className="w-full text-left px-4 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors border-b border-gray-100 dark:border-white/5"
-            >
-              {t('battleReference.removeItem', 'Remove item')}
-            </button>
-          )}
-          {loading && <p className="text-xs text-gray-300 text-center py-6">{t('battleReference.loadingItems', 'Loading...')}</p>}
-          {!loading && filtered.length === 0 && <p className="text-xs text-gray-300 text-center py-6">{t('battleReference.noItemsFound', 'No items found.')}</p>}
-          <div className="divide-y divide-gray-50 dark:divide-white/5">
-            {filtered.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => { onSelect(item); onClose(); }}
-                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left"
-              >
-                {item.spriteUrl
-                  ? <img src={item.spriteUrl} alt="" className="w-8 h-8 object-contain shrink-0" />
-                  : <div className="w-8 h-8 rounded bg-gray-100 dark:bg-white/10 shrink-0" />
-                }
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">{item.name}</p>
-                  {item.description && <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight mt-0.5 line-clamp-2">{item.description}</p>}
+                {pokemon.imageUrl && (
+                  <img src={pokemon.imageUrl} alt={pokemon.name} className="w-10 h-10 object-contain shrink-0" />
+                )}
+                <div className="text-left min-w-0">
+                  <p className="text-sm font-semibold leading-tight truncate">{pokemon.name}</p>
+                  <div className="flex gap-1 mt-0.5 flex-wrap">
+                    {pokemon.types.map((ty) => <TypeIcon key={ty} type={ty} size="xs" />)}
+                  </div>
                 </div>
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -300,10 +243,10 @@ function StatEvRow({
 }
 
 
-function MiniCard({ slot, lang, onRemove, onEditMoves, expanded, onUpdateEvs, onPickNature, onPickAbility, onPickItem }: {
+function MiniCard({ slot, lang, onRemove, onEditMoves, expanded, onUpdateEvs, onPickNature, onPickAbility, onPickItem, onPickForm }: {
   slot: TeamSlot; lang: string; onRemove: () => void; onEditMoves: () => void;
   expanded: boolean; onUpdateEvs: (evs: StatSpread, natureMods: NatureMods) => void;
-  onPickNature: () => void; onPickAbility: () => void; onPickItem: () => void;
+  onPickNature: () => void; onPickAbility: () => void; onPickItem: () => void; onPickForm: () => void;
 }) {
   const { t } = useTranslation('common');
   const { pokemon } = slot;
@@ -365,6 +308,15 @@ function MiniCard({ slot, lang, onRemove, onEditMoves, expanded, onUpdateEvs, on
               {slot.item?.name ?? t('battleReference.addItem', 'Add item')}
             </span>
           </button>
+          {/* Form change button */}
+          {slot.detail && slot.detail.forms.length > 0 && (
+            <button onClick={onPickForm} className="text-[11px] px-1.5 py-0.5 rounded border transition-colors leading-none mt-1"
+              style={slot.selectedFormSlug
+                ? { color: '#6ee7b7', borderColor: '#059669aa', background: '#05966918' }
+                : { color: '#d1d5db', borderColor: 'rgba(255,255,255,0.15)', background: 'transparent' }}>
+              {t('battleReference.changeForm', 'Form')}<span className="ml-0.5 opacity-50">▾</span>
+            </button>
+          )}
         </div>
         <button onClick={onRemove} className="shrink-0 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded-full bg-black/40 text-gray-400 hover:text-red-400 transition-all self-start mt-0.5">
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -415,11 +367,11 @@ function MiniCard({ slot, lang, onRemove, onEditMoves, expanded, onUpdateEvs, on
   );
 }
 
-function OpponentMiniCard({ slot, lang, onRemove, expanded, onOpenDetail, onUpdateEvs, onPickNature, onPickAbility, onPickItem }: {
+function OpponentMiniCard({ slot, lang, onRemove, expanded, onOpenDetail, onUpdateEvs, onPickNature, onPickAbility, onPickItem, onPickForm }: {
   slot: OpponentSlot; lang: string; onRemove: () => void;
   expanded: boolean; onOpenDetail: () => void;
   onUpdateEvs: (evs: StatSpread, natureMods: NatureMods) => void;
-  onPickNature: () => void; onPickAbility: () => void; onPickItem: () => void;
+  onPickNature: () => void; onPickAbility: () => void; onPickItem: () => void; onPickForm: () => void;
 }) {
   const { t } = useTranslation('common');
   const { pokemon, detail, loading } = slot;
@@ -480,6 +432,15 @@ function OpponentMiniCard({ slot, lang, onRemove, expanded, onOpenDetail, onUpda
               {slot.item?.name ?? t('battleReference.addItem', 'Add item')}
             </span>
           </button>
+          {/* Form change button */}
+          {slot.detail && slot.detail.forms.length > 0 && (
+            <button onClick={onPickForm} className="text-[11px] px-1.5 py-0.5 rounded border transition-colors leading-none mt-1"
+              style={slot.selectedFormSlug
+                ? { color: '#6ee7b7', borderColor: '#059669aa', background: '#05966918' }
+                : { color: '#d1d5db', borderColor: 'rgba(255,255,255,0.15)', background: 'transparent' }}>
+              {t('battleReference.changeForm', 'Form')}<span className="ml-0.5 opacity-50">▾</span>
+            </button>
+          )}
         </div>
         <button onClick={onRemove} className="shrink-0 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded-full bg-black/40 text-gray-400 hover:text-red-400 transition-all self-start mt-0.5">
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -909,7 +870,7 @@ function ThreatTable({
               {t('battleReference.myTeam', 'My Team')}
             </th>
             {filledOpponents.map((opp) => (
-              <th key={opp.pokemon.id} className="pb-2 px-1 text-center align-bottom">
+              <th key={`${opp.basePokemon.id}-${opp.selectedFormSlug ?? 'base'}`} className="pb-2 px-1 text-center align-bottom">
                 {opp.pokemon.imageUrl && (
                   <img src={opp.pokemon.imageUrl} alt={opp.pokemon.name} className="w-8 h-8 object-contain mx-auto" />
                 )}
@@ -922,14 +883,14 @@ function ThreatTable({
         </thead>
         <tbody>
           {rows.map(({ slot, cells, safeCount, weakTypes }) => (
-            <tr key={slot.pokemon.id} className="border-t border-gray-100 dark:border-white/5">
+            <tr key={`${slot.basePokemon.id}-${slot.selectedFormSlug ?? 'base'}`} className="border-t border-gray-100 dark:border-white/5">
               <td className="py-1.5 pr-3">
                 <div className="flex items-center gap-1.5">
                   {slot.pokemon.imageUrl && (
                     <img src={slot.pokemon.imageUrl} alt={slot.pokemon.name} className="w-6 h-6 object-contain shrink-0" />
                   )}
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-[100px]">{slot.pokemon.name}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">{slot.pokemon.name}</span>
                     {weakTypes.length > 0 && (
                       <div className="flex flex-wrap gap-0.5 mt-0.5">
                         {weakTypes.map(({ type, multiplier }) => (
@@ -1263,7 +1224,7 @@ function MoveAnalysisTable({
               PP
             </th>
             {filledOpponents.map((opp) => (
-              <th key={opp.pokemon.id} className="pb-2 px-1 text-center align-bottom">
+              <th key={`${opp.basePokemon.id}-${opp.selectedFormSlug ?? 'base'}`} className="pb-2 px-1 text-center align-bottom">
                 {opp.pokemon.imageUrl && (
                   <img src={opp.pokemon.imageUrl} alt={opp.pokemon.name} className="w-8 h-8 object-contain mx-auto" />
                 )}
@@ -1317,14 +1278,20 @@ export default function BattleReferencePage() {
   const [runTour, setRunTour] = useState(false);
   useEffect(() => {
     if (!localStorage.getItem('battleReferenceTourSeen')) {
+      setTeamsExpanded(true);
       setRunTour(true);
     }
   }, []);
   const handleTourCallback = useCallback((data: EventData) => {
-    if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
+    if (data.status === 'finished' || data.status === 'skipped') {
       localStorage.setItem('battleReferenceTourSeen', '1');
       setRunTour(false);
     }
+  }, []);
+  const startTour = useCallback(() => {
+    setTeamsExpanded(true);
+    localStorage.removeItem('battleReferenceTourSeen');
+    setRunTour(true);
   }, []);
 
   // Natures
@@ -1332,6 +1299,7 @@ export default function BattleReferencePage() {
   const [naturePickerFor, setNaturePickerFor] = useState<{ id: number; side: 'mine' | 'opp' } | null>(null);
   const [abilityPickerFor, setAbilityPickerFor] = useState<{ id: number; side: 'mine' | 'opp' } | null>(null);
   const [itemPickerFor, setItemPickerFor] = useState<{ id: number; side: 'mine' | 'opp' } | null>(null);
+  const [formPickerFor, setFormPickerFor] = useState<{ id: number; side: 'mine' | 'opp' } | null>(null);
 
   React.useEffect(() => {
     naturesService.getNatures(lang).then((res) => {
@@ -1438,6 +1406,68 @@ export default function BattleReferencePage() {
     setOpponents((prev) => prev.map((o) => o.pokemon.id === id ? { ...o, item: item ? { name: item.name, spriteUrl: item.spriteUrl } : undefined } : o));
   }, []);
 
+  const handleSelectMyForm = useCallback(async (id: number, slug: string | undefined) => {
+    setFormPickerFor(null);
+    const slot = myTeamRef.current.find((s) => s.basePokemon.id === id);
+    if (!slot || !slot.detail) return;
+    const baseId = slot.basePokemon.id;
+    const targetPokemon = slug === undefined
+      ? slot.basePokemon
+      : slot.detail.forms.find((f) => f.nameLower === slug) ?? slot.basePokemon;
+    setMyTeam((prev) => prev.map((s) =>
+      s.basePokemon.id === baseId
+        ? { ...s, pokemon: targetPokemon, selectedFormSlug: slug, selectedAbilityIdentifier: undefined, detailLoading: true }
+        : s
+    ));
+    const targetSlug = slug ?? (slot.basePokemon.nameLower ?? slot.basePokemon.name.toLowerCase().replace(/\s+/g, '-'));
+    const [res, stoneRes] = await Promise.all([
+      pokemonBuilderService.getPokemonBySlug(targetSlug, lang),
+      slug && MEGA_FORM_TO_STONE[slug]
+        ? itemsService.getItemByIdentifier(MEGA_FORM_TO_STONE[slug], lang)
+        : Promise.resolve(null),
+    ]);
+    setMyTeam((prev) => prev.map((s) => {
+      if (s.basePokemon.id !== baseId) return s;
+      const updated: TeamSlot = { ...s, detail: res.success && res.data ? res.data : null, detailLoading: false };
+      if (slug && stoneRes && stoneRes.success && stoneRes.data) {
+        updated.item = { name: stoneRes.data.name, spriteUrl: stoneRes.data.spriteUrl };
+      } else if (!slug && s.item) {
+        // leaving item unchanged when reverting to base (don't auto-clear in battle-reference)
+      }
+      return updated;
+    }));
+  }, [lang]);
+
+  const handleSelectOppForm = useCallback(async (id: number, slug: string | undefined) => {
+    setFormPickerFor(null);
+    const slot = opponentsRef.current.find((o) => o.basePokemon.id === id);
+    if (!slot || !slot.detail) return;
+    const baseId = slot.basePokemon.id;
+    const targetPokemon = slug === undefined
+      ? slot.basePokemon
+      : slot.detail.forms.find((f) => f.nameLower === slug) ?? slot.basePokemon;
+    setOpponents((prev) => prev.map((o) =>
+      o.basePokemon.id === baseId
+        ? { ...o, pokemon: targetPokemon, selectedFormSlug: slug, selectedAbilityIdentifier: undefined, loading: true }
+        : o
+    ));
+    const targetSlug = slug ?? (slot.basePokemon.nameLower ?? slot.basePokemon.name.toLowerCase().replace(/\s+/g, '-'));
+    const [res, stoneRes] = await Promise.all([
+      pokemonBuilderService.getPokemonBySlug(targetSlug, lang),
+      slug && MEGA_FORM_TO_STONE[slug]
+        ? itemsService.getItemByIdentifier(MEGA_FORM_TO_STONE[slug], lang)
+        : Promise.resolve(null),
+    ]);
+    setOpponents((prev) => prev.map((o) => {
+      if (o.basePokemon.id !== baseId) return o;
+      const updated: OpponentSlot = { ...o, detail: res.success && res.data ? res.data : null, loading: false };
+      if (slug && stoneRes && stoneRes.success && stoneRes.data) {
+        updated.item = { name: stoneRes.data.name, spriteUrl: stoneRes.data.spriteUrl };
+      }
+      return updated;
+    }));
+  }, [lang]);
+
   const handleSelectMyNature = useCallback((natureId: number) => {
     if (!naturePickerFor || naturePickerFor.side !== 'mine') return;
     const nature = natures.find((n) => n.id === natureId);
@@ -1494,7 +1524,7 @@ export default function BattleReferencePage() {
         effectPct: null,
         description: m.description ?? null,
       }));
-      return { pokemon, evs, natureMods, item, natureName: tp.natureData?.name, detail: null, detailLoading: false, selectedMoves };
+      return { pokemon, basePokemon: pokemon, evs, natureMods, item, natureName: tp.natureData?.name, detail: null, detailLoading: false, selectedMoves };
     }).filter(Boolean) as TeamSlot[];
     setMyTeam(slots);
     setShowTeamImport(false);
@@ -1516,7 +1546,7 @@ export default function BattleReferencePage() {
     const current = myTeamRef.current;
     if (current.length >= MAX_TEAM_SIZE || current.some((s) => s.pokemon.id === pokemon.id)) return;
     setShowMySelector(false);
-    setMyTeam((prev) => [...prev, { pokemon, evs: { ...DEFAULT_EVS }, natureMods: { ...DEFAULT_NATURE_MODS }, detail: null, detailLoading: true, selectedMoves: [] }]);
+    setMyTeam((prev) => [...prev, { pokemon, basePokemon: pokemon, evs: { ...DEFAULT_EVS }, natureMods: { ...DEFAULT_NATURE_MODS }, detail: null, detailLoading: true, selectedMoves: [] }]);
     const nameLower = pokemon.nameLower ?? pokemon.name.toLowerCase().replace(/\s+/g, '-');
     const res = await pokemonBuilderService.getPokemonBySlug(nameLower, lang);
     setMyTeam((prev) => prev.map((s) =>
@@ -1548,7 +1578,7 @@ export default function BattleReferencePage() {
     if (current.length >= MAX_TEAM_SIZE || current.some((o) => o.pokemon.id === pokemon.id)) return;
     setShowOppSelector(false);
 
-    const slot: OpponentSlot = { pokemon, evs: { ...DEFAULT_EVS }, natureMods: { ...DEFAULT_NATURE_MODS }, detail: null, loading: true };
+    const slot: OpponentSlot = { pokemon, basePokemon: pokemon, evs: { ...DEFAULT_EVS }, natureMods: { ...DEFAULT_NATURE_MODS }, detail: null, loading: true };
     setOpponents((prev) => [...prev, slot]);
 
     const nameLower = pokemon.nameLower ?? pokemon.name.toLowerCase().replace(/\s+/g, '-');
@@ -1589,10 +1619,7 @@ export default function BattleReferencePage() {
               </p>
             </div>
             <button
-              onClick={() => {
-                localStorage.removeItem('battleReferenceTourSeen');
-                setRunTour(true);
-              }}
+              onClick={startTour}
               className="shrink-0 flex items-center gap-1.5 text-xs text-dark-text-secondary hover:text-primary-400 transition-colors mt-1"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1668,7 +1695,7 @@ export default function BattleReferencePage() {
               /* Expanded: two stacked full-card sections */
               <div className="divide-y" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
                 {/* My Team */}
-                <div className="px-4 py-3" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.05) 0%, transparent 60%)' }}>
+                <div data-tour="tour-add-my-pokemon" className="px-4 py-3" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.05) 0%, transparent 60%)' }}>
                   <div className="grid grid-cols-3 gap-2">
                     {myTeam.map((slot) => (
                       <MiniCard
@@ -1682,15 +1709,16 @@ export default function BattleReferencePage() {
                         onPickNature={() => setNaturePickerFor({ id: slot.pokemon.id, side: 'mine' })}
                         onPickAbility={() => setAbilityPickerFor({ id: slot.pokemon.id, side: 'mine' })}
                         onPickItem={() => setItemPickerFor({ id: slot.pokemon.id, side: 'mine' })}
+                        onPickForm={() => setFormPickerFor({ id: slot.basePokemon.id, side: 'mine' })}
                       />
                     ))}
                     {myTeam.length < MAX_TEAM_SIZE && (
-                      <AddSlotButton data-tour="tour-add-my-pokemon" onClick={() => setShowMySelector(true)} />
+                      <AddSlotButton onClick={() => setShowMySelector(true)} />
                     )}
                   </div>
                 </div>
                 {/* Opponent */}
-                <div className="px-4 py-3" style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.05) 0%, transparent 60%)' }}>
+                <div data-tour="tour-add-opponent" className="px-4 py-3" style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.05) 0%, transparent 60%)' }}>
                   <div className="grid grid-cols-3 gap-2">
                     {opponents.map((slot) => (
                       <OpponentMiniCard
@@ -1704,10 +1732,11 @@ export default function BattleReferencePage() {
                         onPickNature={() => setNaturePickerFor({ id: slot.pokemon.id, side: 'opp' })}
                         onPickAbility={() => setAbilityPickerFor({ id: slot.pokemon.id, side: 'opp' })}
                         onPickItem={() => setItemPickerFor({ id: slot.pokemon.id, side: 'opp' })}
+                        onPickForm={() => setFormPickerFor({ id: slot.basePokemon.id, side: 'opp' })}
                       />
                     ))}
                     {opponents.length < MAX_TEAM_SIZE && (
-                      <AddSlotButton data-tour="tour-add-opponent" onClick={() => setShowOppSelector(true)} />
+                      <AddSlotButton onClick={() => setShowOppSelector(true)} />
                     )}
                   </div>
                 </div>
@@ -1727,6 +1756,7 @@ export default function BattleReferencePage() {
                     );
                   }
                   const accent = getTypeHex(slot.pokemon.types[0]?.toLowerCase() ?? 'normal');
+                  const hasForms = (slot.detail?.forms.length ?? 0) > 0;
                   return (
                     <div key={`my-${slot.pokemon.id}`} className="relative flex-1 aspect-square rounded-lg flex items-center justify-center"
                       style={{ background: `linear-gradient(135deg, ${accent}22 0%, ${accent}0a 100%)`, border: `1px solid ${accent}44`, minWidth: 0 }}>
@@ -1735,9 +1765,18 @@ export default function BattleReferencePage() {
                           style={{ filter: `drop-shadow(0 2px 6px ${accent}55)` }} />
                       )}
                       {slot.item?.spriteUrl && (
-                        <img src={slot.item.spriteUrl} alt={slot.item.name} title={slot.item.name}
-                          className="absolute bottom-0.5 right-0.5 w-8 h-8 object-contain"
-                          style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
+                        hasForms
+                          ? <button
+                              onClick={() => setFormPickerFor({ id: slot.basePokemon.id, side: 'mine' })}
+                              className="absolute bottom-0.5 right-0.5 w-10 h-10 hover:scale-110 transition-transform"
+                              title={slot.item.name}>
+                              <img src={slot.item.spriteUrl} alt={slot.item.name}
+                                className="w-full h-full object-contain"
+                                style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
+                            </button>
+                          : <img src={slot.item.spriteUrl} alt={slot.item.name} title={slot.item.name}
+                              className="absolute bottom-0.5 right-0.5 w-10 h-10 object-contain"
+                              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
                       )}
                     </div>
                   );
@@ -1758,6 +1797,7 @@ export default function BattleReferencePage() {
                     );
                   }
                   const accent = getTypeHex(slot.pokemon.types[0]?.toLowerCase() ?? 'normal');
+                  const hasForms = (slot.detail?.forms.length ?? 0) > 0;
                   return (
                     <div key={`opp-${slot.pokemon.id}`} className="relative flex-1 aspect-square rounded-lg flex items-center justify-center"
                       style={{ background: `linear-gradient(135deg, ${accent}22 0%, ${accent}0a 100%)`, border: `1px solid ${accent}44`, minWidth: 0 }}>
@@ -1766,9 +1806,18 @@ export default function BattleReferencePage() {
                           style={{ filter: `drop-shadow(0 2px 6px ${accent}55)` }} />
                       )}
                       {slot.item?.spriteUrl && (
-                        <img src={slot.item.spriteUrl} alt={slot.item.name} title={slot.item.name}
-                          className="absolute bottom-0.5 right-0.5 w-8 h-8 object-contain"
-                          style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
+                        hasForms
+                          ? <button
+                              onClick={() => setFormPickerFor({ id: slot.basePokemon.id, side: 'opp' })}
+                              className="absolute bottom-0.5 right-0.5 w-10 h-10 hover:scale-110 transition-transform"
+                              title={slot.item.name}>
+                              <img src={slot.item.spriteUrl} alt={slot.item.name}
+                                className="w-full h-full object-contain"
+                                style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
+                            </button>
+                          : <img src={slot.item.spriteUrl} alt={slot.item.name} title={slot.item.name}
+                              className="absolute bottom-0.5 right-0.5 w-10 h-10 object-contain"
+                              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))' }} />
                       )}
                     </div>
                   );
@@ -1932,6 +1981,26 @@ export default function BattleReferencePage() {
               selectedNatureId={selectedNatureId}
               onSelect={naturePickerFor.side === 'mine' ? handleSelectMyNature : handleSelectOppNature}
               onClose={() => setNaturePickerFor(null)}
+            />
+          );
+        })()}
+
+        {/* Form picker modal */}
+        {formPickerFor !== null && (() => {
+          const slot = formPickerFor.side === 'mine'
+            ? myTeam.find((s) => s.basePokemon.id === formPickerFor.id)
+            : opponents.find((o) => o.basePokemon.id === formPickerFor.id);
+          if (!slot || !slot.detail || slot.detail.forms.length === 0) return null;
+          return (
+            <FormPickerModal
+              basePokemon={slot.basePokemon}
+              forms={slot.detail.forms}
+              currentSlug={slot.selectedFormSlug}
+              onSelect={(slug) => {
+                if (formPickerFor.side === 'mine') handleSelectMyForm(slot.basePokemon.id, slug);
+                else handleSelectOppForm(slot.basePokemon.id, slug);
+              }}
+              onClose={() => setFormPickerFor(null)}
             />
           );
         })()}

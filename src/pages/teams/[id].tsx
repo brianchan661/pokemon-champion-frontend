@@ -17,8 +17,10 @@ import { CommentSection } from '@/components/Social/CommentSection';
 import { ShareButton } from '@/components/Social/ShareButton';
 import { TypeIcon } from '@/components/UI/TypeIcon';
 import { TeamTypeAnalysis } from '@/components/TeamBuilder/TeamTypeAnalysis';
-import { Team, Comment } from '@brianchan661/pokemon-champion-shared';
+import { Team, Comment, TeamPokemon } from '@brianchan661/pokemon-champion-shared';
 import { getApiBaseUrl } from '@/config/api';
+
+type MegaOverride = NonNullable<TeamPokemon['megaFormData']>;
 
 const API_URL = getApiBaseUrl();
 
@@ -103,7 +105,7 @@ export default function TeamDetailPage() {
       );
       return response.data.data;
     },
-    enabled: !!id && teamData?.team?.isPublic,
+    enabled: !!id,
   });
 
   const likeMutation = useMutation({
@@ -114,10 +116,16 @@ export default function TeamDetailPage() {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      return response.data.data;
+      return response.data.data as { likes: number; hasLiked: boolean };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['team', id] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        ['team', id, currentLang],
+        (old: { team: Team; hasLiked: boolean } | undefined) => {
+          if (!old) return old;
+          return { ...old, team: { ...old.team, likes: data.likes }, hasLiked: data.hasLiked };
+        }
+      );
     },
   });
 
@@ -128,6 +136,8 @@ export default function TeamDetailPage() {
     }
     await likeMutation.mutateAsync();
   };
+
+  const [megaOverrides, setMegaOverrides] = useState<Record<number, MegaOverride>>({});
 
   if (isLoading) {
     return (
@@ -160,6 +170,15 @@ export default function TeamDetailPage() {
   const hasLiked = teamData.hasLiked;
   const isOwner = user?.id === team.authorId;
   const comments = commentsData || [];
+
+  const handleToggleMegaForm = (index: number, megaFormData: MegaOverride) => {
+    if (index in megaOverrides) {
+      setMegaOverrides((prev) => { const next = { ...prev }; delete next[index]; return next; });
+      return;
+    }
+    if (!megaFormData) return;
+    setMegaOverrides((prev) => ({ ...prev, [index]: megaFormData }));
+  };
 
   return (
     <>
@@ -299,15 +318,46 @@ export default function TeamDetailPage() {
 
             {/* Pokemon Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {team.pokemon.map((p, index) => (
-                <PokemonCard
-                  key={index}
-                  pokemon={p}
-                  variant="detailed"
-                  enableLinks={true}
-                  className="h-full"
-                />
-              ))}
+              {team.pokemon.map((p, index) => {
+                const override = megaOverrides[index];
+                const hasMegaStone = !!p.megaFormData;
+                const isMega = !!override;
+                const displayPokemon = override ? {
+                  ...p,
+                  pokemonData: {
+                    ...p.pokemonData!,
+                    name: override.name,
+                    imageUrl: override.imageUrl,
+                    types: override.types,
+                    ...(override.baseStats ? { baseStats: override.baseStats } : {}),
+                  },
+                  ...(override.abilityData ? { abilityData: override.abilityData, abilityIdentifier: override.abilityIdentifier } : {}),
+                } : p;
+                return (
+                  <PokemonCard
+                    key={index}
+                    pokemon={displayPokemon}
+                    variant="detailed"
+                    enableLinks={!hasMegaStone}
+                    className="h-full"
+                    renderBannerAction={hasMegaStone ? (
+                      <button
+                        onClick={() => handleToggleMegaForm(index, p.megaFormData!)}
+                        title={isMega ? 'Revert to base form' : 'View mega evolution'}
+                        className={`w-6 h-6 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                          isMega ? 'ring-2 ring-white/80 shadow-lg' : 'opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src="/images/shared/mega_evolution.png"
+                          alt="Mega"
+                          className="w-6 h-6 object-contain select-none"
+                        />
+                      </button>
+                    ) : undefined}
+                  />
+                );
+              })}
             </div>
 
             {/* Offensive Type Coverage */}

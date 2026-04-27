@@ -23,6 +23,7 @@ import { SortableTeamSlot } from './SortableTeamSlot';
 export interface TeamSlot {
   id: string;
   pokemon?: TeamPokemon & {
+    baseNameLower?: string;
     pokemonData: {
       id: number;
       nationalNumber: number;

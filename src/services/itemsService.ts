@@ -43,16 +43,13 @@ class ItemsService {
     }
   }
 
-  /**
-   * Get single item by ID
-   */
-  async getItemById(
-    id: number,
+  async getItemByIdentifier(
+    identifier: string,
     lang: 'en' | 'ja' | 'zh-CN' | 'zh-TW' = 'en'
   ): Promise<ApiResponse<Item>> {
     try {
       const response = await axios.get<ApiResponse<Item>>(
-        `${API_BASE}/items/${id}?lang=${lang}`
+        `${API_BASE}/items/${identifier}?lang=${lang}`
       );
       return response.data;
     } catch (error: any) {

@@ -104,6 +104,7 @@ interface PokemonCardProps {
   enableLinks?: boolean;
   forImage?: boolean;
   className?: string;
+  renderBannerAction?: React.ReactNode;
 }
 
 const STAT_LABELS: { key: keyof StatSpread; label: string; color: string }[] = [
@@ -152,6 +153,7 @@ export function PokemonCard({
   enableLinks = false,
   forImage = false,
   className = '',
+  renderBannerAction,
 }: PokemonCardProps) {
   const { t, i18n } = useTranslation('common');
 
@@ -185,130 +187,127 @@ export function PokemonCard({
       <div
         className={`relative rounded-2xl overflow-hidden flex flex-col h-full group ${className}`}
         style={{
-          background: `linear-gradient(160deg, ${c1}55 0%, var(--color-bg-primary) 50%, var(--color-bg-secondary) 100%)`,
-          border: `1px solid ${c1}88`,
-          boxShadow: `0 4px 24px rgba(0,0,0,0.4), 0 0 12px ${c1}33`,
+          background: `linear-gradient(160deg, ${c1}22 0%, var(--color-bg-primary) 55%, var(--color-bg-secondary) 100%)`,
+          border: `1px solid ${c1}66`,
+          boxShadow: `0 4px 24px rgba(0,0,0,0.4), 0 0 12px ${c1}22`,
         }}
       >
-        {/* ── TOP SECTION: sprite left, info right ── */}
-        <div className="relative flex" style={{ background: getHeaderGradient() }}>
-          {/* Type icons top-right */}
-          <div className="absolute top-1.5 right-1.5 flex gap-0.5 z-10">
-            {pokemon?.pokemonData?.types?.map((type: string) => (
-              <TypeIcon key={type} type={type} size="sm" />
-            ))}
-          </div>
-          {/* Nature bottom-right */}
-          {nature?.name && (
-            <span className="absolute bottom-1.5 right-1.5 text-[10px] text-white/70 font-medium leading-none z-10">
-              {nature.name}
-            </span>
-          )}
-          {/* Sprite */}
-          <div className="relative shrink-0 flex items-end justify-center w-24 pb-1">
+        {/* ── BANNER ── */}
+        <div
+          className="relative flex overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${c1}dd 0%, ${c2}bb 100%)` }}
+        >
+          {/* Diagonal stripe texture */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: `repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 10px)`,
+          }} />
+
+          {/* Left: sprite column */}
+          <div className="relative shrink-0 flex items-end justify-center" style={{ width: '104px' }}>
             {pokemon?.pokemonData?.imageUrl ? (
               <img
                 src={pokemon.pokemonData.imageUrl}
                 alt={pokemon.pokemonData.name}
-                className="w-20 h-20 object-contain"
-                style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.6))' }}
+                className="w-24 h-24 object-contain"
+                style={{ filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.7))' }}
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-white/10" />
+              <div className="w-24 h-24 flex items-center justify-center text-white/30 text-3xl">?</div>
             )}
+            {/* Item sprite — bottom-right of sprite */}
             {pokemon?.itemData?.spriteUrl && (
               <img
                 src={pokemon.itemData.spriteUrl}
                 alt={pokemon.itemData.name || ''}
                 title={pokemon.itemData.name}
-                className="absolute bottom-1 right-1 w-10 h-10 object-contain z-10"
-                style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.8))' }}
+                className="absolute bottom-0 right-0 w-10 h-10 object-contain z-10"
+                style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.9))' }}
               />
             )}
           </div>
 
-          {/* Info: left col (name/types/item/ability) + right col (level/nature) */}
-          <div className="flex-1 min-w-0 flex gap-2 py-2.5 pr-3">
-            {/* Left: name, types, item, ability */}
-            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
-              {/* Name + types */}
-              <div className="flex items-center gap-1.5 min-w-0">
+          {/* Right: info column */}
+          <div className="flex-1 min-w-0 flex flex-col gap-1 py-2.5 pr-2.5 pl-1 relative z-10">
+            {/* Top: name + tera + banner action */}
+            <div className="flex items-center justify-between gap-1 min-w-0 flex-1">
+              <div className="min-w-0 flex-1">
                 {enableLinks && (pokemon?.pokemonData?.nationalNumber || pokemon?.pokemonId) ? (
                   <Link
                     href={`/pokemon/${pokemon.pokemonData?.nationalNumber || pokemon.pokemonId}`}
-                    className="font-extrabold text-base leading-tight text-white hover:text-yellow-300 transition-colors drop-shadow truncate"
+                    className="block font-extrabold text-lg leading-tight text-white hover:text-yellow-300 transition-colors drop-shadow truncate"
                     style={{ fontFamily: "'Rajdhani', sans-serif" }}
                   >
                     {pokemon?.pokemonData?.name || 'Unknown'}
                   </Link>
                 ) : (
-                  <span
-                    className={`font-extrabold text-base leading-tight text-white drop-shadow ${forImage ? '' : 'truncate'}`}
-                    style={{ fontFamily: "'Rajdhani', sans-serif" }}
-                  >
+                  <span className={`block font-extrabold text-lg leading-tight text-white drop-shadow ${forImage ? '' : 'truncate'}`}
+                    style={{ fontFamily: "'Rajdhani', sans-serif" }}>
                     {pokemon?.pokemonData?.name || 'Unknown'}
                   </span>
                 )}
               </div>
+              {(pokemon?.teraType || renderBannerAction) && (
+                <div className="shrink-0 flex items-center gap-1.5">
+                  {pokemon?.teraType && (
+                    <div
+                      className="flex items-center gap-1 pl-1 pr-1.5 py-0.5 rounded-full"
+                      style={{
+                        background: 'rgba(0,0,0,0.35)',
+                        border: `1px solid ${getTypeHex(pokemon.teraType)}aa`,
+                      }}
+                      title={`Tera: ${pokemon.teraType}`}
+                    >
+                      <div className="scale-[0.5] -mx-2 -my-1 shrink-0"><TeraTypeIcon type={pokemon.teraType} /></div>
+                      <span className="text-[9px] font-extrabold uppercase tracking-widest leading-none"
+                        style={{ color: getTypeHex(pokemon.teraType), fontFamily: "'Rajdhani', sans-serif" }}>
+                        Tera
+                      </span>
+                    </div>
+                  )}
+                  {renderBannerAction}
+                </div>
+              )}
+            </div>
 
-              {/* Ability */}
-              <div className="flex items-center gap-1 min-w-0">
-                {enableLinks && pokemon?.abilityIdentifier ? (
-                  <Link
-                    href={`/data/abilities/${pokemon.abilityIdentifier}`}
-                    className="text-[11px] font-semibold text-white/90 truncate hover:text-yellow-300 transition-colors"
-                    title={pokemon?.abilityData?.name}
-                  >
-                    {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || '—'}
-                  </Link>
-                ) : (
-                  <span className="text-[11px] font-semibold text-white/90 truncate" title={pokemon?.abilityData?.name}>
-                    {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || '—'}
-                  </span>
-                )}
-                {!forImage && pokemon?.abilityData?.description && (
-                  <InfoTooltip text={pokemon.abilityData.description} />
-                )}
-              </div>
+            {/* Middle: types + ability */}
+            <div className="flex items-center gap-1.5">
+              {pokemon?.pokemonData?.types?.map((type: string) => (
+                <TypeIcon key={type} type={type} size="sm" />
+              ))}
+            </div>
+            <div className="flex items-center gap-1 min-w-0">
+              {enableLinks && pokemon?.abilityIdentifier ? (
+                <Link href={`/data/abilities/${pokemon.abilityIdentifier}`}
+                  className="text-[11px] font-semibold text-white/85 truncate hover:text-yellow-300 transition-colors">
+                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || '—'}
+                </Link>
+              ) : (
+                <span className="text-[11px] font-semibold text-white/85 truncate">
+                  {pokemon?.abilityData?.name || pokemon?.abilityIdentifier || '—'}
+                </span>
+              )}
+              {!forImage && pokemon?.abilityData?.description && (
+                <InfoTooltip text={pokemon.abilityData.description} />
+              )}
+            </div>
 
-              {/* Item */}
+            {/* Bottom: item + nature */}
+            <div className="flex items-center gap-2 min-w-0">
               <div className="flex items-center gap-1 min-w-0">
                 {enableLinks && pokemon?.itemData?.identifier ? (
-                  <Link
-                    href={`/data/items/${pokemon.itemData.identifier}`}
-                    className="text-[11px] font-semibold text-white/90 truncate hover:text-yellow-300 transition-colors"
-                    title={pokemon.itemData.name}
-                  >
+                  <Link href={`/data/items/${pokemon.itemData.identifier}`}
+                    className="text-[11px] font-semibold text-white/85 truncate hover:text-yellow-300 transition-colors"
+                    title={pokemon.itemData.name}>
                     {pokemon.itemData.name || '—'}
                   </Link>
                 ) : (
-                  <span className="text-[11px] font-semibold text-white/90 truncate" title={pokemon?.itemData?.name}>
+                  <span className="text-[11px] font-semibold text-white/85 truncate" title={pokemon?.itemData?.name}>
                     {pokemon?.itemData?.name || '—'}
                   </span>
                 )}
               </div>
-            </div>
-
-            {/* Right: tera */}
-            <div className="shrink-0 flex flex-col items-end justify-center gap-1.5">
-              {pokemon?.teraType && (
-                <div
-                  className="flex items-center gap-1.5 pl-1.5 pr-2 py-0.5 rounded-md"
-                  style={{
-                    background: 'rgba(0,0,0,0.28)',
-                    border: `1px solid ${getTypeHex(pokemon.teraType)}99`,
-                    boxShadow: `0 0 10px ${getTypeHex(pokemon.teraType)}44`,
-                  }}
-                  title={`Tera Type: ${pokemon.teraType}`}
-                >
-                  <div className="scale-[0.55] -mx-1.5 -my-1"><TeraTypeIcon type={pokemon.teraType} /></div>
-                  <span
-                    className="text-[9px] font-extrabold uppercase tracking-[0.18em] leading-none"
-                    style={{ color: getTypeHex(pokemon.teraType), fontFamily: "'Rajdhani', sans-serif" }}
-                  >
-                    Tera
-                  </span>
-                </div>
+              {nature?.name && (
+                <span className="shrink-0 text-[10px] text-white/55 font-medium leading-none">{nature.name}</span>
               )}
             </div>
           </div>

@@ -1,18 +1,73 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
-import { TeamPokemon, StatSpread } from '@brianchan661/pokemon-champion-shared';
+import { TeamPokemon, StatSpread, Pokemon } from '@brianchan661/pokemon-champion-shared';
 import { pokemonBuilderService, ChampionsPokemonDetail } from '@/services/pokemonBuilderService';
 import { naturesService, Nature } from '@/services/naturesService';
 import { teraTypesService, TeraType } from '@/services/teraTypesService';
 import { TeraTypeIcon } from '@/components/UI/TeraTypeIcon';
 import { itemsService, Item } from '@/services/itemsService';
+import { ItemPickerModal } from './ItemPickerModal';
 import { getDefaultEVs, validateEVs } from '@/utils/calculateStats';
 import { getLocalizedMoveName } from '@/utils/localizedName';
+import { MEGA_FORM_TO_STONE } from '@brianchan661/pokemon-champion-shared';
 import { EVInputs } from './EVInputs';
 import { MovePicker } from './MovePicker';
 import { NaturePickerModal } from './NaturePickerModal';
 import { LoadingSpinner } from '@/components/UI/LoadingSpinner';
 import { TypeIcon } from '@/components/UI';
+
+function FormPickerModal({ basePokemon, forms, currentSlug, onSelect, onClose, t }: {
+  basePokemon: Pokemon;
+  forms: Pokemon[];
+  currentSlug?: string;
+  onSelect: (slug: string | undefined) => void;
+  onClose: () => void;
+  t: (key: string, fallback: string) => string;
+}) {
+  // The API already includes the base form inside `forms` when viewing an alternate form,
+  // so deduplicate by id before prepending the explicit base entry.
+  const allOptions: { pokemon: Pokemon; slug: string | undefined }[] = [
+    { pokemon: basePokemon, slug: undefined },
+    ...forms.filter((f) => f.id !== basePokemon.id).map((f) => ({ pokemon: f, slug: f.nameLower })),
+  ];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white dark:bg-dark-bg-secondary rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border w-full max-w-xs overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg-tertiary">
+          <span className="text-sm font-bold text-gray-800 dark:text-dark-text-primary">{t('battleReference.changeForm', 'Change Form')}</span>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-dark-text-primary transition-colors text-lg leading-none">✕</button>
+        </div>
+        <div className="p-3 space-y-2 max-h-96 overflow-y-auto">
+          {allOptions.map(({ pokemon, slug }) => {
+            const isSelected = slug === currentSlug;
+            return (
+              <button
+                key={slug ?? '__base__'}
+                onClick={() => onSelect(slug)}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border transition-all ${
+                  isSelected
+                    ? 'bg-primary-600 border-primary-500 text-white'
+                    : 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-100 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20'
+                }`}
+              >
+                {pokemon.imageUrl && (
+                  <img src={pokemon.imageUrl} alt={pokemon.name} className="w-10 h-10 object-contain shrink-0" />
+                )}
+                <div className="text-left min-w-0">
+                  <p className="text-sm font-semibold leading-tight truncate">{pokemon.name}</p>
+                  <div className="flex gap-1 mt-0.5 flex-wrap">
+                    {pokemon.types.map((ty) => <TypeIcon key={ty} type={ty} size="xs" />)}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface PokemonConfiguratorProps {
   pokemonNameLower: string;
@@ -31,10 +86,13 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
 
   // Pokemon data
   const [pokemon, setPokemon] = useState<ChampionsPokemonDetail | null>(null);
+  const [basePokemonData, setBasePokemonData] = useState<ChampionsPokemonDetail['base'] | null>(null);
+  const [baseAbilityIdentifier, setBaseAbilityIdentifier] = useState<string>('');
+  const [baseAbilities, setBaseAbilities] = useState<any[]>([]);
   const [abilities, setAbilities] = useState<any[]>([]);
   const [natures, setNatures] = useState<Nature[]>([]);
   const [teraTypes, setTeraTypes] = useState<TeraType[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
+  const [selectedItem, setSelectedItem] = useState<Item | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
   // Configuration state
@@ -46,6 +104,8 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
   const [teraType, setTeraType] = useState<string | undefined>(existingConfig?.teraType);
 
   const [itemId, setItemId] = useState<number | undefined>(existingConfig?.itemId);
+  const [selectedFormSlug, setSelectedFormSlug] = useState<string | undefined>(undefined);
+  const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
 
   // Ability description tooltip
@@ -54,13 +114,14 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
   // Nature picker visibility
   const [showNaturePicker, setShowNaturePicker] = useState(false);
 
+  // Form picker visibility
+  const [showFormPicker, setShowFormPicker] = useState(false);
+
   // Move picker visibility
   const [showMovePicker, setShowMovePicker] = useState(false);
 
-  // Item selector visibility and search
-  const [showItemSelector, setShowItemSelector] = useState(false);
-  const [itemSearchQuery, setItemSearchQuery] = useState('');
-  const itemSelectorRef = useRef<HTMLDivElement>(null);
+  // Item picker visibility
+  const [showItemPicker, setShowItemPicker] = useState(false);
 
   // Load data
   useEffect(() => {
@@ -71,25 +132,28 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
 
       const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
 
-      // Load Pokemon details from champions API
+      // Load base Pokemon details (always use base slug to get the full forms list)
       const pokemonResult = await pokemonBuilderService.getPokemonBySlug(pokemonNameLower, currentLang);
       if (!pokemonResult.success || !pokemonResult.data) {
         setError(`Failed to load Pokemon data for "${pokemonNameLower}"`);
         setLoading(false);
         return;
       }
-      if (pokemonResult.success && pokemonResult.data) {
-        setPokemon(pokemonResult.data);
 
-        // Abilities come embedded in the champions detail response
-        const mappedAbilities = (pokemonResult.data.abilities ?? []).map(a => ({
-          identifier: a.identifier,
-          name: currentLang === 'ja' ? (a.nameJa || a.nameEn) : a.nameEn,
-          description: currentLang === 'ja' ? (a.descriptionJa || a.descriptionEn) : a.descriptionEn,
-        }));
-        setAbilities(mappedAbilities);
-        setAbilityIdentifier((prev) => prev || mappedAbilities[0]?.identifier || '');
-      }
+      const detailToUse = pokemonResult.data;
+
+      setPokemon(detailToUse);
+      setBasePokemonData(detailToUse.base);
+      const mappedAbilities = (detailToUse.abilities ?? []).map(a => ({
+        identifier: a.identifier,
+        name: currentLang === 'ja' ? (a.nameJa || a.nameEn) : a.nameEn,
+        description: currentLang === 'ja' ? (a.descriptionJa || a.descriptionEn) : a.descriptionEn,
+      }));
+      setAbilities(mappedAbilities);
+      setBaseAbilities(mappedAbilities);
+      const initialAbility = existingConfig?.abilityIdentifier || mappedAbilities[0]?.identifier || '';
+      setAbilityIdentifier((prev) => prev || initialAbility);
+      setBaseAbilityIdentifier(initialAbility);
 
       // Load natures
       const naturesResult = await naturesService.getNatures(currentLang);
@@ -104,11 +168,11 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
         setTeraTypes(teraResult.data);
       }
 
-      // Load Items (all competitive items)
-      // itemsService supports lang parameter
-      const itemsResult = await itemsService.getItems({ lang: currentLang });
-      if (itemsResult.success && itemsResult.data) {
-        setItems(itemsResult.data);
+      // Restore pre-selected item when re-editing a slot (use identifier slug, not numeric ID)
+      if (existingConfig?.itemData?.identifier) {
+        itemsService.getItemByIdentifier(existingConfig.itemData.identifier, currentLang).then((res) => {
+          if (res.success && res.data) setSelectedItem(res.data);
+        });
       }
 
       setLoading(false);
@@ -117,35 +181,51 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
     loadData();
   }, [pokemonNameLower, i18n.language]);
 
-  // Close item selector when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (itemSelectorRef.current && !itemSelectorRef.current.contains(event.target as Node)) {
-        setShowItemSelector(false);
-        setItemSearchQuery(''); // Clear search when closing
+  // Handle form change (mega/alternate form switch)
+  const handleFormChange = async (slug: string | undefined) => {
+    if (!pokemon) return;
+    const savedForms = pokemon.forms;
+    const targetSlug = slug ?? pokemonNameLower;
+    setFormLoading(true);
+    const currentLang = (i18n.language.startsWith('ja') ? 'ja' : 'en') as 'en' | 'ja';
+    const result = await pokemonBuilderService.getPokemonBySlug(targetSlug, currentLang);
+    if (result.success && result.data) {
+      // Keep the forms list from before so the picker always shows all options
+      setPokemon({ ...result.data, forms: savedForms });
+      const mappedAbilities = (result.data.abilities ?? []).map(a => ({
+        identifier: a.identifier,
+        name: currentLang === 'ja' ? (a.nameJa || a.nameEn) : a.nameEn,
+        description: currentLang === 'ja' ? (a.descriptionJa || a.descriptionEn) : a.descriptionEn,
+      }));
+      setAbilities(mappedAbilities);
+      setAbilityIdentifier(mappedAbilities[0]?.identifier || '');
+      setMoves([]);
+      setSelectedMovesData([]);
+    }
+
+    // Auto-select mega stone when switching to a mega form
+    if (slug) {
+      // Snapshot the current base ability before overwriting abilities with mega's single ability
+      setBaseAbilityIdentifier(abilityIdentifier);
+      const stoneIdentifier = MEGA_FORM_TO_STONE[slug];
+      if (stoneIdentifier) {
+        const res = await itemsService.getItemByIdentifier(stoneIdentifier, currentLang);
+        if (res.success && res.data) {
+          setItemId(res.data.id);
+          setSelectedItem(res.data);
+        }
+      }
+    } else {
+      // Switching back to base — clear item if it was a mega stone
+      if (selectedItem?.category === 'mega-stone') {
+        setItemId(undefined);
+        setSelectedItem(undefined);
       }
     }
 
-    if (showItemSelector) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }
-  }, [showItemSelector]);
-
-  // Filter items based on search query
-  const filteredItems = useMemo(() => {
-    if (!itemSearchQuery.trim()) {
-      return items;
-    }
-    const query = itemSearchQuery.toLowerCase();
-    return items.filter(item =>
-      item.name.toLowerCase().includes(query) ||
-      item.identifier?.toLowerCase().includes(query) ||
-      item.category?.toLowerCase().includes(query)
-    );
-  }, [items, itemSearchQuery]);
+    setSelectedFormSlug(slug);
+    setFormLoading(false);
+  };
 
   // Handle save
   const handleSave = () => {
@@ -163,20 +243,39 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
       return;
     }
 
-    // Get enriched data for display purposes
-    const selectedAbility = abilities.find(a => a.identifier === abilityIdentifier);
+    // Always save base form data regardless of which form is currently previewed
+    const savedAbilityIdentifier = selectedFormSlug && MEGA_FORM_TO_STONE[selectedFormSlug]
+      ? baseAbilityIdentifier
+      : abilityIdentifier;
+    const selectedAbility = baseAbilities.find(a => a.identifier === savedAbilityIdentifier)
+      ?? abilities.find(a => a.identifier === savedAbilityIdentifier);
     const selectedNature = natures.find(n => n.id === natureId);
-    const selectedItem = items.find(i => i.id === itemId);
 
+    const activePokemon = basePokemonData ?? pokemon.base;
     const config: TeamPokemon = {
-      pokemonId: pokemon.base.id,
-      abilityIdentifier,
+      pokemonId: activePokemon.id,
+      abilityIdentifier: savedAbilityIdentifier,
       moves,
       natureId,
       evs,
       teraType,
       itemId,
-      // Include enriched data for display
+      pokemonData: {
+        id: activePokemon.id,
+        nationalNumber: activePokemon.nationalNumber ?? 0,
+        name: activePokemon.name,
+        nameLower: activePokemon.nameLower,
+        types: activePokemon.types,
+        imageUrl: activePokemon.imageUrl,
+        baseStats: activePokemon.hpBase != null ? {
+          hp: activePokemon.hpBase,
+          attack: activePokemon.attackBase!,
+          defense: activePokemon.defenseBase!,
+          specialAttack: activePokemon.spAtkBase!,
+          specialDefense: activePokemon.spDefBase!,
+          speed: activePokemon.speedBase!,
+        } : undefined,
+      },
       abilityData: selectedAbility ? {
         id: selectedAbility.id,
         identifier: selectedAbility.identifier,
@@ -193,7 +292,7 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
         name: selectedItem.name,
         spriteUrl: selectedItem.spriteUrl,
       } : undefined,
-      movesData: selectedMovesData, // Use the tracked moves data
+      movesData: selectedMovesData,
     };
 
     onSave(config);
@@ -227,11 +326,11 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
           {pokemon.base.imageUrl && (
             <img src={pokemon.base.imageUrl} alt={pokemon.base.name} className="w-20 h-20 object-contain" />
           )}
-          <div>
+          <div className="flex-1 min-w-0">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">
               {pokemon.base.name}
             </h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap mt-0.5">
               <p className="text-sm text-gray-600 dark:text-dark-text-secondary">#{pokemon.base.nationalNumber}</p>
               <div className="flex gap-1">
                 {pokemon.base.types.map((type) => (
@@ -239,9 +338,35 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
                 ))}
               </div>
             </div>
+            {pokemon.forms && pokemon.forms.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowFormPicker(true)}
+                disabled={formLoading}
+                className={`mt-2 text-sm px-3 py-1.5 rounded-lg border font-medium transition-colors ${
+                  selectedFormSlug
+                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-400 text-emerald-700 dark:text-emerald-400'
+                    : 'bg-gray-100 dark:bg-dark-bg-tertiary border-gray-300 dark:border-dark-border text-gray-700 dark:text-dark-text-primary hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/10'
+                }`}
+              >
+                {formLoading ? t('common.loading', 'Loading...') : `${t('battleReference.changeForm', 'Change Form')} ▾`}
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Form picker modal */}
+      {showFormPicker && pokemon.forms && pokemon.forms.length > 0 && (
+        <FormPickerModal
+          basePokemon={pokemon.base}
+          forms={pokemon.forms}
+          currentSlug={selectedFormSlug}
+          onSelect={(slug) => { handleFormChange(slug); setShowFormPicker(false); }}
+          onClose={() => setShowFormPicker(false)}
+          t={t}
+        />
+      )}
 
       {/* Content - 3 Column Grid */}
       <div className="flex-1 overflow-y-auto p-6">
@@ -348,92 +473,34 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
             </div>
 
             {/* Held Item */}
-            <div className="relative" ref={itemSelectorRef}>
+            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                 {t('teamBuilder.heldItem', 'Held Item')}
               </label>
               <button
                 type="button"
-                onClick={() => setShowItemSelector(!showItemSelector)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-left flex items-center justify-between dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
+                onClick={() => setShowItemPicker(true)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-left flex items-center justify-between dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary hover:border-primary-400 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  {itemId && items.find(i => i.id === itemId)?.spriteUrl && (
-                    <img
-                      src={items.find(i => i.id === itemId)?.spriteUrl}
-                      alt={items.find(i => i.id === itemId)?.name}
-                      className="w-6 h-6 object-contain"
-                    />
+                  {selectedItem?.spriteUrl && (
+                    <img src={selectedItem.spriteUrl} alt={selectedItem.name} className="w-6 h-6 object-contain" />
                   )}
-                  <span>{itemId ? items.find(i => i.id === itemId)?.name : t('teamBuilder.none', 'None')}</span>
+                  <span>{selectedItem ? selectedItem.name : t('teamBuilder.none', 'None')}</span>
                 </div>
                 <svg className="w-5 h-5 text-gray-400 dark:text-dark-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
-              {showItemSelector && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-dark-bg-secondary border border-gray-300 dark:border-dark-border rounded-lg shadow-lg max-h-80 overflow-hidden flex flex-col">
-                  {/* Search Input */}
-                  <div className="p-2 border-b border-gray-200 dark:border-dark-border sticky top-0 bg-white dark:bg-dark-bg-secondary">
-                    <input
-                      type="text"
-                      placeholder={t('teamBuilder.searchItems', 'Search items...')}
-                      value={itemSearchQuery}
-                      onChange={(e) => setItemSearchQuery(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm dark:bg-dark-bg-tertiary dark:border-dark-border dark:text-dark-text-primary"
-                      autoFocus
-                    />
-                  </div>
-
-                  {/* Items List */}
-                  <div className="overflow-y-auto">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setItemId(undefined);
-                        setShowItemSelector(false);
-                        setItemSearchQuery('');
-                      }}
-                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary flex items-center gap-2 border-b border-gray-100 dark:border-dark-border"
-                    >
-                      <span className="text-gray-500 dark:text-dark-text-secondary">{t('teamBuilder.none', 'None')}</span>
-                    </button>
-                    {filteredItems.length === 0 ? (
-                      <div className="px-3 py-4 text-center text-sm text-gray-500 dark:text-dark-text-secondary">
-                        {t('teamBuilder.noItemsFound', 'No items found')}
-                      </div>
-                    ) : (
-                      filteredItems.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => {
-                            setItemId(item.id);
-                            setShowItemSelector(false);
-                            setItemSearchQuery('');
-                          }}
-                          className={`w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary flex items-center gap-2 ${itemId === item.id ? 'bg-primary-50 dark:bg-dark-bg-tertiary' : ''
-                            }`}
-                        >
-                          {item.spriteUrl && (
-                            <img
-                              src={item.spriteUrl}
-                              alt={item.name}
-                              className="w-6 h-6 object-contain flex-shrink-0"
-                            />
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <span className="text-sm font-medium block dark:text-dark-text-primary">{item.name}</span>
-                            {item.category && (
-                              <span className="text-xs text-gray-500 dark:text-dark-text-tertiary">{item.category}</span>
-                            )}
-                          </div>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
+              {showItemPicker && (
+                <ItemPickerModal
+                  lang={i18n.language.startsWith('ja') ? 'ja' : 'en'}
+                  selectedItem={selectedItem ? { name: selectedItem.name, spriteUrl: selectedItem.spriteUrl } : undefined}
+                  onSelect={(item) => { setItemId(item.id); setSelectedItem(item); }}
+                  onClear={() => { setItemId(undefined); setSelectedItem(undefined); }}
+                  onClose={() => setShowItemPicker(false)}
+                />
               )}
             </div>
 
@@ -575,6 +642,11 @@ export function PokemonConfigurator({ pokemonNameLower, existingConfig, onSave, 
           {error && (
             <p className="text-sm text-red-600 dark:text-red-400 font-medium border-l-4 border-red-500 dark:border-red-400 pl-3">
               {error}
+            </p>
+          )}
+          {!error && selectedFormSlug && MEGA_FORM_TO_STONE[selectedFormSlug] && (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              {t('teamBuilder.megaPreviewNote', 'Previewing mega form — saves as base form')}
             </p>
           )}
         </div>
