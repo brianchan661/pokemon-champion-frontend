@@ -267,7 +267,7 @@ export default function RankingPage() {
                             {row.top_ability}
                           </div>
                           {row.top_ability_pct && (
-                            <div className="text-[10px] font-mono shrink-0 md:mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                            <div className="text-[10px] font-mono font-bold tracking-wide text-blue-500 dark:text-blue-300 bg-blue-500/10 px-1.5 py-[1px] rounded shrink-0 md:mt-0.5 md:inline-block">
                               {parseFloat(row.top_ability_pct).toFixed(1)}%
                             </div>
                           )}
@@ -313,10 +313,7 @@ export default function RankingPage() {
                             >
                               {move.name}
                             </span>
-                            <span
-                              className="text-[9px] font-mono shrink-0"
-                              style={{ color: 'var(--color-text-tertiary)' }}
-                            >
+                            <span className="text-[9px] font-mono font-bold tracking-wide shrink-0 text-blue-500 dark:text-blue-300">
                               {parseFloat(move.percentage).toFixed(0)}%
                             </span>
                           </div>
@@ -350,7 +347,7 @@ export default function RankingPage() {
                               {row.top_item}
                             </div>
                             {row.top_item_pct && (
-                              <div className="text-[10px] font-mono shrink-0" style={{ color: 'var(--color-text-tertiary)' }}>
+                              <div className="text-[10px] font-mono font-bold tracking-wide text-blue-500 dark:text-blue-300 bg-blue-500/10 px-1.5 py-[1px] rounded shrink-0 md:inline-block">
                                 {parseFloat(row.top_item_pct).toFixed(1)}%
                               </div>
                             )}
@@ -382,13 +379,13 @@ export default function RankingPage() {
                               )}
                             </div>
                             {row.top_nature_pct && (
-                              <div className="md:hidden text-[10px] font-mono shrink-0 ml-auto" style={{ color: 'var(--color-text-tertiary)' }}>
+                              <div className="md:hidden text-[10px] font-mono font-bold tracking-wide text-blue-500 dark:text-blue-300 bg-blue-500/10 px-1.5 py-[1px] rounded shrink-0 ml-auto">
                                 {parseFloat(row.top_nature_pct).toFixed(1)}%
                               </div>
                             )}
                           </div>
                           {row.top_nature_pct && (
-                            <div className="hidden md:block text-[10px] font-mono mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                            <div className="hidden md:inline-block text-[10px] font-mono font-bold tracking-wide text-blue-500 dark:text-blue-300 bg-blue-500/10 px-1.5 py-[1px] rounded mt-0.5">
                               {parseFloat(row.top_nature_pct).toFixed(1)}%
                             </div>
                           )}
