@@ -56,7 +56,7 @@ export const FEATURES = [
     translationKey: 'teamBuilder',
   },
   {
-    href: '/tiers',
+    href: '/ranking',
     backgroundImage: '/images/features/tier-lists.png',
     translationKey: 'tiers',
   },

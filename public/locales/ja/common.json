@@ -25,7 +25,7 @@
     "abilities": "特性",
     "moves": "わざ",
     "items": "道具",
-    "tiers": "ティア",
+    "ranking": "ランキング",
     "guides": "ガイド",
     "news": "ニュース",
     "more": "その他",
@@ -804,5 +804,33 @@
       "removedByMoldBreaker": "かたやぶり・ターボブレイズ・テラボルテージで無効化",
       "notUsedIfTransformed": "へんしん中は発動しない"
     }
+  },
+  "ranking": {
+    "title": "{{season}} {{format}}バトルランキング",
+    "subtitle": "使用率トップ50ポケモン",
+    "backToList": "{{season}}ランキング",
+    "format": {
+      "single": "シングル",
+      "double": "ダブル"
+    },
+    "col": {
+      "rank": "順位",
+      "pokemon": "ポケモン",
+      "topMove": "上位の技",
+      "topItem": "上位の道具"
+    },
+    "section": {
+      "abilities": "特性",
+      "moves": "技",
+      "items": "道具",
+      "natures": "性格",
+      "teammates": "相棒",
+      "evSpreads": "努力値",
+      "usage": "使用率"
+    },
+    "empty": "ランキングデータがありません。",
+    "error": "ランキングの読み込みに失敗しました。",
+    "retry": "再試行",
+    "captured": "取得日: {{date}}"
   }
 }

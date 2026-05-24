@@ -15,7 +15,7 @@
     "abilities": "特性",
     "moves": "招式",
     "items": "道具",
-    "tiers": "分级",
+    "ranking": "排名",
     "guides": "指南",
     "news": "新闻",
     "more": "更多",
@@ -647,5 +647,33 @@
       "removedByMoldBreaker": "可被破格・涡轮烈焰・超导电压无效化 [NEEDS_TRANSLATION]",
       "notUsedIfTransformed": "变形中不发动 [NEEDS_TRANSLATION]"
     }
+  },
+  "ranking": {
+    "title": "{{season}} {{format}}对战排行榜",
+    "subtitle": "使用率前 50 名宝可梦",
+    "backToList": "{{season}} 排行榜",
+    "format": {
+      "single": "单打",
+      "double": "双打"
+    },
+    "col": {
+      "rank": "排名",
+      "pokemon": "宝可梦",
+      "topMove": "热门招式",
+      "topItem": "热门道具"
+    },
+    "section": {
+      "abilities": "特性",
+      "moves": "招式",
+      "items": "道具",
+      "natures": "性格",
+      "teammates": "队友",
+      "evSpreads": "努力值分配",
+      "usage": "使用率"
+    },
+    "empty": "暂无排行榜数据。",
+    "error": "加载排行榜失败。",
+    "retry": "重试",
+    "captured": "采集日期：{{date}}"
   }
 }

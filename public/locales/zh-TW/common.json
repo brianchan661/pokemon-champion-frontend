@@ -15,7 +15,7 @@
     "abilities": "特性",
     "moves": "招式",
     "items": "道具",
-    "tiers": "分級",
+    "ranking": "排名",
     "guides": "指南",
     "news": "新聞",
     "openMenu": "開啟選單",
@@ -595,5 +595,33 @@
       "removedByMoldBreaker": "可被破格・渦輪烈焰・超導電壓無效化 [NEEDS_TRANSLATION]",
       "notUsedIfTransformed": "變形中不發動 [NEEDS_TRANSLATION]"
     }
+  },
+  "ranking": {
+    "title": "{{season}} {{format}}對戰排行榜",
+    "subtitle": "使用率前 50 名寶可夢",
+    "backToList": "{{season}} 排行榜",
+    "format": {
+      "single": "單打",
+      "double": "雙打"
+    },
+    "col": {
+      "rank": "排名",
+      "pokemon": "寶可夢",
+      "topMove": "熱門招式",
+      "topItem": "熱門道具"
+    },
+    "section": {
+      "abilities": "特性",
+      "moves": "招式",
+      "items": "道具",
+      "natures": "性格",
+      "teammates": "隊友",
+      "evSpreads": "努力值分配",
+      "usage": "使用率"
+    },
+    "empty": "暫無排行榜資料。",
+    "error": "載入排行榜失敗。",
+    "retry": "重試",
+    "captured": "擷取日期：{{date}}"
   }
 }

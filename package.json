@@ -37,7 +37,8 @@
     "react-i18next": "^13.5.0",
     "react-image-crop": "^11.0.10",
     "react-joyride": "^3.0.2",
-    "react-window": "^2.2.3"
+    "react-window": "^2.2.3",
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.0",

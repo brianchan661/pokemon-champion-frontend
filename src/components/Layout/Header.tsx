@@ -20,7 +20,7 @@ const NAVIGATION_ITEMS = [
       { key: 'items', href: '/data/items' },
     ]
   },
-  { key: 'tiers', href: '/tiers' },
+  { key: 'ranking', href: '/ranking' },
   {
     key: 'guides',
     href: '/guides',

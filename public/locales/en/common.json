@@ -24,7 +24,7 @@
     "abilities": "Abilities",
     "moves": "Moves",
     "items": "Items",
-    "tiers": "Tiers",
+    "ranking": "Rankings",
     "guides": "Guides",
     "news": "News",
     "more": "More",
@@ -835,5 +835,33 @@
       "removedByMoldBreaker": "Removed by Mold Breaker / Turboblaze / Teravolt",
       "notUsedIfTransformed": "Not Used if Transformed"
     }
+  },
+  "ranking": {
+    "title": "{{season}} {{format}} Battle Rankings",
+    "subtitle": "Top 50 Pokemon by usage rate",
+    "backToList": "{{season}} Rankings",
+    "format": {
+      "single": "Single",
+      "double": "Double"
+    },
+    "col": {
+      "rank": "Rank",
+      "pokemon": "Pokemon",
+      "topMove": "Top Move",
+      "topItem": "Top Item"
+    },
+    "section": {
+      "abilities": "Abilities",
+      "moves": "Moves",
+      "items": "Items",
+      "natures": "Natures",
+      "teammates": "Teammates",
+      "evSpreads": "EV Spreads",
+      "usage": "Usage"
+    },
+    "empty": "No rankings available.",
+    "error": "Failed to load rankings.",
+    "retry": "Retry",
+    "captured": "Captured {{date}}"
   }
 }

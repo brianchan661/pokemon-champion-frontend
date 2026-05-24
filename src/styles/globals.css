@@ -24,6 +24,24 @@
   --color-border: #2a3347;
 }
 
+.ev-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.ev-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ev-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+.ev-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+.ev-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
 @layer base {
 
   /* Smooth color transitions for theme changes */
