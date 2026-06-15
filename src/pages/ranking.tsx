@@ -12,7 +12,7 @@ import { getApiBaseUrl } from '@/config/api';
 
 const API_URL = getApiBaseUrl();
 
-const SEASONS = ['M1'];
+const SEASONS = ['M1', 'M2'];
 const FORMATS = ['single', 'double'] as const;
 type Format = typeof FORMATS[number];
 
